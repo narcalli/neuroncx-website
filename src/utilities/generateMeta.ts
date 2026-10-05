@@ -4,6 +4,7 @@ import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
+import { getSiteSettings, siteFileUrl } from './siteSettings'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -23,13 +24,20 @@ export const generateMeta = async (args: {
   doc: Partial<Page> | Partial<Post> | null
 }): Promise<Metadata> => {
   const { doc } = args
+  const settings = await getSiteSettings()
 
-  const ogImage = getImageURL(doc?.meta?.image)
+  // Site Settings supply the defaults. Until they are filled in, the old values apply.
+  const suffix = settings.titleSuffix ?? ' | Blog'
+  const defaultTitle = settings.defaultTitle || 'Blog'
+  const description = doc?.meta?.description || settings.defaultDescription || undefined
 
-  const title = doc?.meta?.title ? doc?.meta?.title + ' | Blog' : 'Blog'
+  const shareImage = siteFileUrl(settings.defaultShareImage)
+  const ogImage = doc?.meta?.image ? getImageURL(doc?.meta?.image) : shareImage || getImageURL(null)
+
+  const title = doc?.meta?.title ? doc?.meta?.title + suffix : defaultTitle
 
   return {
-    description: doc?.meta?.description,
+    description,
     openGraph: mergeOpenGraph({
       description: doc?.meta?.description || '',
       images: ogImage

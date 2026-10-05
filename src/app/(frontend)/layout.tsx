@@ -15,16 +15,28 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const settings = await getSiteSettings()
+
+  // Each icon falls back to the file shipped in public/ when the CMS field is empty.
+  const faviconIco = siteFileUrl(settings.faviconIco) || '/favicon.ico'
+  const faviconSvg = siteFileUrl(settings.faviconSvg) || '/favicon.svg'
+  const favicon32 = siteFileUrl(settings.favicon32)
+  const appleTouchIcon = siteFileUrl(settings.appleTouchIcon)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href={faviconIco} rel="icon" sizes="32x32" />
+        <link href={faviconSvg} rel="icon" type="image/svg+xml" />
+        {favicon32 ? <link href={favicon32} rel="icon" type="image/png" sizes="32x32" /> : null}
+        {appleTouchIcon ? <link href={appleTouchIcon} rel="apple-touch-icon" sizes="180x180" /> : null}
+        <link href="/manifest.webmanifest" rel="manifest" />
+        {settings.themeColor ? <meta name="theme-color" content={settings.themeColor} /> : null}
       </head>
       <body>
         <Providers>
