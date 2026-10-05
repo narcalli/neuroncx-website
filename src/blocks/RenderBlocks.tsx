@@ -32,6 +32,7 @@ import { BenefitsBlock } from '@/blocks/Benefits/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
+import { ProductInActionBlock } from '@/blocks/ProductInAction/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
 import { ContactFormBlock } from '@/blocks/ContactForm/Component'
 import { PartnerStripBlock } from '@/blocks/PartnerStrip/Component'
@@ -77,6 +78,7 @@ const blockComponents = {
   partnerStrip: PartnerStripBlock,
   productSuite: ProductSuiteBlock,
   productSuite2: ProductSuite2Block,
+  productInAction: ProductInActionBlock,
   statHero: StatHeroBlock,
   useCases: UseCasesBlock,
   problemStatement: ProblemStatementBlock,
@@ -102,6 +104,7 @@ const noMargin = [
   'partnerStrip',
   'platformLayers',
   'platformLayersTwo',
+  'productInAction',
   'trustPanel',
   'statBand',
 ]
