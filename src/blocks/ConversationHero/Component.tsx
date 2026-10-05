@@ -1,4 +1,11 @@
 import React from 'react'
+import { BlockIcon } from '@/components/BlockIcon'
+
+// An in-page anchor (e.g. #how-it-works) should stay on this page. Anything
+// else, like a demo booking link, opens in a new tab so the visitor doesn't
+// lose their place on the page.
+const externalAttrs = (href?: string | null) =>
+  href && href.startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' }
 
 type Props = {
   eyebrow?: string | null
@@ -30,34 +37,6 @@ const parse = (raw?: string | null): Line[] =>
 
 // Each bubble lands 0.6s after the one before it, as in the reference.
 const STEP = 0.6
-
-const ICONS: Record<string, React.ReactNode> = {
-  calendar: (
-    <>
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-    </>
-  ),
-  card: (
-    <>
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <path d="M2 10h20" />
-    </>
-  ),
-  document: (
-    <>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6M9 15l2 2 4-4" />
-    </>
-  ),
-  message: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
-  check: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M8 12.5l2.5 2.5L16 9.5" />
-    </>
-  ),
-}
 
 export const ConversationHeroBlock: React.FC<Props> = ({
   eyebrow,
@@ -204,7 +183,11 @@ export const ConversationHeroBlock: React.FC<Props> = ({
             {primaryButtonLabel || secondaryButtonLabel ? (
               <div className="cta">
                 {primaryButtonLabel ? (
-                  <a className="btn btn-primary" href={primaryButtonLink || '#'}>
+                  <a
+                    className="btn btn-primary"
+                    href={primaryButtonLink || '#'}
+                    {...externalAttrs(primaryButtonLink)}
+                  >
                     {primaryButtonLabel}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
                       <path d="M5 12h14M13 6l6 6-6 6" />
@@ -212,7 +195,11 @@ export const ConversationHeroBlock: React.FC<Props> = ({
                   </a>
                 ) : null}
                 {secondaryButtonLabel ? (
-                  <a className="btn btn-ghost" href={secondaryButtonLink || '#'}>
+                  <a
+                    className="btn btn-ghost"
+                    href={secondaryButtonLink || '#'}
+                    {...externalAttrs(secondaryButtonLink)}
+                  >
                     {secondaryButtonLabel}
                   </a>
                 ) : null}
@@ -275,9 +262,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
                         }}
                       >
                         <span className="ring">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            {ICONS[s.icon || 'calendar'] || ICONS.calendar}
-                          </svg>
+                          <BlockIcon name={s.icon} fallback="calendar" />
                         </span>
                         {s.label}
                       </div>

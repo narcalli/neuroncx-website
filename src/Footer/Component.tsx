@@ -52,7 +52,7 @@ export async function Footer() {
         <div className="cols">
           <div>
             <Link href="/">
-              <Logo />
+              <Logo src={footerData?.logo?.url} />
             </Link>
             {footerData?.tagline ? <p className="tagline">{footerData.tagline}</p> : null}
           </div>

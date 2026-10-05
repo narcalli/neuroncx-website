@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react'
 
 import type { Header } from '@/payload-types'
 
+import { Logo } from '@/components/Logo/Logo'
+
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
@@ -80,15 +82,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
 
       <div className="inner">
         <Link className="brand" href="/">
-          <svg className="pin" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="16" fill="#C62828" />
-            <path
-              d="M16 7c-3.3 0-6 2.7-6 6 0 4.2 6 12 6 12s6-7.8 6-12c0-3.3-2.7-6-6-6z"
-              fill="#fff"
-            />
-            <circle cx="16" cy="13" r="2.4" fill="#C62828" />
-          </svg>
-          NeuronCx
+          <Logo src={typeof data.logo === 'object' ? data.logo?.url : undefined} />
         </Link>
 
         <HeaderNav data={data} mobileOpen={mobileOpen} onNavigate={() => setMobileOpen(false)} />

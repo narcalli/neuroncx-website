@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import { BlockIcon } from '@/components/BlockIcon'
 
 type Stage = { label?: string | null; icon?: string | null; id?: string | null }
 type Detail = { title?: string | null; description?: string | null; id?: string | null }
@@ -12,46 +13,6 @@ type Props = {
   intro?: string | null
   stages?: Stage[] | null
   industries?: Industry[] | null
-}
-
-const ICONS: Record<string, React.ReactNode> = {
-  message: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
-  check: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M8 12.5l2.5 2.5L16 9.5" />
-    </>
-  ),
-  calendar: (
-    <>
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-    </>
-  ),
-  card: (
-    <>
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <path d="M2 10h20" />
-    </>
-  ),
-  document: (
-    <>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6M9 15l2 2 4-4" />
-    </>
-  ),
-  chat: (
-    <>
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      <path d="M8 9h8M8 13h5" />
-    </>
-  ),
-  refresh: (
-    <>
-      <path d="M3 12a9 9 0 1 0 3-6.7" />
-      <path d="M3 4v5h5" />
-    </>
-  ),
 }
 
 export const JourneyEngineBlock: React.FC<Props> = ({
@@ -222,9 +183,7 @@ export const JourneyEngineBlock: React.FC<Props> = ({
               aria-label={`${s.label} stage`}
             >
               <span className="ring">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  {ICONS[s.icon || 'message'] || ICONS.message}
-                </svg>
+                <BlockIcon name={s.icon} fallback="message" round />
               </span>
               {s.label}
             </button>
@@ -234,9 +193,7 @@ export const JourneyEngineBlock: React.FC<Props> = ({
         {detail ? (
           <div className="detail">
             <span className="mark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                {ICONS[steps[step]?.icon || 'message'] || ICONS.message}
-              </svg>
+              <BlockIcon name={steps[step]?.icon} fallback="message" round />
             </span>
             <div>
               <h3>{detail.title}</h3>

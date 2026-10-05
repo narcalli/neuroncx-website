@@ -15,7 +15,15 @@ export const dynamic = 'force-dynamic'
 
 // Blocks that own their top spacing and should sit flush under the header.
 // Keep in sync with noMargin in src/blocks/RenderBlocks.tsx.
-const flushFirstBlocks = ['conversationHero', 'statHero', 'closingCta']
+const flushFirstBlocks = [
+  'conversationHero',
+  'heroFullBackground',
+  'heroRightPlacement',
+  'heroWorkforceGrid',
+  'statHero',
+  'closingCta',
+  'agenticHero',
+]
 
 type Args = {
   params: Promise<{

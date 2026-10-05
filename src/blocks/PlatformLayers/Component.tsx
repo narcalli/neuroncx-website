@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import { BlockIcon } from '@/components/BlockIcon'
 
 type Layer = {
   title?: string | null
@@ -15,29 +16,6 @@ type Props = {
   heading?: string | null
   intro?: string | null
   layers?: Layer[] | null
-}
-
-const ICONS: Record<string, React.ReactNode> = {
-  message: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
-  bolt: <path d="M13 2L4.5 13H11l-1 9 8.5-11H12l1-9z" />,
-  layers: (
-    <>
-      <path d="M12 2l9 5-9 5-9-5 9-5z" />
-      <path d="M3 12l9 5 9-5M3 17l9 5 9-5" />
-    </>
-  ),
-  gauge: (
-    <>
-      <path d="M12 21a9 9 0 1 1 9-9" />
-      <path d="M12 12l5-3" />
-    </>
-  ),
-  plug: (
-    <>
-      <path d="M9 2v6M15 2v6" />
-      <path d="M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v5" />
-    </>
-  ),
 }
 
 export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, layers }) => {
@@ -100,7 +78,7 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
         .ncx-layers .tag{display:inline-block;margin-top:16px;font-family:Poppins,Arial,sans-serif;
           font-size:.76rem;font-weight:600;color:#FF8F8F;background:rgba(198,40,40,.22);
           border-radius:999px;padding:6px 14px}
-        .ncx-layers .step{height:78vh}
+        .ncx-layers .step{height:45vh}
         .ncx-layers .dots{display:flex;justify-content:center;gap:9px;padding:26px 0 72px}
         .ncx-layers .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);
           transition:background .3s,transform .3s}
@@ -128,9 +106,7 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
             {items.map((l, i) => (
               <article className={`card${i === active ? ' on' : ''}`} key={l.id || i}>
                 <span className="badge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    {ICONS[l.icon || 'message'] || ICONS.message}
-                  </svg>
+                  <BlockIcon name={l.icon} fallback="message" stroke="#fff" round />
                 </span>
                 <div>
                   <h3>{l.title}</h3>

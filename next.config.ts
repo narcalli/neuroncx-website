@@ -30,6 +30,15 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
+      // Pictures served by the CMS, for example /api/media/file/... on its own site.
+      ...(process.env.CMS_URL
+        ? [
+            {
+              hostname: new URL(process.env.CMS_URL).hostname,
+              protocol: new URL(process.env.CMS_URL).protocol.replace(':', '') as 'http' | 'https',
+            },
+          ]
+        : []),
       // Direct S3 path-style URLs — bypasses Lambda so Next.js image optimizer
       // fetches source images from S3 directly, avoiding the 6 MB Lambda limit.
       ...(process.env.S3_REGION

@@ -5,10 +5,14 @@ interface Props {
   className?: string
   loading?: 'lazy' | 'eager'
   priority?: 'auto' | 'high' | 'low'
+  /** Logo image from the CMS. Falls back to the default logo when empty. */
+  src?: string | null
 }
 
+const DEFAULT_LOGO_SRC = '/ncx-logo.png'
+
 export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className } = props
+  const { loading: loadingFromProps, priority: priorityFromProps, className, src } = props
 
   const loading = loadingFromProps || 'eager'
   const priority = priorityFromProps || 'high'
@@ -28,7 +32,7 @@ export const Logo = (props: Props) => {
         loading={loading}
         fetchPriority={priority}
         decoding="async"
-        src="/ncx-logo.png"
+        src={src || DEFAULT_LOGO_SRC}
       />
       NeuronCx
     </span>

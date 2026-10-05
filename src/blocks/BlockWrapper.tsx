@@ -12,6 +12,8 @@ type Presentation = {
 type Props = Presentation & {
   blockType?: string
   flush?: boolean
+  /** Lets a link elsewhere on the page (e.g. "#how-it-works") jump to this block. */
+  htmlId?: string | null
   children: React.ReactNode
 }
 
@@ -48,6 +50,7 @@ export const BlockWrapper: React.FC<Props> = ({
   align,
   hidden,
   flush,
+  htmlId,
   children,
 }) => {
   if (hidden) return null
@@ -55,8 +58,10 @@ export const BlockWrapper: React.FC<Props> = ({
   const outer: React.CSSProperties = {}
   const inner: React.CSSProperties = {}
 
-  if (background && background !== 'default' && BACKGROUNDS[background]) {
-    outer.background = BACKGROUNDS[background]
+  const hasBackground = Boolean(background && background !== 'default' && BACKGROUNDS[background])
+
+  if (hasBackground) {
+    outer.background = BACKGROUNDS[background as string]
     // Dark backgrounds need light text, or the block disappears into them.
     if (background === 'navy' || background === 'crimson') outer.color = '#FFFFFF'
   }
@@ -76,17 +81,29 @@ export const BlockWrapper: React.FC<Props> = ({
 
   if (align && align !== 'default') inner.textAlign = align as React.CSSProperties['textAlign']
 
+  // Keeps a jump link (e.g. #how-it-works) from landing under the sticky header.
+  if (htmlId) outer.scrollMarginTop = '96px'
+
   const hasOuter = Object.keys(outer).length > 0
   const hasInner = Object.keys(inner).length > 0
 
   const content = hasInner ? <div style={inner}>{children}</div> : children
 
+  // A chosen background should fill edge to edge with no gap to adjacent
+  // blocks, the same as the dedicated flush/hero blocks — otherwise the
+  // page's own background shows through the margin as a visible seam.
+  const isFlush = flush || hasBackground
+
   if (!hasOuter && !hasInner) {
-    return <div className={flush ? '' : 'my-4'}>{children}</div>
+    return (
+      <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'}>
+        {children}
+      </div>
+    )
   }
 
   return (
-    <div className={flush ? '' : 'my-4'} style={outer}>
+    <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'} style={outer}>
       {content}
     </div>
   )

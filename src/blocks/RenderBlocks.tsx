@@ -2,12 +2,27 @@ import React, { Fragment } from 'react'
 
 import type { Page } from '@/payload-types'
 
+import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
+import { IntegrationsMarqueeBlock } from '@/components/blocks/IntegrationsMarquee/IntegrationsMarquee'
+import { DetailedProductSuiteBlock } from '@/blocks/DetailedProductSuite/Component'
+import { FAQBlock } from '@/blocks/FAQ/Component'
+import { AgenticHeroBlock } from '@/blocks/AgenticHero/Component'
+import { AgenticFlowDemoBlock } from '@/blocks/AgenticFlowDemo/Component'
+import { AgenticStatsBlock } from '@/blocks/AgenticStats/Component'
+import { AgenticCartsDemoBlock } from '@/blocks/AgenticCartsDemo/Component'
+import { AgenticOrbitBlock } from '@/blocks/AgenticOrbit/Component'
+import { AgenticEpisodeBlock } from '@/blocks/AgenticEpisode/Component'
+import { AgenticCasesBlock } from '@/blocks/AgenticCases/Component'
+import { AgenticClosingBlock } from '@/blocks/AgenticClosing/Component'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { ArticleGridBlock } from '@/blocks/ArticleGrid/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FeatureThreadBlock } from '@/blocks/FeatureThread/Component'
 import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
+import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
+import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
+import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { HowItWorksBlock } from '@/blocks/HowItWorks/Component'
@@ -16,11 +31,13 @@ import { StatHeroBlock } from '@/blocks/StatHero/Component'
 import { BenefitsBlock } from '@/blocks/Benefits/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
+import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
 import { ContactFormBlock } from '@/blocks/ContactForm/Component'
 import { PartnerStripBlock } from '@/blocks/PartnerStrip/Component'
 import { ProblemStatementBlock } from '@/blocks/ProblemStatement/Component'
 import { PlatformLayersBlock } from '@/blocks/PlatformLayers/Component'
+import { PlatformLayersTwoBlock } from '@/blocks/PlatformLayersTwo/Component'
 import { JourneyEngineBlock } from '@/blocks/JourneyEngine/Component'
 import { ContextEngineBlock } from '@/blocks/ContextEngine/Component'
 import { SolutionGridBlock } from '@/blocks/SolutionGrid/Component'
@@ -29,25 +46,42 @@ import { StatBandBlock } from '@/blocks/StatBand/Component'
 import { BlockWrapper } from '@/blocks/BlockWrapper'
 
 const blockComponents = {
+  agenticFlowDemo: AgenticFlowDemoBlock,
+  agenticStats: AgenticStatsBlock,
+  agenticCartsDemo: AgenticCartsDemoBlock,
+  agenticOrbit: AgenticOrbitBlock,
+  agenticEpisode: AgenticEpisodeBlock,
+  agenticCases: AgenticCasesBlock,
+  agenticClosing: AgenticClosingBlock,
+  agenticHero: AgenticHeroBlock,
   archive: ArchiveBlock,
   articleGrid: ArticleGridBlock,
   benefits: BenefitsBlock,
+  bentoGrid: BentoGrid,
   closingCta: ClosingCtaBlock,
   contactForm: ContactFormBlock,
   content: ContentBlock,
   conversationHero: ConversationHeroBlock,
   cta: CallToActionBlock,
+  detailedProductSuite: DetailedProductSuiteBlock,
+  faq: FAQBlock,
   featureThread: FeatureThreadBlock,
+  heroFullBackground: HeroFullBackgroundBlock,
+  heroRightPlacement: HeroRightPlacementBlock,
+  heroWorkforceGrid: HeroWorkforceGridBlock,
   howItWorks: HowItWorksBlock,
   integrations: IntegrationsBlock,
+  integrationsMarquee: IntegrationsMarqueeBlock,
   logoWall: LogoWallBlock,
   mediaBlock: MediaBlock,
   partnerStrip: PartnerStripBlock,
   productSuite: ProductSuiteBlock,
+  productSuite2: ProductSuite2Block,
   statHero: StatHeroBlock,
   useCases: UseCasesBlock,
   problemStatement: ProblemStatementBlock,
   platformLayers: PlatformLayersBlock,
+  platformLayersTwo: PlatformLayersTwoBlock,
   journeyEngine: JourneyEngineBlock,
   contextEngine: ContextEngineBlock,
   solutionGrid: SolutionGridBlock,
@@ -58,11 +92,16 @@ const blockComponents = {
 // Blocks that manage their own vertical spacing and should sit flush.
 const noMargin = [
   'conversationHero',
+  'agenticHero',
+  'heroFullBackground',
+  'heroRightPlacement',
+  'heroWorkforceGrid',
   'statHero',
   'closingCta',
   'useCases',
   'partnerStrip',
   'platformLayers',
+  'platformLayersTwo',
   'trustPanel',
   'statBand',
 ]
@@ -90,6 +129,7 @@ export const RenderBlocks: React.FC<{
               return (
                 <BlockWrapper
                   key={index}
+                  htmlId={b.htmlId}
                   background={b.background}
                   width={b.width}
                   spacingTop={b.spacingTop}

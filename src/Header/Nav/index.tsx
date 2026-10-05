@@ -33,6 +33,11 @@ export const HeaderNav: React.FC<Props> = ({ data, mobileOpen, onNavigate }) => 
 
   if (!items.length) return null
 
+  // Dropdown links that point off the site (e.g. a docs site) open in a new
+  // tab, so visitors don't lose their place in the nav. Matches the same
+  // check already used for the sign-in link above.
+  const isExternal = (href: string) => /^https?:\/\//.test(href)
+
   const go = () => {
     setOpenIndex(null)
     onNavigate?.()
@@ -126,12 +131,20 @@ export const HeaderNav: React.FC<Props> = ({ data, mobileOpen, onNavigate }) => 
                 {columns.map((col: any, c: number) => (
                   <div key={col.id || c}>
                     {col?.heading ? <h6>{col.heading}</h6> : null}
-                    {((col?.links as any[]) || []).map((l: any, k: number) => (
-                      <Link key={l.id || k} href={l?.href || '#'} onClick={go}>
-                        {l?.label}
-                        {l?.description ? <span className="desc">{l.description}</span> : null}
-                      </Link>
-                    ))}
+                    {((col?.links as any[]) || []).map((l: any, k: number) => {
+                      const href = l?.href || '#'
+                      return isExternal(href) ? (
+                        <a key={l.id || k} href={href} target="_blank" rel="noopener noreferrer" onClick={go}>
+                          {l?.label}
+                          {l?.description ? <span className="desc">{l.description}</span> : null}
+                        </a>
+                      ) : (
+                        <Link key={l.id || k} href={href} onClick={go}>
+                          {l?.label}
+                          {l?.description ? <span className="desc">{l.description}</span> : null}
+                        </Link>
+                      )
+                    })}
                   </div>
                 ))}
               </div>

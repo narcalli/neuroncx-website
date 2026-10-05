@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@600&display=swap');
+
+/* Layout tokens for this block — adjust here. The card's own look lives in
+   ../OptionCard/OptionCard.module.css. */
+.container {
+  --max-width: 1120px;
+  --gutter: 32px;
+  --gutter-mobile: 20px;
+
+  /* Section header */
+  --header-gap: 40px;
+  --header-gap-mobile: 28px;
+  --header-eyebrow: #c62828;
+  --header-title: #1a2035;
+  --header-description: #5b6478;
+
+  /* Red card (Bento Grid only) */
+  --red-bg: #ffebee;
+  --red-border: #ffcdd2;
+
+  --bg-frame: #ffffff;
+  --frame-radius: 32px;
+  --frame-padding: 40px;
+  --frame-padding-mobile: 20px;
+  --frame-shadow:
+    0 24px 60px -20px rgba(26, 32, 53, 0.18),
+    0 4px 16px rgba(26, 32, 53, 0.06);
+
+  /* Side gutter, so neither the cards nor the frame touch the screen edges. */
+  padding-inline: var(--gutter);
+}
+
+.root {
+  max-width: var(--max-width);
+  margin-inline: auto;
+}
+
+/* Section header: each part is optional, so spacing sits between parts only. */
+.header {
+  margin-bottom: var(--header-gap);
+}
+
+.eyebrow,
+.title,
+.description {
+  margin: 0;
+}
+
+.header > * + * {
+  margin-top: 14px;
+}
+
+.eyebrow {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--header-eyebrow);
+}
+
+.eyebrow + .title {
+  margin-top: 12px;
+}
+
+.title {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  font-size: clamp(26px, 3.2vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  max-width: 26ch;
+  color: var(--header-title);
+}
+
+.description {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16.5px;
+  line-height: 1.65;
+  max-width: 62ch;
+  color: var(--header-description);
+}
+
+.onDark .eyebrow,
+.onDark .title {
+  color: #fff;
+}
+
+.onDark .description {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+@media (max-width: 900px) {
+  .header {
+    margin-bottom: var(--header-gap-mobile);
+  }
+}
+
+/* Red swaps the grey card's fill and thin border; it keeps a border, like
+   grey and lavender, and takes solid and gradient borders the same way. */
+.cardRed {
+  --card-bg: var(--red-bg);
+  --card-border: var(--red-border);
+}
+
+/* The block's "Content width" option is set: the page wrapper sets the width instead. */
+.uncapped {
+  max-width: none;
+}
+
+.framed {
+  background: var(--bg-frame);
+  border-radius: var(--frame-radius);
+  padding: var(--frame-padding);
+  box-shadow: var(--frame-shadow);
+}
+
+@media (max-width: 767.98px) {
+  .container {
+    padding-inline: var(--gutter-mobile);
+  }
+
+  .framed {
+    padding: var(--frame-padding-mobile);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap, 20px);
+  grid-auto-rows: minmax(var(--row-h, 240px), auto);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+/* Where a card sits in the grid. Spans arrive as --col, --col-md and --row. */
+.cell {
+  grid-column: 1 / -1;
+  grid-row: auto;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .cell {
+    grid-column: span var(--col-md, 12);
+    grid-row: span var(--row, 1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cell {
+    grid-column: span var(--col, 12);
+    grid-row: span var(--row, 1);
+  }
+}

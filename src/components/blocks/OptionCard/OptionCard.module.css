@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Inter:wght@400;500&display=swap');
+
+/* Brand tokens for the shared card — adjust here, nowhere else.
+   Put this class on an element that wraps the cards. */
+.tokens {
+  --card-bg: #f5f5f7;
+  --card-border: #e4e4ea;
+  --card-radius: 20px;
+  --card-padding: 28px;
+  --image-radius: 14px;
+
+  --tag-bg: rgba(26, 32, 53, 0.06);
+  --tag-border: rgba(26, 32, 53, 0.14);
+  --tag-color: #1a2035;
+
+  --title-color: #1a2035;
+  --title-font: 'Poppins', Arial, sans-serif;
+  --title-size-large: clamp(28px, 3.2vw, 44px);
+  --title-size-regular: 22px;
+
+  --body-font: 'Inter', Arial, sans-serif;
+  --body-color: #1a1a2e;
+
+  --link-color: #c62828;
+
+  /* Number chip, gradient border and accent line */
+  --accent-from: #9b5cf6;
+  --accent-to: #3b6fe8;
+  --bullet-color: #4c6fe0;
+  --points-color: #1a2035;
+  --icon-bg: #0b1f3a;
+
+  /* Card colours */
+  --lavender-bg: #f4f1fe;
+  --lavender-border: #e3dcfb;
+  --white-bg: #ffffff;
+  --white-shadow: 0 8px 24px rgba(20, 20, 40, 0.08);
+
+  /* Solid border colours */
+  --border-blue: #3b6fe8;
+  --border-violet: #9b5cf6;
+  --border-crimson: #c62828;
+  --border-navy: #1a2035;
+
+  font-family: var(--body-font);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  --card-fill: var(--card-bg);
+  --accent-line: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  background: var(--card-fill);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  min-width: 0;
+}
+
+/* Card colours. Grey is the look on .card above. */
+.cardLavender {
+  --card-fill: var(--lavender-bg);
+  border-color: var(--lavender-border);
+}
+
+/* Always white, so it reads on lavender and grey sections alike. */
+.cardWhite {
+  --card-fill: var(--white-bg);
+  border-color: transparent;
+  box-shadow: var(--white-shadow);
+}
+
+.borderBlue {
+  --border-color: var(--border-blue);
+}
+
+.borderViolet {
+  --border-color: var(--border-violet);
+}
+
+.borderCrimson {
+  --border-color: var(--border-crimson);
+}
+
+.borderNavy {
+  --border-color: var(--border-navy);
+}
+
+.borderSolid {
+  --accent-line: var(--border-color, var(--border-blue));
+  border: 1.5px solid var(--border-color, var(--border-blue));
+}
+
+/* A gradient border that keeps the card radius: the fill is painted up to
+   the padding edge, the gradient up to the border edge, under a transparent border. */
+.borderGradient {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--card-fill), var(--card-fill)) padding-box,
+    linear-gradient(135deg, var(--accent-from), var(--accent-to)) border-box;
+}
+
+/* Icon tile and number chip share one row at the top of the card. */
+.badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.icon,
+.number {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.icon {
+  background: var(--icon-bg);
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.number {
+  padding: 0 10px;
+  background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  font-family: var(--title-font);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  color: var(--tag-color);
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.titleLarge,
+.titleRegular {
+  font-family: var(--title-font);
+  font-weight: 600;
+  color: var(--title-color);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.titleLarge {
+  font-size: var(--title-size-large);
+  line-height: 1.1;
+}
+
+.titleRegular {
+  font-size: var(--title-size-regular);
+  line-height: 1.25;
+}
+
+.body {
+  font-family: var(--body-font);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--body-color);
+  max-width: 65ch;
+  margin: 0;
+}
+
+.imageWrap {
+  position: relative;
+  flex: 1;
+  min-height: 160px;
+  border-radius: var(--image-radius);
+  overflow: hidden;
+  background: var(--card-border);
+}
+
+@media (max-width: 767.98px) {
+  .imageWrap {
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+.pills,
+.bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pills li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--tag-border);
+  color: var(--tag-color);
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.cardWhite .pills li {
+  background: var(--tag-bg);
+}
+
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  color: var(--points-color);
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.bullets li::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bullet-color);
+  /* Centres the dot on the first line of text. */
+  margin-top: calc((1.45em - 8px) / 2);
+}
+
+.accentLine {
+  flex: none;
+  height: 2px;
+  width: 100%;
+  /* The card's own 12px gap plus this makes 24px above the line. */
+  margin-top: 12px;
+  border-radius: 2px;
+  background: var(--accent-line);
+}
+
+.link {
+  align-self: flex-start;
+  margin-top: auto;
+  color: var(--link-color);
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Background-image variant: image fills the card, text sits on a dark
+   overlay anchored to the bottom. */
+.cardBackground {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  justify-content: flex-end;
+}
+
+.bgImageWrap {
+  position: absolute;
+  inset: 0;
+}
+
+.bgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 14, 26, 0.8) 0%,
+    rgba(10, 14, 26, 0.38) 55%,
+    rgba(10, 14, 26, 0) 100%
+  );
+}
+
+.bgContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--card-padding);
+}
+
+.bgContent .tag,
+.bgContent .pills li {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.bgContent .icon {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.bgContent .titleLarge,
+.bgContent .titleRegular,
+.bgContent .bullets li {
+  color: #fff;
+}
+
+.bgContent .bullets li::before {
+  background: #fff;
+}
+
+.bgContent .body {
+  color: rgba(255, 255, 255, 0.88);
+}

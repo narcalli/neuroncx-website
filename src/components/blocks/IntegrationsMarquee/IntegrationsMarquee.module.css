@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+.container {
+  --max-width: 1120px;
+  --gutter: 32px;
+  --gutter-mobile: 20px;
+  padding-inline: var(--gutter);
+  padding-block: 56px;
+}
+
+.root {
+  max-width: var(--max-width);
+  margin-inline: auto;
+}
+
+@media (max-width: 767.98px) {
+  .container {
+    padding-inline: var(--gutter-mobile);
+    padding-block: 40px;
+  }
+}
+
+/* Section header — same typography as every other block's header. */
+.header {
+  margin-bottom: 40px;
+}
+
+.eyebrow,
+.title,
+.description {
+  margin: 0;
+}
+
+.header > * + * {
+  margin-top: 14px;
+}
+
+.eyebrow {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #c62828;
+}
+
+.eyebrow + .title {
+  margin-top: 12px;
+}
+
+.title {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  font-size: clamp(26px, 3.2vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  max-width: 26ch;
+  color: #1a2035;
+}
+
+.description {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16.5px;
+  line-height: 1.65;
+  max-width: 62ch;
+  color: #5b6478;
+}
+
+.onDark .eyebrow,
+.onDark .title {
+  color: #fff;
+}
+
+.onDark .description {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Marquee */
+.marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur, 40s) linear infinite;
+}
+
+.track.reverse {
+  animation-direction: reverse;
+}
+
+.marquee:hover .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+.copy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pills */
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  background: #fff;
+  border: 1px solid #e4e7f0;
+  border-radius: 12px;
+  padding: 10px 20px 10px 10px;
+}
+
+.icon {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.icon img {
+  object-fit: contain;
+}
+
+.monogram {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #1a2035;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.name {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1a2035;
+  white-space: nowrap;
+}
+
+/* Reduced motion: no animation, no mask, no duplicate — a plain wrapped grid. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .row {
+    overflow: visible;
+  }
+
+  .track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+  }
+
+  .copy {
+    flex-wrap: wrap;
+  }
+
+  .copy[data-duplicate='true'] {
+    display: none;
+  }
+}

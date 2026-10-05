@@ -123,6 +123,19 @@
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
+
+  /* NeuronCx brand tokens. Every block's own scoped <style> block has been
+     redeclaring these locally (search any block's .ncx-* selector) — this is
+     the first one to read them from here instead. Keep the two in step. */
+  --ncx-navy: #1a2035;
+  --ncx-navy-tint: #252d4a;
+  --ncx-crimson: #c62828;
+  --ncx-crimson-tint: #ffebee;
+  --ncx-cloud: #f5f5f7;
+  --ncx-white: #ffffff;
+  --ncx-body: #1a1a2e;
+  --ncx-muted: #6b7280;
+  --ncx-rule: #e2e2e8;
 }
 
 [data-theme='dark'] {
