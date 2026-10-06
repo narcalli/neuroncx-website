@@ -33,6 +33,9 @@ import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
 import { ProductInActionBlock } from '@/blocks/ProductInAction/Component'
+import { TestimonialBlock } from '@/blocks/Testimonial/Component'
+import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
+import { CustomerDirectoryBlock } from '@/blocks/CustomerDirectory/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
 import { ContactFormBlock } from '@/blocks/ContactForm/Component'
 import { PartnerStripBlock } from '@/blocks/PartnerStrip/Component'
@@ -79,6 +82,9 @@ const blockComponents = {
   productSuite: ProductSuiteBlock,
   productSuite2: ProductSuite2Block,
   productInAction: ProductInActionBlock,
+  testimonial: TestimonialBlock,
+  caseStudyGrid: CaseStudyGridBlock,
+  customerDirectory: CustomerDirectoryBlock,
   statHero: StatHeroBlock,
   useCases: UseCasesBlock,
   problemStatement: ProblemStatementBlock,
