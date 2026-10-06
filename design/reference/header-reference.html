@@ -1,0 +1,916 @@
+<title>NeuronCx Episodic CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: left-aligned hairline grid. One ruled column of sections on cool paper,
+   broken twice by full-bleed navy bands. Episode timeline is the signature device. */
+:root{
+  --paper:#F6F7FA;
+  --surface:#FFFFFF;
+  --surface-2:#FBFCFE;
+  --ink:#171C2E;
+  --ink-soft:#5A6379;
+  --ink-faint:#8A92A6;
+  --line:#E2E6EF;
+  --line-soft:#EDF0F6;
+  --crimson:#C62828;
+  --crimson-ink:#C62828;
+  --crimson-tint:#FDECEE;
+  --teal:#136B74;
+  --teal-ink:#136B74;
+  --teal-tint:#E4F1F1;
+  --band:#1A2035;
+  --band-ink:#FFFFFF;
+  --band-soft:#A3ABC6;
+  --band-line:rgba(255,255,255,.13);
+  --band-raise:rgba(255,255,255,.045);
+  --shadow:0 1px 2px rgba(20,26,45,.05), 0 8px 24px -12px rgba(20,26,45,.14);
+  --font-display:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Inter','Helvetica Neue',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  --gutter:clamp(20px,5vw,64px);
+  --max:1160px;
+  --wash:#E9EEF6;
+  --g1:rgba(26,32,53,.20);
+  --g2:rgba(19,107,116,.34);
+  --g3:rgba(198,40,40,.13);
+  --g4:rgba(78,112,186,.26);
+  --nav-glass:rgba(255,255,255,.72);
+  --scrim:rgba(246,247,250,.3);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1018;
+    --surface:#151924;
+    --surface-2:#11151F;
+    --ink:#E9EBF2;
+    --ink-soft:#A3ABBF;
+    --ink-faint:#737C92;
+    --line:#262C3B;
+    --line-soft:#1D2230;
+    --crimson:#E05151;
+    --crimson-ink:#F08A8A;
+    --crimson-tint:#2A1416;
+    --teal:#4FB2BB;
+    --teal-ink:#6FC7CF;
+    --teal-tint:#10242A;
+    --band:#060811;
+    --band-ink:#EEF0F6;
+    --band-soft:#8A92A6;
+    --band-line:rgba(255,255,255,.1);
+    --band-raise:rgba(255,255,255,.035);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+    --wash:#111722;
+    --g1:rgba(78,112,186,.26);
+    --g2:rgba(79,178,187,.22);
+    --g3:rgba(224,81,81,.14);
+    --g4:rgba(40,52,88,.5);
+    --nav-glass:rgba(21,25,36,.78);
+    --scrim:rgba(13,16,24,.34);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1018;
+  --surface:#151924;
+  --surface-2:#11151F;
+  --ink:#E9EBF2;
+  --ink-soft:#A3ABBF;
+  --ink-faint:#737C92;
+  --line:#262C3B;
+  --line-soft:#1D2230;
+  --crimson:#E05151;
+  --crimson-ink:#F08A8A;
+  --crimson-tint:#2A1416;
+  --teal:#4FB2BB;
+  --teal-ink:#6FC7CF;
+  --teal-tint:#10242A;
+  --band:#060811;
+  --band-ink:#EEF0F6;
+  --band-soft:#8A92A6;
+  --band-line:rgba(255,255,255,.1);
+  --band-raise:rgba(255,255,255,.035);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  --wash:#111722;
+  --g1:rgba(78,112,186,.26);
+  --g2:rgba(79,178,187,.22);
+  --g3:rgba(224,81,81,.14);
+  --g4:rgba(40,52,88,.5);
+  --nav-glass:rgba(21,25,36,.78);
+  --scrim:rgba(13,16,24,.34);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--font-body);font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;line-height:1.1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.eyebrow{
+  font-family:var(--font-mono);font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;gap:9px;
+}
+.eyebrow::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--crimson);flex:none}
+.eyebrow.on-band{color:var(--band-soft)}
+.lede{font-size:clamp(16px,1.5vw,18px);color:var(--ink-soft);max-width:60ch}
+
+/* ---------- announcement bar ---------- */
+.topbar{background:var(--paper);border-bottom:1px solid var(--line-soft)}
+.topbar-in{
+  max-width:var(--max);margin:0 auto;padding:9px 46px 9px var(--gutter);
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  font-size:13.5px;color:var(--ink-soft);position:relative;text-align:center;
+}
+.pill-sm{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--crimson);color:#fff;padding:4px 12px;border-radius:999px;
+  text-decoration:none;white-space:nowrap;flex:none;
+}
+.topbar-x{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:0;color:var(--ink-faint);font-size:18px;line-height:1;
+  cursor:pointer;padding:4px 8px;border-radius:6px;
+}
+.topbar-x:hover{color:var(--ink)}
+
+/* ---------- shell: floating nav riding the hero stage ---------- */
+.shell{display:block;padding-inline:clamp(10px,1.4vw,18px);padding-bottom:clamp(10px,1.4vw,18px)}
+.nav{
+  position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:60;
+  margin-top:12px;border-radius:999px;height:64px;
+  border:1px solid transparent;transition:background .25s,border-color .25s,box-shadow .25s;
+}
+.nav.is-stuck{
+  background:var(--nav-glass);backdrop-filter:blur(14px) saturate(1.4);
+  border-color:var(--line);box-shadow:var(--shadow);
+}
+/* header riding a dark band: invert the chrome */
+.nav.on-dark .navlink,
+.nav.on-dark .nav-right .ghost{color:#fff}
+.nav.on-dark .navlink:hover,
+.nav.on-dark .nav-right .ghost:hover{color:#fff;opacity:.72}
+.nav.on-dark .mark{background:transparent;border-color:rgba(255,255,255,.28);color:#fff}
+.nav.on-dark.is-stuck{
+  background:rgba(8,11,20,.5);border-color:rgba(255,255,255,.14);
+  box-shadow:0 10px 30px -16px rgba(0,0,0,.6);
+}
+.nav.on-dark .navitem.is-open .navlink{background:rgba(255,255,255,.16);box-shadow:none;color:#fff}
+.nav-in{
+  display:flex;align-items:center;gap:8px;height:100%;
+  max-width:var(--max);margin:0 auto;padding-inline:8px;
+}
+.mark{
+  display:flex;align-items:center;gap:9px;text-decoration:none;flex:none;
+  font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.02em;
+  background:var(--surface);color:var(--ink);
+  padding:9px 18px 9px 11px;border-radius:999px;border:1px solid var(--line);
+}
+.mark-dot{width:20px;height:20px;border-radius:50%;background:var(--crimson);position:relative;flex:none}
+.mark-dot::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#fff}
+
+.nav-links{display:flex;align-items:center;margin-inline:auto}
+.navitem{position:static}
+.navlink{
+  display:flex;align-items:center;gap:5px;height:40px;padding:0 15px;
+  font-family:var(--font-body);font-size:14px;color:var(--ink);text-decoration:none;
+  background:none;border:0;cursor:pointer;border-radius:8px;
+}
+.navlink:hover{color:var(--teal-ink)}
+.navlink svg{width:10px;height:10px;opacity:.5;transition:transform .2s}
+.navitem.is-open .navlink{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.navitem.is-open .navlink svg{transform:rotate(180deg)}
+.nav-right{display:flex;align-items:center;gap:6px;flex:none}
+.nav-right .ghost{font-size:14px;color:var(--ink);text-decoration:none;padding:0 12px}
+.nav-right .ghost:hover{color:var(--teal-ink)}
+.btn-pill{
+  font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--crimson);color:#fff;text-decoration:none;
+  padding:13px 22px;border-radius:999px;white-space:nowrap;transition:background .15s;
+}
+.btn-pill:hover{background:#A81F1F}
+
+/* ---------- mega menu ---------- */
+.mega{
+  position:absolute;left:0;top:calc(100% + 8px);
+  width:min(292px,calc(100vw - 24px));padding:7px;
+  background:var(--surface);border:1px solid var(--line);border-radius:15px;
+  box-shadow:0 2px 4px rgba(20,26,45,.04), 0 22px 54px -22px rgba(20,26,45,.26);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
+}
+.navitem.is-open .mega{opacity:1;visibility:visible;transform:none}
+.mega a{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-radius:9px;font-size:14.5px;line-height:1.35;
+  text-decoration:none;color:var(--ink);transition:background .14s,color .14s;
+}
+.mega a:hover{background:var(--teal-tint);color:var(--teal-ink)}
+.mega h5{
+  font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-faint);
+  margin:10px 0 2px;padding:10px 12px 0;border-top:1px solid var(--line-soft);
+}
+.mega h5:first-child{margin-top:0;padding-top:2px;border-top:0}
+.badge-new{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;padding:2px 7px;
+  border:1px dashed var(--crimson);color:var(--crimson-ink);border-radius:999px;flex:none;
+}
+.meta{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;flex:none}
+
+/* ---------- stage: drifting gradient field ---------- */
+.stage{position:relative;margin-top:-64px;border-radius:26px;overflow:hidden;background:var(--wash);isolation:isolate}
+.stage::before{
+  content:"";position:absolute;inset:-35%;z-index:0;
+  background:
+    radial-gradient(38% 46% at 18% 28%, var(--g1), transparent 66%),
+    radial-gradient(44% 52% at 78% 16%, var(--g2), transparent 66%),
+    radial-gradient(46% 54% at 62% 88%, var(--g3), transparent 66%),
+    radial-gradient(42% 50% at 8% 86%, var(--g4), transparent 66%);
+  animation:drift 26s ease-in-out infinite alternate;
+  will-change:transform;
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1) rotate(0deg)}
+  50%{transform:translate3d(5%,-4%,0) scale(1.16) rotate(4deg)}
+  100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
+}
+.stage-in{
+  position:relative;z-index:1;max-width:var(--max);margin:0 auto;
+  padding:calc(64px + clamp(44px,6vw,76px)) var(--gutter) clamp(36px,4.5vw,56px);
+}
+
+/* ---------- scrim behind an open menu ---------- */
+.scrim{
+  position:fixed;inset:0;z-index:40;background:var(--scrim);
+  backdrop-filter:blur(14px) saturate(.92);-webkit-backdrop-filter:blur(14px) saturate(.92);
+  opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease;
+}
+body.menu-open .scrim{opacity:1;visibility:visible}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-.01em;
+  padding:10px 18px;border-radius:7px;text-decoration:none;border:1px solid transparent;
+  cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+}
+.btn-primary{background:var(--crimson);color:#fff}
+.btn-primary:hover{background:#A81F1F}
+.btn-line{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--ink-faint)}
+.btn-band{background:#fff;color:#1A2035}
+.btn-band:hover{background:#E8EAF0}
+.btn-band-line{border-color:var(--band-line);color:var(--band-ink)}
+.btn-band-line:hover{background:var(--band-raise)}
+.btn-lg{padding:13px 24px;font-size:15px}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:4px}
+
+/* ---------- sections ---------- */
+.sec{padding-block:clamp(56px,7vw,96px)}
+.sec + .sec{border-top:1px solid var(--line)}
+.band{
+  background:var(--band);color:var(--band-ink);
+  border-radius:26px;border-top:0;margin-block:clamp(10px,1.4vw,18px);
+}
+.band + .sec{border-top:0}
+.band h2,.band h3{color:var(--band-ink)}
+.band p{color:var(--band-soft)}
+.sec-head{display:flex;flex-direction:column;gap:14px;margin-bottom:40px;max-width:62ch}
+.sec-head h2{font-size:clamp(26px,3.4vw,38px)}
+
+/* ---------- hero ---------- */
+.stage h1{font-size:clamp(36px,5.6vw,60px);font-weight:700;margin-block:20px 18px;max-width:17ch}
+.stage .lede{font-size:clamp(16px,1.7vw,19px);max-width:56ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero-note{margin-top:18px;font-family:var(--font-mono);font-size:12px;color:var(--ink-faint)}
+.stage .tl-card{margin-top:clamp(36px,4.5vw,56px)}
+
+/* ---------- episode timeline ---------- */
+.tl-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.tl-head{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  padding:14px 18px;border-bottom:1px solid var(--line-soft);background:var(--surface-2);
+}
+.tl-id{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.chip{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;
+  padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-soft);
+}
+.chip-open{background:var(--teal-tint);border-color:transparent;color:var(--teal-ink)}
+.tl-spacer{flex:1 1 auto}
+.tl-body{padding:30px 18px 24px;overflow-x:auto}
+.tl{display:grid;grid-template-columns:repeat(6,minmax(132px,1fr));gap:0;position:relative;min-width:0}
+.tl::before{
+  content:"";position:absolute;left:calc(100%/12);right:calc(100%/12);top:7px;height:2px;
+  background:linear-gradient(90deg,var(--teal) 0%,var(--teal) 72%,var(--line) 72%,var(--line) 100%);
+  border-radius:2px;
+}
+.step{position:relative;padding:0 10px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.dot{
+  width:16px;height:16px;border-radius:50%;background:var(--surface);
+  border:3px solid var(--teal);position:relative;z-index:1;
+}
+.step.human .dot{border-color:var(--crimson)}
+.step.next .dot{border-color:var(--line)}
+.step-day{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+.step-label{font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-.01em}
+.step-chan{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.step.human .step-chan{color:var(--crimson-ink)}
+.tl-foot{
+  display:flex;flex-wrap:wrap;gap:18px;padding:14px 18px;
+  border-top:1px solid var(--line-soft);background:var(--surface-2);
+  font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);
+}
+.key{display:flex;align-items:center;gap:7px}
+.key i{width:9px;height:9px;border-radius:50%;display:block;flex:none}
+
+/* ---------- ruled list ---------- */
+.ruled{display:grid;gap:0;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.ruled > div{padding:26px 24px 26px 0;border-right:1px solid var(--line)}
+.ruled > div:last-child{border-right:0;padding-right:0}
+.ruled > div:not(:first-child){padding-left:24px}
+.ruled h3{font-size:17px;margin-bottom:9px}
+.ruled p{font-size:14.5px;color:var(--ink-soft)}
+.ruled .num{font-family:var(--font-mono);font-size:11px;color:var(--crimson-ink);letter-spacing:.1em;display:block;margin-bottom:12px}
+
+/* ---------- cards ---------- */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:24px 22px;display:flex;flex-direction:column;gap:9px;min-width:0;
+}
+.card h3{font-size:17px}
+.card p{font-size:14.5px;color:var(--ink-soft)}
+.card .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-ink);margin-bottom:4px}
+
+.grid-agents{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--band-line);border:1px solid var(--band-line);border-radius:12px;overflow:hidden}
+.agent{background:var(--band);padding:24px 22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.agent:hover{background:var(--band-raise)}
+.agent h3{font-size:16px}
+.agent p{font-size:14px;line-height:1.55}
+.agent .ix{font-family:var(--font-mono);font-size:11px;color:var(--band-soft);letter-spacing:.1em;margin-bottom:6px}
+
+/* ---------- scorecard ---------- */
+.qa{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.sheet-head{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
+.sheet-head strong{font-family:var(--font-display);font-size:14px;font-weight:600}
+.sheet-head span{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);margin-left:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{
+  text-align:left;font-family:var(--font-mono);font-weight:500;font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+  padding:11px 18px;border-bottom:1px solid var(--line-soft);
+}
+.tbl td{padding:12px 18px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .mono{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-soft)}
+.tbl .score{font-variant-numeric:tabular-nums;font-family:var(--font-mono);font-weight:500;text-align:right;white-space:nowrap}
+.meter{height:5px;border-radius:3px;background:var(--line-soft);overflow:hidden;min-width:56px}
+.meter i{display:block;height:100%;border-radius:3px;background:var(--teal)}
+.meter.low i{background:var(--crimson)}
+.flag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:var(--crimson-tint);color:var(--crimson-ink);white-space:nowrap}
+.flag.ok{background:transparent;color:var(--ink-faint)}
+.qa-points{display:flex;flex-direction:column;gap:22px}
+.pt{display:flex;flex-direction:column;gap:5px;padding-left:18px;border-left:2px solid var(--line)}
+.pt.mark{border-left-color:var(--crimson)}
+.pt h3{font-size:16px}
+.pt p{font-size:14.5px;color:var(--ink-soft)}
+
+/* ---------- metrics ---------- */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.metric{background:var(--surface);padding:26px 22px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.metric b{
+  font-family:var(--font-display);font-size:clamp(28px,3.4vw,38px);font-weight:700;
+  letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;
+}
+.metric b em{font-style:normal;color:var(--crimson-ink)}
+.metric span{font-size:13.5px;color:var(--ink-soft)}
+
+/* ---------- integrations ---------- */
+.ints{display:flex;flex-wrap:wrap;gap:10px}
+.int{
+  display:inline-flex;align-items:center;gap:9px;padding:10px 16px;
+  border:1px solid var(--line);border-radius:9px;background:var(--surface);
+  font-family:var(--font-display);font-size:14px;font-weight:500;
+}
+.int i{width:7px;height:7px;border-radius:2px;background:var(--teal);display:block;flex:none}
+
+/* ---------- closing ---------- */
+.close-in{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-end;justify-content:space-between}
+.close-in h2{font-size:clamp(26px,3.6vw,40px);max-width:16ch}
+.foot{border-top:1px solid var(--band-line);padding-block:26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:13px;color:var(--band-soft)}
+.foot .tag{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.04em;margin-left:auto}
+
+@media (max-width:900px){
+  .qa{grid-template-columns:1fr;gap:30px}
+  .grid3,.grid-agents{grid-template-columns:repeat(2,1fr)}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:1040px){
+  .navlink{padding:0 11px;font-size:13.5px}
+}
+
+@media (max-width:760px){
+  .nav-links{display:none}
+  .nav-right{margin-left:auto}
+  .nav-right .ghost{padding:0 8px;font-size:13.5px}
+  .btn-pill{padding:11px 16px;font-size:10px;letter-spacing:.08em}
+  .mark{font-size:15px;padding:8px 14px 8px 9px}
+  .topbar-in{font-size:12.5px;gap:9px;padding-right:40px}
+  .band{border-radius:20px}
+  .stage{border-radius:20px}
+  .ruled{grid-template-columns:1fr;border-top:0}
+  .ruled > div{border-right:0;border-top:1px solid var(--line);padding:22px 0}
+  .ruled > div:not(:first-child){padding-left:0}
+  .tl-body{padding:26px 18px 20px;overflow-x:visible}
+  .tl{grid-template-columns:1fr;gap:0}
+  .tl::before{left:7px;right:auto;top:8px;bottom:14px;height:auto;width:2px;
+    background:linear-gradient(180deg,var(--teal) 0%,var(--teal) 72%,var(--line) 72%,var(--line) 100%)}
+  .step{
+    display:grid;grid-template-columns:16px 1fr;column-gap:16px;row-gap:4px;
+    padding:0 0 24px 0;align-items:start;
+  }
+  .step .dot{grid-column:1;grid-row:1 / span 3;margin-top:3px}
+  .step-day{grid-column:2}
+  .step-label{grid-column:2}
+  .step-chan{grid-column:2}
+  .step:last-child{padding-bottom:0}
+}
+@media (max-width:560px){
+  .grid3,.grid-agents,.metrics{grid-template-columns:1fr}
+  .close-in{flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="topbar" id="topbar">
+  <div class="topbar-in">
+    <span>Call QA now scores every eligible call, not a two percent sample</span>
+    <a class="pill-sm" href="#qa">See how</a>
+    <button class="topbar-x" id="topbar-x" aria-label="Dismiss announcement">&times;</button>
+  </div>
+</div>
+
+<main class="shell">
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <header class="nav" id="nav">
+    <div class="nav-in">
+      <a class="mark" href="#top"><span class="mark-dot"></span>NeuronCx</a>
+      <nav class="nav-links">
+        <div class="navitem">
+          <button class="navlink" type="button" aria-expanded="false">Platform
+            <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3.2 5 7 9 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mega">
+            <a href="#agents">Omnichannel CX</a>
+            <a href="#episode">Customer 360</a>
+            <a href="#episode">Knowledge base</a>
+            <a href="#episode">AI workflows</a>
+            <a href="#qa">Call quality <span class="badge-new">NEW</span></a>
+            <h5>Connect</h5>
+            <a href="#integrations">Integrations</a>
+            <a href="#integrations">EHR and HL7 connector</a>
+          </div>
+        </div>
+
+        <div class="navitem">
+          <button class="navlink" type="button" aria-expanded="false">Solutions
+            <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3.2 5 7 9 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mega">
+            <h5>By industry</h5>
+            <a href="#episode">Diagnostic chains</a>
+            <a href="#episode">Hospitals</a>
+            <a href="#agents">Dental and specialty</a>
+            <a href="#agents">Admissions</a>
+            <h5>By team</h5>
+            <a href="#qa">Central call centre</a>
+            <a href="#agents">Operations</a>
+          </div>
+        </div>
+
+        <div class="navitem">
+          <button class="navlink" type="button" aria-expanded="false">Resources
+            <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3.2 5 7 9 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <div class="mega">
+            <h5>Documentation</h5>
+            <a href="#episode">User documentation</a>
+            <a href="#integrations">Developer documentation <span class="meta">API</span></a>
+            <h5>Reading</h5>
+            <a href="#qa">Case studies</a>
+            <a href="#episode">Blog</a>
+          </div>
+        </div>
+
+        <a class="navlink" href="#close">Pricing</a>
+      </nav>
+      <div class="nav-right">
+        <a class="ghost" href="#top">Sign in</a>
+        <a class="btn-pill" href="#close">Book a demo</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="stage" id="top">
+    <div class="stage-in">
+      <p class="eyebrow">Episodic CRM</p>
+      <h1>Every episode runs start to finish</h1>
+      <p class="lede">An episode opens the moment someone reaches you and closes when the service is done. NeuronCx runs the bookings, payments and follow-ups inside it across WhatsApp, voice and web, and brings in your team only where a person is needed.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="#close">Book a demo</a>
+        <a class="btn btn-line btn-lg" href="#episode">See an episode run</a>
+      </div>
+      <p class="hero-note">Live across diagnostics, hospitals, dental and admissions</p>
+
+      <div class="tl-card" id="episode">
+      <div class="tl-head">
+        <span class="tl-id">EPISODE&nbsp;&middot;&nbsp;DX-40219</span>
+        <span class="chip chip-open">Open</span>
+        <span class="tl-spacer"></span>
+        <span class="chip">Full body check</span>
+        <span class="chip">Anna Nagar branch</span>
+      </div>
+      <div class="tl-body">
+        <div class="tl">
+          <div class="step">
+            <span class="dot"></span>
+            <span class="step-day">DAY 0 &middot; 09:14</span>
+            <span class="step-label">Enquiry opens</span>
+            <span class="step-chan">WhatsApp. Prescription photo read, four tests priced.</span>
+          </div>
+          <div class="step">
+            <span class="dot"></span>
+            <span class="step-day">DAY 0 &middot; 09:21</span>
+            <span class="step-label">Slot booked</span>
+            <span class="step-chan">Nearest branch matched from shared location.</span>
+          </div>
+          <div class="step">
+            <span class="dot"></span>
+            <span class="step-day">DAY 0 &middot; 09:23</span>
+            <span class="step-label">Payment taken</span>
+            <span class="step-chan">&#8377;2,400 paid in chat, matched to the gateway.</span>
+          </div>
+          <div class="step">
+            <span class="dot"></span>
+            <span class="step-day">DAY 2 &middot; 07:40</span>
+            <span class="step-label">Sample collected</span>
+            <span class="step-chan">Branch system writes back to the episode.</span>
+          </div>
+          <div class="step human">
+            <span class="dot"></span>
+            <span class="step-day">DAY 3 &middot; 16:02</span>
+            <span class="step-label">Handed to a person</span>
+            <span class="step-chan">Report query needs a clinician. Full history attached.</span>
+          </div>
+          <div class="step next">
+            <span class="dot"></span>
+            <span class="step-day">DAY 12 &middot; DUE</span>
+            <span class="step-label">Follow-up scan</span>
+            <span class="step-chan">Scheduled off the report date, not a new lead.</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-foot">
+        <span class="key"><i style="background:var(--teal)"></i>Completed by the platform</span>
+        <span class="key"><i style="background:var(--crimson)"></i>Handed to your team</span>
+        <span class="key"><i style="background:var(--line)"></i>Planned, not yet due</span>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">The problem</p>
+        <h2>A lead-shaped CRM loses the second visit</h2>
+        <p class="lede">Most systems run one straight line: contact, opportunity, closed. Real service relationships repeat, and each return arrives as a stranger.</p>
+      </div>
+      <div class="ruled">
+        <div>
+          <span class="num">01</span>
+          <h3>The return is a new lead</h3>
+          <p>After the sale, the next message opens a fresh row. Your team starts cold and the customer explains everything again.</p>
+        </div>
+        <div>
+          <span class="num">02</span>
+          <h3>The half-finished booking vanishes</h3>
+          <p>Someone stops partway. Nothing watches it, because the pipeline only tracks leads heading toward a sale.</p>
+        </div>
+        <div>
+          <span class="num">03</span>
+          <h3>One person, four records</h3>
+          <p>WhatsApp, a phone call and two branches produce four entries, and nothing holds the relationship between them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">What changes</p>
+        <h2>One home for the whole story</h2>
+      </div>
+      <div class="grid3">
+        <div class="card">
+          <span class="tag">Context</span>
+          <h3>Every interaction joins its episode</h3>
+          <p>Once an episode opens, each call, message, booking and payment attaches to it. Whoever picks it up sees the history first.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Plan</span>
+          <h3>Every episode knows its next step</h3>
+          <p>Each one carries a plan built around a key date, so the system knows what should happen and when. A missed step gets chased.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Identity</span>
+          <h3>Every episode belongs to one customer</h3>
+          <p>Contacts from different channels and branches resolve to one person. Central and local teams see the same customer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec band" id="agents">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow on-band">Bot swarm</p>
+        <h2>Small agents, one job each</h2>
+        <p>Each agent reads your rules, acts in your systems, hands over when a decision needs a person, and logs the step against the episode.</p>
+      </div>
+      <div class="grid-agents">
+        <div class="agent">
+          <span class="ix">WHATSAPP</span>
+          <h3>Appointment booking</h3>
+          <p>Shares location, matches the nearest branch, confirms a slot. A dropped booking waits where it stopped.</p>
+        </div>
+        <div class="agent">
+          <span class="ix">PAYMENTS</span>
+          <h3>Collection in chat</h3>
+          <p>A link goes out as soon as the booking is confirmed, then is tracked until paid and matched with the gateway.</p>
+        </div>
+        <div class="agent">
+          <span class="ix">VISION</span>
+          <h3>Prescription reading</h3>
+          <p>Every prescribed test is picked out of a photo. Anything unclear goes to a person, the rest moves to pricing.</p>
+        </div>
+        <div class="agent">
+          <span class="ix">ADVISORY</span>
+          <h3>Test counselling</h3>
+          <p>Patients ask from a symptom or a doctor's note, and arrive knowing which tests to take and how to prepare.</p>
+        </div>
+        <div class="agent">
+          <span class="ix">ADMISSIONS</span>
+          <h3>Application intake</h3>
+          <p>Marksheets, IDs and photos land in the CRM in order, and counsellors call the students who already qualify.</p>
+        </div>
+        <div class="agent">
+          <span class="ix">COMPLIANCE</span>
+          <h3>KYC verification</h3>
+          <p>IDs are read, names and dates cross-checked, your rules applied the same way every time. Only real exceptions escalate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="qa">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Call quality</p>
+        <h2>Every call scored against your own scorecard</h2>
+      </div>
+      <div class="qa">
+        <div class="sheet">
+          <div class="sheet-head">
+            <strong>Daily sample</strong>
+            <span>6 Oct &middot; 214 of 1,340 calls</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr><th>Call</th><th>Agent</th><th>Language</th><th>Score</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">#88214</td><td>Divya R</td><td class="mono">Tamil</td>
+                  <td style="width:22%"><span class="meter"><i style="width:92%"></i></span></td>
+                  <td class="score">92</td>
+                </tr>
+                <tr>
+                  <td class="mono">#88219</td><td>Karan S</td><td class="mono">Hindi</td>
+                  <td style="width:22%"><span class="meter"><i style="width:87%"></i></span></td>
+                  <td class="score">87</td>
+                </tr>
+                <tr>
+                  <td class="mono">#88226</td><td>Nisha P</td><td class="mono">English</td>
+                  <td style="width:22%"><span class="meter low"><i style="width:54%"></i></span></td>
+                  <td class="score"><span class="flag">Review</span></td>
+                </tr>
+                <tr>
+                  <td class="mono">#88231</td><td>Arun M</td><td class="mono">Telugu</td>
+                  <td style="width:22%"><span class="meter"><i style="width:79%"></i></span></td>
+                  <td class="score">79</td>
+                </tr>
+                <tr>
+                  <td class="mono">#88240</td><td>Divya R</td><td class="mono">Tamil</td>
+                  <td style="width:22%"><span class="meter"><i style="width:95%"></i></span></td>
+                  <td class="score">95</td>
+                </tr>
+                <tr>
+                  <td class="mono">#88247</td><td>Fahad A</td><td class="mono">Malayalam</td>
+                  <td style="width:22%"><span class="meter"><i style="width:83%"></i></span></td>
+                  <td class="score">83</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="qa-points">
+          <div class="pt">
+            <h3>Selection before scoring</h3>
+            <p>Supplier calls, wrong numbers and dropped connections stay out of the pool. Who called decides whether a call is checked at all.</p>
+          </div>
+          <div class="pt">
+            <h3>A fair share per agent</h3>
+            <p>A daily cap divided across the agents who took calls. The busiest agent is not the most checked, and a quiet week costs nobody their score.</p>
+          </div>
+          <div class="pt">
+            <h3>Any language, your rubric</h3>
+            <p>Calls are transcribed, carried into the scoring language where needed, then scored line by line against your weights.</p>
+          </div>
+          <div class="pt mark">
+            <h3>Proof behind every score</h3>
+            <p>Each score carries the piece of conversation it came from, so a supervisor can check it rather than trust it, and change it if they disagree.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Representative figures</p>
+        <h2>What it looks like in month three</h2>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b>74<em>%</em></b><span>of enquiries handled without an agent</span></div>
+        <div class="metric"><b>100<em>%</em></b><span>of eligible calls scored, not a 2% sample</span></div>
+        <div class="metric"><b>1,340</b><span>calls assessed in a single day</span></div>
+        <div class="metric"><b>3.2<em>&times;</em></b><span>more repeat bookings traced to an episode</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="integrations">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Connected</p>
+        <h2>Works with the systems already running</h2>
+        <p class="lede">Bookings, records and reports stay in sync with your system of record, so the CRM reflects it rather than competing with it. WhatsApp is native, which means the conversation and the record are one object.</p>
+      </div>
+      <div class="ints">
+        <span class="int"><i></i>EkaCare</span>
+        <span class="int"><i></i>Medics</span>
+        <span class="int"><i></i>DocPulse</span>
+        <span class="int"><i></i>ABDM</span>
+        <span class="int"><i></i>Razorpay</span>
+        <span class="int"><i></i>WhatsApp Business</span>
+        <span class="int"><i></i>Exotel</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec band" id="close">
+    <div class="wrap">
+      <div class="close-in">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <p class="eyebrow on-band">Get started</p>
+          <h2>See NeuronCx run your customer journey</h2>
+          <p style="max-width:52ch">Bring one real workflow, a booking, an order update or a recovery flow, and we will show it running on your channels.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a class="btn btn-band btn-lg" href="#top">Book a 20-minute demo</a>
+          <a class="btn btn-band-line btn-lg" href="#episode">Explore the platform</a>
+        </div>
+      </div>
+      <div class="foot">
+        <a class="mark" href="#top" style="color:var(--band-ink)"><span class="mark-dot"></span>NeuronCx</a>
+        <span>CX workflows designed to think like your business</span>
+        <span class="tag">&copy; 2026 neuronCx.ai</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var nav = document.getElementById('nav');
+  var darkZones = Array.prototype.slice.call(document.querySelectorAll('.band'));
+  var ticking = false;
+
+  function paintNav(){
+    ticking = false;
+    if (!nav) return;
+    nav.classList.toggle('is-stuck', window.scrollY > 36);
+    var r = nav.getBoundingClientRect();
+    var probe = r.top + r.height / 2;
+    var onDark = darkZones.some(function(zone){
+      var z = zone.getBoundingClientRect();
+      return z.top <= probe && z.bottom >= probe;
+    });
+    nav.classList.toggle('on-dark', onDark);
+  }
+  function onScroll(){
+    if (!ticking) { ticking = true; window.requestAnimationFrame(paintNav); }
+  }
+  paintNav();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+
+  var bar = document.getElementById('topbar');
+  var x = document.getElementById('topbar-x');
+  if (bar && x) { x.addEventListener('click', function(){ bar.hidden = true; }); }
+
+  var items = Array.prototype.slice.call(document.querySelectorAll('.navitem'));
+  var links = document.querySelector('.nav-links');
+  var scrim = document.getElementById('scrim');
+  var timer = null;
+
+  function closeAll(){
+    items.forEach(function(it){
+      it.classList.remove('is-open');
+      var b = it.querySelector('.navlink');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
+    document.body.classList.remove('menu-open');
+  }
+
+  function place(item){
+    var panel = item.querySelector('.mega');
+    var trigger = item.querySelector('.navlink');
+    if (!panel || !trigger || !nav) return;
+    var navBox = nav.getBoundingClientRect();
+    var trigBox = trigger.getBoundingClientRect();
+    var w = panel.offsetWidth;
+    var pad = 8;
+    var centred = trigBox.left + trigBox.width / 2 - navBox.left - w / 2;
+    var max = navBox.width - w - pad;
+    var left = Math.max(pad, Math.min(centred, max > pad ? max : pad));
+    panel.style.left = Math.round(left) + 'px';
+  }
+
+  function open(item){
+    items.forEach(function(it){
+      var on = it === item;
+      it.classList.toggle('is-open', on);
+      var b = it.querySelector('.navlink');
+      if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+    place(item);
+    document.body.classList.add('menu-open');
+  }
+
+  items.forEach(function(item){
+    item.addEventListener('mouseenter', function(){
+      window.clearTimeout(timer);
+      open(item);
+    });
+    var btn = item.querySelector('.navlink');
+    if (btn) {
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        if (item.classList.contains('is-open')) { closeAll(); } else { open(item); }
+      });
+      btn.addEventListener('focus', function(){ open(item); });
+    }
+  });
+
+  if (links) {
+    links.addEventListener('mouseleave', function(){
+      timer = window.setTimeout(closeAll, 120);
+    });
+    links.addEventListener('mouseenter', function(){ window.clearTimeout(timer); });
+  }
+  if (scrim) scrim.addEventListener('mouseenter', closeAll);
+  window.addEventListener('resize', function(){
+    var openItem = items.filter(function(it){ return it.classList.contains('is-open'); })[0];
+    if (openItem) place(openItem);
+  }, { passive: true });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAll(); });
+})();
+</script>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
+import { IBM_Plex_Mono, Instrument_Sans, Inter } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -17,6 +18,22 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 
+// Self-hosted at build time, so no render-blocking Google Fonts request.
+// Exposed as variables only — nothing here changes what the existing blocks
+// render, they keep naming their own families.
+const displayFont = Instrument_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
+})
+const bodyFont = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-body' })
+const labelFont = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-label',
+})
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const settings = await getSiteSettings()
@@ -28,7 +45,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const appleTouchIcon = siteFileUrl(settings.appleTouchIcon)
 
   return (
-    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(
+        GeistSans.variable,
+        GeistMono.variable,
+        displayFont.variable,
+        bodyFont.variable,
+        labelFont.variable,
+      )}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <InitTheme />
         <link href={faviconIco} rel="icon" sizes="32x32" />
