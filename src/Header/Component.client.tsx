@@ -12,6 +12,38 @@ import { headerCss } from './headerStyles'
 type NavItem = NonNullable<Header['navItems']>[number]
 type MenuItem = NonNullable<NavItem['items']>[number]
 
+type Link = { label: string; href: string; badge?: string | null; groupHeading?: string | null; newTab?: boolean | null; id?: string | null }
+
+/**
+ * The links for one dropdown.
+ *
+ * Normally that is the item's own list. A deployment whose data has not been
+ * migrated yet still carries the old columns-of-links shape, so those are
+ * folded into the same flat list here — first link of each column takes that
+ * column's heading — and the menu works either way.
+ */
+const linksFor = (item: NavItem): Link[] => {
+  const own = (item.items || []).filter((l: MenuItem) => l?.label && l?.href) as Link[]
+  if (own.length) return own
+
+  const out: Link[] = []
+  ;(item.columns || []).forEach((col) => {
+    let headingPending = true
+    ;(col.links || []).forEach((l) => {
+      if (!l?.label || !l?.href) return
+      out.push({
+        label: l.label,
+        href: l.href,
+        groupHeading: headingPending ? col.heading || null : null,
+        newTab: /^https?:\/\//.test(l.href),
+        id: l.id,
+      })
+      headingPending = false
+    })
+  })
+  return out
+}
+
 const isExternal = (href?: string | null) => /^https?:\/\//.test(String(href || ''))
 
 /** Perceived brightness of a computed colour, or null when it is transparent. */
@@ -284,8 +316,12 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
 
           <nav className="ncx-nav__links" onMouseLeave={closeSoon} onMouseEnter={hold}>
             {items.map((item, i) => {
-              const links = (item.items || []).filter((l: MenuItem) => l?.label && l?.href)
-              const isDropdown = item.type === 'dropdown' && links.length > 0
+              const links = linksFor(item)
+              // A row that predates the type field reads back as "link",
+              // because that is the field's default — so the field alone
+              // cannot decide. A row is a plain link when it was explicitly
+              // set to one *and* has somewhere to go; otherwise its links win.
+              const isDropdown = links.length > 0 && !(item.type === 'link' && item.href)
 
               if (!isDropdown) {
                 if (!item.href) return null
