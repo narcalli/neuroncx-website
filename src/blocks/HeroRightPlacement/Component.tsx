@@ -40,8 +40,33 @@ const resolveHref = (cta: LinkGroup | undefined): string | null => {
 }
 
 /**
+ * The ratio the masked box takes, so the box is exactly the drawn picture and
+ * the edge fade lands on the picture's real edges at every width. Without it
+ * the box is the whole right-hand area, and since the picture is contained the
+ * two only match at one viewport: wider than that the fade eats the picture,
+ * narrower it falls on empty space and leaves the picture's edges hard.
+ *
+ * Images and GIFs carry their own width and height. Payload does not read a
+ * video's dimensions, so a video borrows its poster's ratio. A video with no
+ * poster gets null, and the box falls back to filling the area as before.
+ *
+ * That is deliberately the only fallback. Do not add a third path: a default
+ * ratio for posterless video would fit some uploads and silently misframe the
+ * rest, which is the bug this replaced; measuring the video in the browser
+ * would size the box after first paint and make the hero jump. A poster is
+ * the fix, and the field already asks for one.
+ */
+const ratioOf = (value: MediaValue, poster: MediaValue): number | null => {
+  const pic = pickMedia(value, 'hero')
+  if (!pic) return null
+  const source = pic.isVideo ? pickMedia(poster) : pic
+  if (!source?.width || !source?.height) return null
+  return source.width / source.height
+}
+
+/**
  * The image or video, always shown in full (contain) and pinned to the
- * right — the one fixed treatment this block offers. Video and GIF bypass
+ * right, the one fixed treatment this block offers. Video and GIF bypass
  * next/image, same reasoning as Hero — Full Background: GIFs lose their
  * animation through it, and video needs a real <video> element.
  */
@@ -120,6 +145,8 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   const mediaValue: MediaValue =
     media && typeof media === 'object' && mediaAlt ? { ...media, alt: mediaAlt } : media
 
+  const ratio = ratioOf(mediaValue, videoPoster)
+
   return (
     <section className="ncx-hrp" data-anim={anim}>
       <style>{`
@@ -164,6 +191,14 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
             linear-gradient(90deg,transparent 0%,#000 22%),
             linear-gradient(180deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
           mask-composite:intersect}
+        /* With a known ratio the box shrinks to the largest rectangle of the
+           picture's shape that fits the area, so the picture fills it exactly
+           and the mask above lands on the picture, not on empty space. The
+           area and the hero's height are unchanged; only the box moves.
+           Pinned right here, centred once the layout stacks. */
+        .ncx-hrp .bg[data-fit]{container-type:size;display:flex;align-items:center;justify-content:flex-end}
+        .ncx-hrp .bg[data-fit] .bg-inner{position:relative;inset:auto;flex:none;
+          width:min(100cqw,calc(100cqh * var(--r)));height:min(100cqh,calc(100cqw / var(--r)))}
         .ncx-hrp .media{position:absolute;inset:0;width:100%;height:100%}
         .ncx-hrp .media-video-fallback{display:none}
 
@@ -232,12 +267,16 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
           /* No longer beside the text, so pinning right just leaves an
              empty gap — centered fills the box evenly instead. */
           .ncx-hrp .media{object-position:center!important}
+          .ncx-hrp .bg[data-fit]{justify-content:center}
         }
       `}</style>
 
       <div className="glow" />
 
-      <div className="bg">
+      <div
+        className="bg"
+        {...(ratio ? { 'data-fit': '', style: { '--r': ratio } as React.CSSProperties } : {})}
+      >
         <div className="bg-inner">
           <MediaLayer value={mediaValue} poster={videoPoster} />
         </div>

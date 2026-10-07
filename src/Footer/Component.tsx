@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import { getGlobal, CMS_TAG } from '@/utilities/cms'
 import { Logo } from '@/components/Logo/Logo'
+import { pickMedia } from '@/utilities/media'
 
 function hrefFor(link: any): string {
   if (
@@ -16,10 +17,17 @@ function hrefFor(link: any): string {
 }
 
 export async function Footer() {
-  const footerData = await getGlobal<any>('footer', {
-    depth: 2,
-    tags: [CMS_TAG, 'footer'],
-  })
+  // One brand mark, set once on the header. The footer used to carry its own
+  // upload field, which meant updating the logo in the obvious place changed it
+  // in only one of the two places it appears.
+  const [footerData, headerData] = await Promise.all([
+    getGlobal<any>('footer', { depth: 2, tags: [CMS_TAG, 'footer'] }),
+    getGlobal<any>('header', { depth: 2, tags: [CMS_TAG, 'header'] }),
+  ])
+
+  // Payload returns media paths relative to its own origin and the site runs on
+  // a different one, so the URL has to be made absolute here on the server.
+  const logo = pickMedia(headerData?.logo)
 
   const columns = footerData?.columns || []
   const legalItems = footerData?.legalItems || []
@@ -51,7 +59,7 @@ export async function Footer() {
         <div className="cols">
           <div>
             <Link href="/">
-              <Logo src={footerData?.logo?.url} />
+              <Logo src={logo?.src || null} />
             </Link>
             {footerData?.tagline ? <p className="tagline">{footerData.tagline}</p> : null}
           </div>
