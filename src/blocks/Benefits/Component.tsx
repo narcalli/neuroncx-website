@@ -15,19 +15,18 @@ export const BenefitsBlock: React.FC<Props> = ({ label, heading, items }) => {
   return (
     <section className="ncx-benefits">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-benefits{--ink:#1A1A2E;--soft:#4A5573;--crimson:#C62828;--rule:#DFE3EA;
+        .ncx-benefits{
           max-width:1120px;margin:0 auto;padding:48px 32px;
-          font-family:Inter,Arial,sans-serif;color:var(--ink)}
-        .ncx-benefits .label{font-family:Poppins,Arial,sans-serif;font-size:14px;
-          color:var(--crimson);margin:0 0 12px}
-        .ncx-benefits h2{font-family:Poppins,Arial,sans-serif;font-weight:500;
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-benefits .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
+          color:var(--ncx-crimson-ink);margin:0 0 12px}
+        .ncx-benefits h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:24ch}
         .ncx-benefits .grid{margin-top:44px;display:grid;
           grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:36px 48px}
-        .ncx-benefits h3{font-family:Poppins,Arial,sans-serif;font-weight:500;
-          font-size:19px;letter-spacing:-.015em;margin:0;padding-top:16px;border-top:2px solid var(--ink)}
-        .ncx-benefits p{margin:10px 0 0;color:var(--soft);font-size:17px;line-height:1.6;max-width:44ch}
+        .ncx-benefits h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
+          font-size:19px;letter-spacing:-.015em;margin:0;padding-top:16px;border-top:2px solid var(--ncx-body)}
+        .ncx-benefits p{margin:10px 0 0;color:var(--ncx-muted);font-size:17px;line-height:1.6;max-width:44ch}
         @media(max-width:820px){.ncx-benefits{padding:36px 20px}
           .ncx-benefits .grid{margin-top:32px;gap:28px}}
       `}</style>

@@ -90,40 +90,41 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
   return (
     <section className="ncx-flow">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600&display=swap');
-        .ncx-flow{padding:84px 0;font-family:Inter,Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-flow .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-        .ncx-flow h2{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);
-          max-width:24ch;letter-spacing:-.01em;margin:0;color:var(--ncx-navy)}
+        .ncx-flow{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-flow h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);
+          max-width:24ch;letter-spacing:-.01em;margin:0;color:var(--ncx-ink)}
         .ncx-flow .sec-sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-flow .lab-box{margin-top:44px;border-radius:18px;padding:22px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule)}
         .ncx-flow .lab-q{margin:0 0 14px;color:var(--ncx-muted);font-size:.92rem}
         .ncx-flow .trig{display:flex;flex-wrap:wrap;gap:10px}
-        .ncx-flow .tb{color:var(--ncx-body);background:#fff;border:1px solid var(--rule2,#CBD0DC);border-radius:999px;
+        .ncx-flow .tb{color:var(--ncx-body);background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:999px;
           padding:9px 16px;cursor:pointer;font-weight:500;font-size:.92rem;font-family:inherit}
-        .ncx-flow .tb[aria-pressed="true"]{background:var(--ncx-crimson);border-color:var(--ncx-crimson);color:#fff}
+        .ncx-flow .tb[aria-pressed="true"]{background:var(--ncx-crimson);border-color:var(--ncx-crimson);color:var(--ncx-on-navy)}
         .ncx-flow .stage{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(28px,6vw,80px);margin-top:26px;align-items:stretch}
         .ncx-flow .stage-svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
-        .ncx-flow .base{fill:none;stroke:var(--rule2,#CBD0DC);stroke-width:2;stroke-dasharray:4 7}
+        .ncx-flow .base{fill:none;stroke:var(--ncx-rule);stroke-width:2;stroke-dasharray:4 7}
         .ncx-flow .trail{fill:none;stroke:var(--ncx-crimson);stroke-width:3;stroke-linecap:round}
-        .ncx-flow .dot{fill:var(--ncx-crimson);stroke:#fff;stroke-width:2}
-        .ncx-flow .node{position:relative;z-index:1;background:#fff;border:1px solid var(--ncx-rule);border-radius:14px;
+        .ncx-flow .dot{fill:var(--ncx-crimson);stroke:var(--ncx-white);stroke-width:2}
+        .ncx-flow .node{position:relative;z-index:1;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:14px;
           padding:16px 16px 18px;min-height:136px;display:flex;flex-direction:column;gap:7px;transition:border-color .3s,box-shadow .4s}
         .ncx-flow .node.on{border-color:var(--ncx-crimson);box-shadow:0 0 0 1px var(--ncx-crimson),0 14px 30px -18px var(--ncx-crimson)}
-        .ncx-flow .node.ok.on{border-color:#15803D;box-shadow:0 0 0 1px #15803D,0 14px 30px -18px #15803D}
-        .ncx-flow .tag{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ncx-muted)}
-        .ncx-flow .node.on .tag{color:var(--ncx-crimson)}
-        .ncx-flow .node.ok.on .tag{color:#15803D}
-        .ncx-flow .node b{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:1.05rem;line-height:1.25;color:var(--ncx-navy)}
+        .ncx-flow .node.ok.on{border-color:var(--ncx-teal);box-shadow:0 0 0 1px var(--ncx-teal),0 14px 30px -18px var(--ncx-teal)}
+        .ncx-flow .tag{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ncx-muted)}
+        /* The node's ring and glow stay flat crimson/teal — they are state
+           marks at area, not text. The tags are text, so they take the -ink
+           stops and step to the on-navy tones inside a highlight. */
+        .ncx-flow .node.on .tag{color:var(--ncx-crimson-ink)}
+        .ncx-flow .node.ok.on .tag{color:var(--ncx-teal-ink)}
+        .ncx-flow .node b{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1.05rem;line-height:1.25;color:var(--ncx-ink)}
         .ncx-flow .node small{color:var(--ncx-muted);font-size:.85rem;line-height:1.45}
         .ncx-flow .node.ok:not(.on) b,.ncx-flow .node.ok:not(.on) small{opacity:.45}
         .ncx-flow .hch{display:flex;gap:8px;flex-wrap:wrap}
-        .ncx-flow .hch span{border-radius:999px;padding:5px 11px;font-size:.8rem;border:1px solid var(--rule2,#CBD0DC);color:var(--ncx-muted);transition:background .3s,color .3s}
-        .ncx-flow .hch span.on{background:var(--ncx-crimson);color:#fff;border-color:var(--ncx-crimson)}
+        .ncx-flow .hch span{border-radius:999px;padding:5px 11px;font-size:.8rem;border:1px solid var(--ncx-rule);color:var(--ncx-muted);transition:background .3s,color .3s}
+        .ncx-flow .hch span.on{background:var(--ncx-crimson);color:var(--ncx-on-navy);border-color:var(--ncx-crimson)}
         .ncx-flow .note{margin:18px 0 0;font-size:.82rem;color:var(--ncx-muted)}
         .ncx-flow .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px}
-        .ncx-flow .step{padding:22px 22px 24px;border-radius:14px;background:#fff;border:1px solid var(--ncx-rule);border-top:3px solid var(--rule2,#CBD0DC)}
-        .ncx-flow .step h3{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:1.1rem;color:var(--ncx-crimson);margin:0 0 8px}
+        .ncx-flow .step{padding:22px 22px 24px;border-radius:14px;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-top:3px solid var(--ncx-rule)}
+        .ncx-flow .step h3{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1.1rem;color:var(--ncx-crimson-ink);margin:0 0 8px}
         .ncx-flow .step p{font-size:.97rem;margin:0}
         @media (max-width:720px){
           .ncx-flow{padding:60px 0}
@@ -132,7 +133,7 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
         }
       `}</style>
 
-      <div className="wrap">
+      <div className="wrap ncx-container-narrow">
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

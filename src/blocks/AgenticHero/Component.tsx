@@ -18,13 +18,13 @@ const SLOTS: [number, number][] = [
 ]
 
 const SparkIcon = () => (
-  <path d="M0 -9 L2.4 -2.4 L9 0 L2.4 2.4 L0 9 L-2.4 2.4 L-9 0 L-2.4 -2.4Z" fill="#fff" />
+  <path d="M0 -9 L2.4 -2.4 L9 0 L2.4 2.4 L0 9 L-2.4 2.4 L-9 0 L-2.4 -2.4Z" fill="var(--ncx-on-navy)" />
 )
 
 const PersonIcon = () => (
   <>
-    <circle cy={-5} r={5} fill="#1A2035" />
-    <path d="M-10 12 C-10 3 10 3 10 12 Z" fill="#1A2035" />
+    <circle cy={-5} r={5} fill="var(--ncx-ink)" />
+    <path d="M-10 12 C-10 3 10 3 10 12 Z" fill="var(--ncx-ink)" />
   </>
 )
 
@@ -33,8 +33,8 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
   if (node.kind === 'human') {
     return (
       <g transform={`translate(${x} ${y})`}>
-        <circle className="ncx-pr" r={22} fill="none" stroke="rgba(255,255,255,.6)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
-        <circle r={22} fill="#F5F6FA" />
+        <circle className="ncx-pr" r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
+        <circle r={22} fill="var(--ncx-paper)" />
         <PersonIcon />
       </g>
     )
@@ -42,15 +42,15 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
   if (node.kind === 'system') {
     return (
       <g transform={`translate(${x} ${y})`}>
-        <circle r={22} fill="none" stroke="rgba(255,255,255,.7)" strokeWidth={1.5} />
-        <rect x={-8} y={-8} width={16} height={16} rx={3} fill="none" stroke="#fff" strokeWidth={1.6} />
+        <circle r={22} fill="none" stroke="rgba(26,32,53,.45)" strokeWidth={1.5} />
+        <rect x={-8} y={-8} width={16} height={16} rx={3} fill="none" stroke="var(--ncx-ink)" strokeWidth={1.6} />
       </g>
     )
   }
   return (
     <g transform={`translate(${x} ${y})`}>
-      <circle className="ncx-pr" r={22} fill="none" stroke="rgba(255,255,255,.6)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
-      <circle r={22} fill="#2B3563" stroke="rgba(255,255,255,.5)" strokeWidth={1.5} />
+      <circle className="ncx-pr" r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
+      <circle r={22} fill="var(--ncx-navy-tint)" stroke="rgba(26,32,53,.35)" strokeWidth={1.5} />
       <SparkIcon />
     </g>
   )
@@ -69,33 +69,40 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
   return (
     <section className="ncx-hero">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap');
-        .ncx-hero{position:relative;overflow:hidden;isolation:isolate;background:var(--ncx-navy);color:#fff;
-          padding:84px 0 100px;font-family:Inter,Arial,sans-serif}
-        .ncx-hero .mesh{position:absolute;inset:-20%;z-index:-2;pointer-events:none}
-        .ncx-hero .mesh i{position:absolute;border-radius:50%;will-change:transform}
-        .ncx-hero .b1{width:44vmax;height:44vmax;left:-8%;top:-32%;opacity:.38;background:radial-gradient(circle,#C62828,transparent 64%);animation:ncxDrift1 22s ease-in-out infinite alternate}
-        .ncx-hero .b2{width:44vmax;height:44vmax;right:-8%;top:-16%;opacity:.55;background:radial-gradient(circle,#4A5AA8,transparent 64%);animation:ncxDrift2 26s ease-in-out infinite alternate}
-        .ncx-hero .b3{width:38vmax;height:38vmax;left:30%;bottom:-44%;opacity:.6;background:radial-gradient(circle,#2F3B78,transparent 64%);animation:ncxDrift3 30s ease-in-out infinite alternate}
-        @keyframes ncxDrift1{to{transform:translate(12vmax,8vmax) scale(1.15)}}
-        @keyframes ncxDrift2{to{transform:translate(-10vmax,10vmax) scale(.9)}}
-        @keyframes ncxDrift3{to{transform:translate(-14vmax,-6vmax) scale(1.2)}}
-        .ncx-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-          background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.2px);background-size:28px 28px;
-          -webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
-        .ncx-hero .wrap{max-width:1080px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
-        .ncx-hero h1{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,4.1rem);
+        .ncx-hero{position:relative;overflow:hidden;isolation:isolate;
+          background:var(--wash);color:var(--ncx-body);
+          padding:calc(64px + clamp(44px,6vw,76px)) 0 clamp(64px,8vw,100px);
+          font-family:var(--font-body),Arial,sans-serif}
+        /* The stage, as on conversationHero and statHero: full bleed, four
+           blooms on one composited layer. */
+        .ncx-hero::before{
+          content:"";position:absolute;inset:-35%;z-index:0;pointer-events:none;
+          background:
+            radial-gradient(38% 46% at 18% 28%, var(--g1), transparent 66%),
+            radial-gradient(44% 52% at 78% 16%, var(--g2), transparent 66%),
+            radial-gradient(46% 54% at 62% 88%, var(--g3), transparent 66%),
+            radial-gradient(42% 50% at 8% 86%, var(--g4), transparent 66%);
+          animation:ncxDrift 26s ease-in-out infinite alternate;
+          will-change:transform}
+        @keyframes ncxDrift{
+          0%{transform:translate3d(0,0,0) scale(1) rotate(0deg)}
+          50%{transform:translate3d(5%,-4%,0) scale(1.16) rotate(4deg)}
+          100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
+        }
+        @media(prefers-reduced-motion:reduce){.ncx-hero::before{animation:none}}}}}
+        .ncx-hero .wrap{position:relative;z-index:1}
+        .ncx-hero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,4.1rem);
           line-height:1.1;max-width:16ch;letter-spacing:-.02em;margin:0}
         .ncx-hero .w{display:inline-block}
         .ncx-hero .acc{position:relative}
         .ncx-hero .acc::after{content:"";position:absolute;left:0;right:0;bottom:.02em;height:.09em;border-radius:4px;
-          background:linear-gradient(90deg,#FF5A5F,#C62828);transform:scaleX(0);transform-origin:left center;
+          background:var(--ncx-crimson);transform:scaleX(0);transform-origin:left center;
           animation:ncxUnderline .9s 1.1s cubic-bezier(.2,.8,.2,1) forwards}
         @keyframes ncxUnderline{to{transform:scaleX(1)}}
-        .ncx-hero .hero-p{color:#D8DAE4;font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:54ch;margin:26px 0 0;line-height:1.6}
-        .ncx-hero .btn{display:inline-block;background:#C62828;color:#fff;font-family:Poppins,Arial,sans-serif;font-weight:600;
+        .ncx-hero .hero-p{color:var(--ncx-muted);font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:54ch;margin:26px 0 0;line-height:1.6}
+        .ncx-hero .btn{display:inline-block;background:var(--ncx-crimson);color:var(--ncx-on-navy);font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           font-size:1rem;text-decoration:none;padding:15px 30px;border-radius:8px;margin-top:34px}
-        .ncx-hero .btn:hover{background:#A91F1F}
+        .ncx-hero .btn:hover{background:var(--ncx-crimson-hover)}
         .ncx-hero .net{position:absolute;right:max(-60px,calc(50% - 650px));top:50%;transform:translateY(-50%);
           width:min(640px,72vw);height:auto;z-index:-1;pointer-events:none}
         .ncx-hero .ln{stroke-dasharray:3 9;animation:ncxFlow 1.4s linear infinite}
@@ -111,15 +118,9 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         }
       `}</style>
 
-      <div className="mesh" aria-hidden="true">
-        <i className="b1" />
-        <i className="b2" />
-        <i className="b3" />
-      </div>
-
       {slotNodes.length > 0 ? (
         <svg className="net" viewBox="0 0 600 420" aria-hidden="true" focusable="false">
-          <g fill="none" strokeWidth={1.6} strokeLinecap="round" stroke="rgba(255,255,255,.4)">
+          <g fill="none" strokeWidth={1.6} strokeLinecap="round" stroke="rgba(26,32,53,.28)">
             {slotNodes.map((_, i) => (
               <line
                 key={i}
@@ -133,11 +134,11 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
             ))}
           </g>
           <g transform="translate(300 210)">
-            <circle className="ncx-pr" r={32} fill="none" stroke="#FF5A5F" strokeWidth={2} />
+            <circle className="ncx-pr" r={32} fill="none" stroke="var(--ncx-crimson)" strokeWidth={2} />
             <g transform="scale(2.4) translate(-13 -13)">
-              <circle cx={13} cy={13} r={13} fill="#C62828" />
-              <path d="M13 6c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 8 4.5 8s4.5-4.8 4.5-8C17.5 8 15.5 6 13 6z" fill="#fff" />
-              <circle cx={13} cy={10.6} r={1.8} fill="#C62828" />
+              <circle cx={13} cy={13} r={13} fill="var(--ncx-crimson)" />
+              <path d="M13 6c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 8 4.5 8s4.5-4.8 4.5-8C17.5 8 15.5 6 13 6z" fill="var(--ncx-on-navy)" />
+              <circle cx={13} cy={10.6} r={1.8} fill="var(--ncx-crimson)" />
             </g>
           </g>
           {slotNodes.map((node, i) => (
@@ -146,7 +147,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         </svg>
       ) : null}
 
-      <div className="wrap">
+      <div className="wrap ncx-container-narrow">
         <h1 aria-label={headline || undefined}>
           {words.map((word, i) => {
             const plain = word.replace(/[^a-z0-9]/gi, '').toLowerCase()

@@ -388,6 +388,14 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
                 {data.signInLabel}
               </Anchor>
             ) : null}
+            {data.signInLabel && data.supportLabel && data.supportHref ? (
+              <span className="ncx-sep" aria-hidden="true" />
+            ) : null}
+            {data.supportLabel && data.supportHref ? (
+              <Anchor className="ncx-ghost ncx-support" href={data.supportHref}>
+                {data.supportLabel}
+              </Anchor>
+            ) : null}
             {data.ctaLabel ? (
               <Anchor className="ncx-btn-pill" href={data.ctaHref || '/contact'}>
                 {data.ctaLabel}

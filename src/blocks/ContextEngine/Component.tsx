@@ -46,56 +46,54 @@ export const ContextEngineBlock: React.FC<Props> = ({
   return (
     <section className="ncx-ctx">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-ctx{--navy:#1A2035;--navy-2:#252D4A;--crimson:#C62828;--ink:#1A1A2E;
-          --muted:#6B7280;--line:#E4E4EA;--cloud:#F5F5F7;
-          background:var(--cloud);padding:72px 0;font-family:Inter,Arial,sans-serif;color:var(--ink)}
-        .ncx-ctx .inner{max-width:1180px;margin:0 auto;padding:0 32px}
+        .ncx-ctx{
+          /* Band removed; a hairline holds the edge against its neighbours. */
+          border-block:1px solid var(--ncx-rule-soft);padding:72px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-ctx .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
-        .ncx-ctx .eyebrow{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.82rem;
-          letter-spacing:.04em;color:var(--crimson);margin:0 0 14px}
-        .ncx-ctx h2{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-ctx .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
+          letter-spacing:.04em;color:var(--ncx-crimson);margin:0 0 14px}
+        .ncx-ctx h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1.1;letter-spacing:-.02em;
           margin:0;max-width:16ch}
-        .ncx-ctx .intro{color:var(--muted);margin:18px 0 0;font-size:1.02rem;line-height:1.6;max-width:52ch}
+        .ncx-ctx .intro{color:var(--ncx-muted);margin:18px 0 0;font-size:1.02rem;line-height:1.6;max-width:52ch}
         .ncx-ctx .points{margin:28px 0 0;padding:0;list-style:none;display:flex;
           flex-direction:column;gap:18px}
         .ncx-ctx .points li{display:flex;gap:14px;align-items:flex-start}
-        .ncx-ctx .tick{flex:0 0 22px;width:22px;height:22px;border-radius:6px;background:var(--navy);
-          color:#fff;display:flex;align-items:center;justify-content:center;margin-top:2px}
+        .ncx-ctx .tick{flex:0 0 22px;width:22px;height:22px;border-radius:6px;background:var(--ncx-navy);
+          color:var(--ncx-on-navy);display:flex;align-items:center;justify-content:center;margin-top:2px}
         .ncx-ctx .tick svg{width:13px;height:13px}
-        .ncx-ctx .points p{margin:0;font-size:1rem;line-height:1.55;color:var(--muted)}
-        .ncx-ctx .points b{color:var(--ink);font-weight:600}
-        .ncx-ctx .callout{margin-top:26px;background:#fff;border:1px solid var(--line);
-          border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+        .ncx-ctx .points p{margin:0;font-size:1rem;line-height:1.55;color:var(--ncx-muted)}
+        .ncx-ctx .points b{color:var(--ncx-body);font-weight:600}
+        .ncx-ctx .callout{margin-top:26px;background:var(--ncx-white);border:1px solid var(--ncx-rule);
+          border-radius:var(--ncx-r-card);padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
         .ncx-ctx .callout .mark{flex:0 0 30px;width:30px;height:30px;border-radius:9px;
-          background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
+          background:var(--ncx-navy);color:var(--ncx-on-navy);display:flex;align-items:center;justify-content:center}
         .ncx-ctx .callout .mark svg{width:15px;height:15px}
-        .ncx-ctx .callout p{margin:0;font-size:.98rem;line-height:1.55;color:var(--muted)}
-        .ncx-ctx .callout b{font-family:Poppins,Arial,sans-serif;color:var(--ink);font-weight:700}
+        .ncx-ctx .callout p{margin:0;font-size:.98rem;line-height:1.55;color:var(--ncx-muted)}
+        .ncx-ctx .callout b{font-family:var(--font-display),Arial,sans-serif;color:var(--ncx-body);font-weight:700}
 
-        .ncx-ctx .panel{background:var(--navy);border-radius:18px;padding:18px;
+        .ncx-ctx .panel{background:var(--ncx-navy);border-radius:18px;padding:18px;
           box-shadow:0 30px 60px -30px rgba(15,18,32,.5)}
         .ncx-ctx svg.map{display:block;width:100%;height:auto}
         .ncx-ctx .edge{stroke:rgba(255,255,255,.16);stroke-width:1.5;
           stroke-dasharray:240;stroke-dashoffset:240;
           animation:ncxEdge 1s ease forwards}
         @keyframes ncxEdge{to{stroke-dashoffset:0}}
-        .ncx-ctx .sat circle{fill:#232C47;stroke:rgba(255,255,255,.18);stroke-width:1}
-        .ncx-ctx .sat text{fill:rgba(255,255,255,.9);font-family:Inter,Arial,sans-serif;
+        .ncx-ctx .sat circle{fill:var(--ncx-navy-tint);stroke:rgba(255,255,255,.18);stroke-width:1}
+        .ncx-ctx .sat text{fill:rgba(255,255,255,.9);font-family:var(--font-body),Arial,sans-serif;
           font-size:12px;font-weight:500}
         .ncx-ctx .sat{opacity:0;animation:ncxSat .5s cubic-bezier(.34,1.56,.64,1) forwards}
         @keyframes ncxSat{to{opacity:1}}
-        .ncx-ctx .core-glow{fill:var(--crimson);opacity:.28;
+        .ncx-ctx .core-glow{fill:var(--ncx-crimson);opacity:.28;
           animation:ncxPulse 3.2s ease-in-out infinite}
         @keyframes ncxPulse{0%,100%{opacity:.2}50%{opacity:.4}}
-        .ncx-ctx .core circle.body{fill:#161D33;stroke:var(--crimson);stroke-width:2}
-        .ncx-ctx .core text{fill:#fff;font-family:Poppins,Arial,sans-serif;font-size:13px;
+        .ncx-ctx /* No token: a tone recessed BELOW the panel, not above it. */
+        .ncx-ctx .core circle.body{fill:#161D33;stroke:var(--ncx-crimson);stroke-width:2}
+        .ncx-ctx .core text{fill:var(--ncx-on-navy);font-family:var(--font-display),Arial,sans-serif;font-size:13px;
           font-weight:700}
 
         @media(max-width:900px){
           .ncx-ctx{padding:48px 0}
-          .ncx-ctx .inner{padding:0 20px}
           .ncx-ctx .grid{grid-template-columns:1fr;gap:34px}
           .ncx-ctx h2{max-width:100%}
         }
@@ -106,7 +104,7 @@ export const ContextEngineBlock: React.FC<Props> = ({
         }
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         <div className="grid">
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}

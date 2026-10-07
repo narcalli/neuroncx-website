@@ -8,7 +8,6 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getBySlug, CMS_TAG } from '@/utilities/cms'
-import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
@@ -53,7 +52,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <article className={startsFlush ? 'pb-24' : 'pt-16 pb-24'}>
-      <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 

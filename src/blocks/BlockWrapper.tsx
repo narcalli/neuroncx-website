@@ -18,10 +18,46 @@ type Props = Presentation & {
 }
 
 const BACKGROUNDS: Record<string, string> = {
-  white: '#FFFFFF',
-  cloud: '#F5F5F7',
-  navy: '#1A2035',
-  crimson: '#C62828',
+  white: 'var(--ncx-white)',
+  cloud: 'var(--ncx-cloud)',
+  navy: 'var(--ncx-navy)',
+}
+
+/**
+ * Highlight (navy) is not just white body text. The whole token set is
+ * remapped for the subtree, so a block that reads --ncx-* renders correctly in
+ * either state without knowing which one it is in: ink and body go white,
+ * muted and faint go to the soft tint, hairlines to the translucent rule, and
+ * every light surface becomes the barely-raised wash. Crimson is deliberately
+ * left alone — it stays the one accent that reads the same in both states.
+ */
+const ON_NAVY: Record<string, string> = {
+  '--ncx-ink': 'var(--ncx-on-navy)',
+  // Nested navy would vanish into the wrapper, so it steps up a tone.
+  '--ncx-navy': 'var(--ncx-navy-tint)',
+  // Crimson and teal as TEXT step down; the fill hues are left alone.
+  '--ncx-crimson-ink': 'var(--ncx-on-navy-soft)',
+  '--ncx-teal-ink': 'var(--ncx-teal-on-navy)',
+  // Interactive text keeps its affordance: a link does not step down to the
+  // soft tint in the one section the page most wants acted on.
+  '--ncx-link': 'var(--ncx-on-navy)',
+  // A focus ring and a hover hairline both have to stay visible on navy, and
+  // crimson at 1px does not. Teal steps up; the hover line brightens.
+  '--ncx-focus': 'var(--ncx-teal-on-navy)',
+  '--ncx-hover-line': 'var(--ncx-on-navy-rule-strong)',
+  // Tints are pale surfaces: left alone they survive as light patches.
+  '--ncx-crimson-tint': 'var(--ncx-crimson-wash-on-navy)',
+  '--ncx-teal-tint': 'var(--ncx-teal-wash-on-navy)',
+  '--ncx-body': 'var(--ncx-on-navy)',
+  '--ncx-muted': 'var(--ncx-on-navy-soft)',
+  '--ncx-faint': 'var(--ncx-on-navy-soft)',
+  '--ncx-rule': 'var(--ncx-on-navy-rule)',
+  '--ncx-rule-soft': 'var(--ncx-on-navy-rule)',
+  '--ncx-rule-strong': 'var(--ncx-on-navy-rule-strong)',
+  '--ncx-cloud': 'var(--ncx-on-navy-raise)',
+  '--ncx-paper': 'var(--ncx-on-navy-raise)',
+  '--ncx-white': 'var(--ncx-on-navy-raise)',
+  '--ncx-raised': 'var(--ncx-on-navy-raise)',
 }
 
 const SPACE: Record<string, string> = {
@@ -63,7 +99,11 @@ export const BlockWrapper: React.FC<Props> = ({
   if (hasBackground) {
     outer.background = BACKGROUNDS[background as string]
     // Dark backgrounds need light text, or the block disappears into them.
-    if (background === 'navy' || background === 'crimson') outer.color = '#FFFFFF'
+    if (background === 'navy') outer.color = 'var(--ncx-on-navy)'
+    // The remap goes on the inner element, not this one: applied here it
+    // would rewrite the very variable this element's own background reads,
+    // and the band would come out navy-tint instead of navy.
+    if (background === 'navy') Object.assign(inner, ON_NAVY)
   }
 
   if (spacingTop && spacingTop !== 'default') outer.paddingTop = SPACE[spacingTop]

@@ -37,49 +37,13 @@ export const headerCss = `
   --hdr-veil-dark:rgba(12,16,26,.32);
   --hdr-veil-dark-stuck:rgba(12,16,26,.46);
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --hdr-surface:#151924;
-    --hdr-surface-2:#11151F;
-    --hdr-ink:#E9EBF2;
-    --hdr-ink-soft:#A3ABBF;
-    --hdr-ink-faint:#737C92;
-    --hdr-line:#262C3B;
-    --hdr-line-soft:#1D2230;
-    --hdr-crimson:#E05151;
-    --hdr-crimson-hover:#C63F3F;
-    --hdr-teal:#4FB2BB;
-    --hdr-teal-tint:#10242A;
-    --hdr-shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
-    --hdr-veil:rgba(13,16,24,.42);
-    --hdr-veil-stuck:rgba(13,16,24,.58);
-    --hdr-veil-busy:rgba(13,16,24,.76);
-  }
-}
-:root[data-theme="dark"]{
-  --hdr-surface:#151924;
-  --hdr-surface-2:#11151F;
-  --hdr-ink:#E9EBF2;
-  --hdr-ink-soft:#A3ABBF;
-  --hdr-ink-faint:#737C92;
-  --hdr-line:#262C3B;
-  --hdr-line-soft:#1D2230;
-  --hdr-crimson:#E05151;
-  --hdr-crimson-hover:#C63F3F;
-  --hdr-teal:#4FB2BB;
-  --hdr-teal-tint:#10242A;
-  --hdr-shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
-  --hdr-veil:rgba(13,16,24,.42);
-  --hdr-veil-stuck:rgba(13,16,24,.58);
-  --hdr-veil-busy:rgba(13,16,24,.76);
-}
 
 /* ---------- announcement bar ---------- */
 .ncx-topbar{background:transparent;border-bottom:1px solid var(--hdr-line-soft);flex:none}
 .ncx-topbar__in{
   max-width:var(--hdr-max);margin:0 auto;padding:9px 46px 9px var(--hdr-gutter);
   display:flex;align-items:center;justify-content:center;gap:12px;
-  font-family:var(--font-body),Inter,Arial,sans-serif;
+  font-family:var(--font-body),Arial,sans-serif;
   font-size:13.5px;color:var(--hdr-ink-soft);position:relative;text-align:center;
 }
 .ncx-topbar__cta{
@@ -102,7 +66,7 @@ export const headerCss = `
 .ncx-nav{
   position:sticky;top:env(safe-area-inset-top,0px);z-index:60;
   height:64px;flex:none;margin-bottom:-64px;
-  font-family:var(--font-body),Inter,Arial,sans-serif;
+  font-family:var(--font-body),Arial,sans-serif;
 }
 /* The veil: a blur with a light tint, masked so it is solid across the bar and
    feathers out below it. That soft bottom edge is the whole trick — it reads
@@ -142,17 +106,19 @@ export const headerCss = `
   font-family:var(--font-display),'Instrument Sans',Arial,sans-serif;
   font-weight:700;font-size:16px;letter-spacing:-.02em;
   background:var(--hdr-surface);color:var(--hdr-ink);
-  padding:9px 18px 9px 11px;border-radius:999px;border:1px solid var(--hdr-line);
+  padding:7px 18px 7px 8px;border-radius:999px;border:1px solid var(--hdr-line);
 }
 .ncx-mark__dot{width:20px;height:20px;border-radius:50%;background:var(--hdr-crimson);position:relative;flex:none}
 .ncx-mark__dot::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#fff}
-.ncx-mark__img{width:20px;height:20px;border-radius:50%;object-fit:contain;flex:none;display:block}
+/* Bigger than the fallback dot: an uploaded mark carries detail, and at 20px
+   it read as a speck next to the wordmark. */
+.ncx-mark__img{width:30px;height:30px;border-radius:50%;object-fit:contain;flex:none;display:block}
 
 .ncx-nav__links{display:flex;align-items:center;margin-inline:auto}
 .ncx-navitem{position:static}
 .ncx-navlink{
   display:flex;align-items:center;gap:5px;height:40px;padding:0 15px;
-  font-family:var(--font-body),Inter,Arial,sans-serif;font-size:14px;
+  font-family:var(--font-body),Arial,sans-serif;font-size:14px;
   color:var(--hdr-ink);text-decoration:none;
   background:none;border:0;cursor:pointer;border-radius:8px;
 }
@@ -163,6 +129,13 @@ export const headerCss = `
 .ncx-nav__right{display:flex;align-items:center;gap:6px;flex:none}
 .ncx-ghost{font-size:14px;color:var(--hdr-ink);text-decoration:none;padding:0 12px}
 .ncx-ghost:hover{color:var(--hdr-teal)}
+/* A hairline rather than a typed "|": it stays the same weight at any size and
+   takes the chrome colour, so it fades in and out with the rest. */
+.ncx-sep{
+  width:1px;height:16px;flex:none;background:currentColor;opacity:.28;
+  color:var(--hdr-ink);
+}
+.ncx-nav.on-dark .ncx-sep{color:#fff;opacity:.34}
 .ncx-btn-pill{
   font-family:var(--font-label),'IBM Plex Mono',monospace;
   font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
@@ -227,7 +200,6 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
   }
   .ncx-nav.on-dark::before{background:#0A0E18;border-bottom-color:rgba(255,255,255,.14)}
   .ncx-scrim{background:rgba(23,28,46,.22)}
-  :root[data-theme="dark"] .ncx-scrim{background:rgba(5,7,12,.34)}
 }
 
 @media (max-width:1040px){
@@ -235,10 +207,13 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
 }
 @media (max-width:760px){
   .ncx-nav__links{display:none}
+  /* Same place as the centre links: it belongs in the drawer at this width. */
+  .ncx-support,.ncx-sep{display:none}
   .ncx-nav__right{margin-left:auto}
   .ncx-ghost{padding:0 8px;font-size:13.5px}
   .ncx-btn-pill{padding:11px 16px;font-size:10px;letter-spacing:.08em}
-  .ncx-mark{font-size:15px;padding:8px 14px 8px 9px}
+  .ncx-mark{font-size:15px;padding:6px 14px 6px 7px}
+  .ncx-mark__img{width:26px;height:26px}
   .ncx-topbar__in{font-size:12.5px;gap:9px;padding-right:40px}
 }
 @media (prefers-reduced-motion:reduce){

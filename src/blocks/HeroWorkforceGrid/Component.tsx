@@ -27,7 +27,6 @@ type Props = {
   headline?: string | null
   subhead?: string | null
   cta?: LinkGroup | null
-  theme?: 'dark' | 'red' | 'white' | null
   speed?: 'slow' | 'medium' | 'fast' | null
   columns?: '2' | '3' | '4' | null
   cards?: Card[] | null
@@ -73,7 +72,6 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   headline,
   subhead,
   cta,
-  theme,
   speed,
   columns,
   cards,
@@ -87,43 +85,39 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   const mult = SPEED_MULT[speed || 'medium'] || SPEED_MULT.medium
 
   return (
-    <section className="ncx-hwg" data-theme={theme || 'dark'}>
+    <section className="ncx-hwg">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
         .ncx-hwg{
-          --crimson:#C62828;
-          --h-bg:#1A2035;--h-text:#fff;--h-sub:#C9CEDC;--h-muted:#A7AEC2;
-          --h-eyebrow:#F3B6B3;--h-glow-1:rgba(198,40,40,.16);--h-glow-2:rgba(70,95,180,.2);
-          --card-bg:#212843;--card-border:rgba(255,255,255,.1);--card-shadow:none;
-          --card-hover-bg:#242C4C;--card-hover-border:rgba(224,96,90,.5);
-          --ic-bg:rgba(198,40,40,.16);--ic-fg:#F3B6B3;
-          --btn-bg:var(--crimson);--btn-fg:#fff;--btn-bg-hover:#B02222;
+          /* One palette, on the light stage. The three theme variants that used
+             to live here (dark, red, white) are gone, and so is the CMS field
+             that selected between them. */
+          --h-text:var(--ncx-ink);--h-sub:var(--ncx-muted);--h-muted:var(--ncx-faint);
+          --h-eyebrow:var(--ncx-crimson-ink);
+          --card-bg:var(--ncx-white);--card-border:var(--ncx-rule);
+          --card-shadow:var(--ncx-shadow);
+          --card-hover-bg:var(--ncx-white);--card-hover-border:var(--ncx-hover-line);
+          --ic-bg:var(--ncx-crimson-tint);--ic-fg:var(--ncx-crimson);
+          --btn-bg:var(--ncx-crimson);--btn-fg:var(--ncx-on-navy);--btn-bg-hover:var(--ncx-crimson-hover);
           position:relative;overflow:hidden;isolation:isolate;
-          background:var(--h-bg);color:var(--h-text);
-          font-family:Inter,Arial,sans-serif}
-
-        .ncx-hwg[data-theme="red"]{
-          --h-bg:#7A1616;--h-text:#fff;--h-sub:#F3D4D2;--h-muted:#E8B9B6;
-          --h-eyebrow:#FFE1DE;--h-glow-1:rgba(255,255,255,.1);--h-glow-2:rgba(0,0,0,.18);
-          --card-bg:rgba(255,255,255,.1);--card-border:rgba(255,255,255,.22);--card-shadow:none;
-          --card-hover-bg:rgba(255,255,255,.16);--card-hover-border:rgba(255,255,255,.5);
-          --ic-bg:rgba(255,255,255,.18);--ic-fg:#fff;
-          --btn-bg:#fff;--btn-fg:#7A1616;--btn-bg-hover:#F2E5E4}
-
-        .ncx-hwg[data-theme="white"]{
-          --h-bg:#F5F5F7;--h-text:#171A2B;--h-sub:#454B63;--h-muted:#6B7185;
-          --h-eyebrow:#B0201F;--h-glow-1:rgba(198,40,40,.07);--h-glow-2:rgba(70,95,180,.08);
-          --card-bg:#fff;--card-border:rgba(23,26,43,.08);
-          --card-shadow:0 10px 26px -14px rgba(23,26,43,.18);
-          --card-hover-bg:#fff;--card-hover-border:rgba(198,40,40,.35);
-          --ic-bg:rgba(198,40,40,.09);--ic-fg:#C62828;
-          --btn-bg:var(--crimson);--btn-fg:#fff;--btn-bg-hover:#B02222}
-
-        .ncx-hwg .bg{position:absolute;inset:0;z-index:0;pointer-events:none;
+          background:var(--wash);color:var(--h-text);
+          padding-top:calc(64px + clamp(24px,3vw,44px));
+          font-family:var(--font-body),Arial,sans-serif}
+        /* Same stage as the other heroes: full bleed, four blooms, one layer. */
+        .ncx-hwg::before{
+          content:"";position:absolute;inset:-35%;z-index:0;pointer-events:none;
           background:
-            radial-gradient(650px 500px at 90% 0%,var(--h-glow-1),transparent 70%),
-            radial-gradient(700px 550px at 0% 100%,var(--h-glow-2),transparent 70%)}
+            radial-gradient(38% 46% at 18% 28%, var(--g1), transparent 66%),
+            radial-gradient(44% 52% at 78% 16%, var(--g2), transparent 66%),
+            radial-gradient(46% 54% at 62% 88%, var(--g3), transparent 66%),
+            radial-gradient(42% 50% at 8% 86%, var(--g4), transparent 66%);
+          animation:ncxDrift 26s ease-in-out infinite alternate;will-change:transform}
+        @keyframes ncxDrift{
+          0%{transform:translate3d(0,0,0) scale(1) rotate(0deg)}
+          50%{transform:translate3d(5%,-4%,0) scale(1.16) rotate(4deg)}
+          100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
+        }
+        @media(prefers-reduced-motion:reduce){.ncx-hwg::before{animation:none}}
 
         .ncx-hwg .inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;
           padding:clamp(48px,7vw,88px) 24px;display:grid;
@@ -131,17 +125,17 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           gap:clamp(28px,4vw,56px);align-items:center}
 
         .ncx-hwg .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;
-          font-family:Poppins,Arial,sans-serif;font-size:14px;font-weight:600;color:var(--h-eyebrow)}
+          font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;color:var(--h-eyebrow)}
         .ncx-hwg .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;
           background:var(--crimson);box-shadow:0 0 0 4px rgba(198,40,40,.25)}
-        .ncx-hwg h1{font-family:Poppins,Arial,sans-serif;font-weight:600;letter-spacing:-.025em;
+        .ncx-hwg h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;letter-spacing:-.025em;
           line-height:1.06;font-size:clamp(38px,4.2vw,58px);margin:0 0 20px;
           max-width:11ch;text-wrap:balance;color:var(--h-text)}
         .ncx-hwg .word{display:inline-block;white-space:pre}
         .ncx-hwg .subhead{color:var(--h-sub);font-size:clamp(16px,1.3vw,18px);line-height:1.65;
           margin:0 0 30px;max-width:44ch}
         .ncx-hwg .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;
-          border-radius:12px;font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:15.5px;
+          border-radius:12px;font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15.5px;
           text-decoration:none;white-space:nowrap;
           background:var(--btn-bg);color:var(--btn-fg);
           transition:background .2s,transform .2s ease}
@@ -169,9 +163,9 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
         .ncx-hwg .card__ic{width:32px;height:32px;border-radius:9px;background:var(--ic-bg);
           color:var(--ic-fg);display:grid;place-items:center;margin-bottom:10px}
         .ncx-hwg .card__ic svg{width:17px;height:17px}
-        .ncx-hwg .card__tag{display:block;font-family:Poppins,Arial,sans-serif;font-size:10.5px;
+        .ncx-hwg .card__tag{display:block;font-family:var(--font-display),Arial,sans-serif;font-size:10.5px;
           letter-spacing:.06em;text-transform:uppercase;color:var(--h-muted);margin-bottom:2px}
-        .ncx-hwg .card__title{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:15px;
+        .ncx-hwg .card__title{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;
           margin:0 0 6px;color:var(--h-text)}
         .ncx-hwg .card__desc{font-size:13px;line-height:1.55;color:var(--h-muted);margin:0}
 

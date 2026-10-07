@@ -84,26 +84,26 @@ export const TestimonialBlock: React.FC<TestimonialProps> = ({ eyebrow, heading,
   return (
     <section className="ncx-testi">
       <style>{`
-        .ncx-testi{background:var(--ncx-cloud);padding:88px 0;font-family:Inter,Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-testi{background:var(--ncx-cloud);padding:88px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-testi__wrap{max-width:760px;margin:0 auto;padding:0 24px}
-        .ncx-testi__eyebrow{font-family:Inter,Arial,sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson);margin:0 0 12px}
-        .ncx-testi__heading{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:clamp(1.5rem,3vw,2rem);color:var(--ncx-navy);margin:0 0 32px}
+        .ncx-testi__eyebrow{font-family:var(--font-body),Arial,sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 12px}
+        .ncx-testi__heading{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.5rem,3vw,2rem);color:var(--ncx-ink);margin:0 0 32px}
         .ncx-testi__card{margin:0;position:relative}
-        .ncx-testi__mark{display:block;font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:72px;line-height:1;color:var(--ncx-crimson);opacity:.25;height:40px}
+        .ncx-testi__mark{display:block;font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:72px;line-height:1;color:var(--ncx-crimson);opacity:.25;height:40px}
         .ncx-testi__quote{margin:0}
-        .ncx-testi__quote p{margin:0;font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:28px;line-height:1.45;color:var(--ncx-navy)}
+        .ncx-testi__quote p{margin:0;font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:28px;line-height:1.45;color:var(--ncx-ink)}
         @media(max-width:640px){.ncx-testi__quote p{font-size:20px}}
         .ncx-testi__attr{display:flex;align-items:center;gap:16px;margin:32px 0 0}
         .ncx-testi__avatar,.ncx-testi__photo{width:48px;height:48px;border-radius:50%;flex-shrink:0;object-fit:cover}
-        .ncx-testi__avatar{display:flex;align-items:center;justify-content:center;background:var(--ncx-crimson);color:#fff;font-weight:600;font-size:15px}
+        .ncx-testi__avatar{display:flex;align-items:center;justify-content:center;background:var(--ncx-crimson);color:var(--ncx-on-navy);font-weight:600;font-size:15px}
         .ncx-testi__who{display:flex;flex-direction:column;gap:2px;min-width:0}
-        .ncx-testi__name{font-weight:600;font-size:14px;color:var(--ncx-navy)}
+        .ncx-testi__name{font-weight:600;font-size:14px;color:var(--ncx-ink)}
         .ncx-testi__role{font-size:13px;color:var(--ncx-muted)}
-        .ncx-testi__story{font-weight:500;font-size:13px;color:var(--ncx-crimson);text-decoration:none;margin-top:4px}
+        .ncx-testi__story{font-weight:500;font-size:13px;color:var(--ncx-link);text-decoration:none;margin-top:4px}
         .ncx-testi__story:hover{text-decoration:underline}
         .ncx-testi__logo{margin-left:auto;max-width:120px;height:auto;max-height:40px;object-fit:contain}
         .ncx-testi__dots{display:flex;gap:10px;justify-content:center;margin-top:32px}
-        .ncx-testi__dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:#D8DAE3;cursor:pointer}
+        .ncx-testi__dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:var(--ncx-rule);cursor:pointer}
         .ncx-testi__dots button.is-active{background:var(--ncx-crimson)}
       `}</style>
       <div className="ncx-testi__wrap">

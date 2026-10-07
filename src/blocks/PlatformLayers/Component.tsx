@@ -48,45 +48,40 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
   return (
     <section className="ncx-layers">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-layers{--navy:#1A2035;--navy-2:#252D4A;--crimson:#C62828;--line:rgba(255,255,255,.1);
-          background:var(--navy);color:#fff;font-family:Inter,Arial,sans-serif;padding:72px 0 0}
-        .ncx-layers .inner{max-width:1180px;margin:0 auto;padding:0 32px}
-        .ncx-layers .eyebrow{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.82rem;
-          letter-spacing:.04em;color:#FF8F8F;margin:0 0 14px}
-        .ncx-layers h2{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-layers{background:var(--ncx-navy);color:var(--ncx-on-navy);font-family:var(--font-body),Arial,sans-serif;padding:72px 0 0}
+        .ncx-layers .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
+          letter-spacing:.04em;color:var(--ncx-crimson-on-navy);margin:0 0 14px}
+        .ncx-layers h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.1;letter-spacing:-.02em;
           margin:0;max-width:18ch}
-        .ncx-layers .intro{color:rgba(255,255,255,.7);margin:18px 0 0;font-size:1.02rem}
+        .ncx-layers .intro{color:var(--ncx-on-navy-soft);margin:18px 0 0;font-size:1.02rem}
 
         .ncx-layers .scroller{position:relative;margin-top:44px}
         .ncx-layers .stage{position:sticky;top:96px;height:min(62vh,440px)}
-        .ncx-layers .card{position:absolute;inset:0;background:var(--navy-2);
-          border:1px solid var(--line);border-radius:22px;padding:44px;
+        .ncx-layers .card{position:absolute;inset:0;background:var(--ncx-navy-tint);
+          border:1px solid var(--ncx-on-navy-rule);border-radius:22px;padding:44px;
           display:flex;align-items:center;gap:30px;
           opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease;
           pointer-events:none}
         .ncx-layers .card.on{opacity:1;transform:translateY(0);pointer-events:auto}
         .ncx-layers .badge{flex:0 0 68px;width:68px;height:68px;border-radius:18px;
-          background:var(--crimson);display:flex;align-items:center;justify-content:center;
-          box-shadow:0 14px 30px -12px rgba(198,40,40,.8)}
+          background:var(--ncx-crimson);display:flex;align-items:center;justify-content:center}
         .ncx-layers .badge svg{width:30px;height:30px}
-        .ncx-layers h3{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:1.5rem;
+        .ncx-layers h3{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:1.5rem;
           margin:0;letter-spacing:-.01em}
-        .ncx-layers .desc{margin:12px 0 0;color:rgba(255,255,255,.72);font-size:1.02rem;
+        .ncx-layers .desc{margin:12px 0 0;color:var(--ncx-on-navy-soft);font-size:1.02rem;
           line-height:1.6;max-width:56ch}
-        .ncx-layers .tag{display:inline-block;margin-top:16px;font-family:Poppins,Arial,sans-serif;
-          font-size:.76rem;font-weight:600;color:#FF8F8F;background:rgba(198,40,40,.22);
+        .ncx-layers .tag{display:inline-block;margin-top:16px;font-family:var(--font-display),Arial,sans-serif;
+          font-size:.76rem;font-weight:600;color:var(--ncx-crimson-on-navy);background:var(--ncx-crimson-wash-on-navy);
           border-radius:999px;padding:6px 14px}
         .ncx-layers .step{height:45vh}
         .ncx-layers .dots{display:flex;justify-content:center;gap:9px;padding:26px 0 72px}
-        .ncx-layers .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);
+        .ncx-layers .dot{width:9px;height:9px;border-radius:50%;background:var(--ncx-on-navy-rule-strong);
           transition:background .3s,transform .3s}
-        .ncx-layers .dot.on{background:var(--crimson);transform:scale(1.25)}
+        .ncx-layers .dot.on{background:var(--ncx-crimson);transform:scale(1.25)}
 
         @media(max-width:900px){
           .ncx-layers{padding:48px 0 0}
-          .ncx-layers .inner{padding:0 20px}
           .ncx-layers .stage{position:static;height:auto}
           .ncx-layers .card{position:static;opacity:1;transform:none;pointer-events:auto;
             padding:26px;gap:18px;flex-direction:column;align-items:flex-start;margin-bottom:16px}
@@ -96,7 +91,7 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
         @media(prefers-reduced-motion:reduce){.ncx-layers .card{transition:none}}
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h2>{heading}</h2>
         {intro ? <p className="intro">{intro}</p> : null}
@@ -106,7 +101,7 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
             {items.map((l, i) => (
               <article className={`card${i === active ? ' on' : ''}`} key={l.id || i}>
                 <span className="badge">
-                  <BlockIcon name={l.icon} fallback="message" stroke="#fff" round />
+                  <BlockIcon name={l.icon} fallback="message" round />
                 </span>
                 <div>
                   <h3>{l.title}</h3>

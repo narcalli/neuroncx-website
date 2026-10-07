@@ -4,7 +4,6 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import React from 'react'
-import PageClient from './page.client'
 import { notFound } from 'next/navigation'
 import { getPaginated, CMS_TAG } from '@/utilities/cms'
 
@@ -36,9 +35,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <div className="pt-24 pb-24">
-      <PageClient />
       <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose max-w-none">
           <h1>Posts</h1>
         </div>
       </div>

@@ -62,30 +62,29 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
   return (
     <section className="ncx-thread">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-thread{--ink:#1A1A2E;--ink-soft:#4A5573;--crimson:#C62828;--rule:#DFE3EA;
+        .ncx-thread{
           position:relative;max-width:1120px;margin:0 auto;padding:48px 32px;
-          font-family:Inter,Arial,sans-serif;color:var(--ink)}
-        .ncx-thread h2{font-family:Poppins,Arial,sans-serif;font-weight:500;
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-thread h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:34px;letter-spacing:-.025em;margin:0 0 44px}
         .ncx-thread .spine{position:relative;display:grid;grid-template-columns:1fr 1fr;
           column-gap:8%;row-gap:20px;align-items:start}
         .ncx-thread .spine:before{content:"";position:absolute;left:50%;top:8px;bottom:8px;
-          width:1px;background:var(--rule)}
+          width:1px;background:var(--ncx-rule)}
         .ncx-thread .turn{position:relative}
         .ncx-thread .turn.left{grid-column:1}
         .ncx-thread .turn.right{grid-column:2}
         .ncx-thread .turn:before{content:"";position:absolute;top:12px;width:9px;height:9px;
-          border-radius:50%;background:var(--crimson)}
+          border-radius:50%;background:var(--ncx-crimson)}
         .ncx-thread .turn.left:before{right:-4.6%}
         .ncx-thread .turn.right:before{left:-4.6%}
-        .ncx-thread .cat{font-family:Poppins,Arial,sans-serif;font-size:13px;
-          color:var(--crimson);margin-bottom:8px;display:block}
-        .ncx-thread h3{font-family:Poppins,Arial,sans-serif;font-weight:500;
+        .ncx-thread .cat{font-family:var(--font-display),Arial,sans-serif;font-size:13px;
+          color:var(--ncx-crimson-ink);margin-bottom:8px;display:block}
+        .ncx-thread h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:25px;letter-spacing:-.02em;margin:0 0 10px}
-        .ncx-thread p{color:var(--ink-soft);font-size:17px;line-height:1.6;margin:0}
-        .ncx-thread .more{font-family:Poppins,Arial,sans-serif;font-size:15px;
-          color:var(--crimson);text-decoration:none;display:inline-block;margin-top:12px;
+        .ncx-thread p{color:var(--ncx-muted);font-size:17px;line-height:1.6;margin:0}
+        .ncx-thread .more{font-family:var(--font-display),Arial,sans-serif;font-size:15px;
+          color:var(--ncx-link);text-decoration:none;display:inline-block;margin-top:12px;
           border-bottom:1px solid currentColor}
         @media(max-width:900px){
           .ncx-thread{padding:40px 20px}

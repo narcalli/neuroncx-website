@@ -48,31 +48,29 @@ export const AgenticCartsDemoBlock: React.FC<AgenticCartsDemoProps> = ({
   return (
     <section className="ncx-carts">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600&display=swap');
-        .ncx-carts{padding:84px 0;font-family:Inter,Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-carts .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-        .ncx-carts h2{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-navy)}
+        .ncx-carts{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-carts h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-ink)}
         .ncx-carts .sec-sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-carts .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;margin-top:38px;padding:4px;border-radius:12px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule);max-width:520px}
-        .ncx-carts .seg-pill{position:absolute;left:4px;top:4px;bottom:4px;width:calc(50% - 4px);border-radius:9px;background:#fff;box-shadow:0 0 0 1px var(--rule2,#CBD0DC);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+        .ncx-carts .seg-pill{position:absolute;left:4px;top:4px;bottom:4px;width:calc(50% - 4px);border-radius:9px;background:var(--ncx-white);box-shadow:0 0 0 1px var(--ncx-rule);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
         .ncx-carts .seg-pill.a{transform:translateX(0)}
         .ncx-carts .seg-pill.b{transform:translateX(100%)}
-        .ncx-carts .seg button{position:relative;z-index:1;background:none;border:0;padding:11px 12px;font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.88rem;color:var(--ncx-muted);cursor:pointer}
-        .ncx-carts .seg button[aria-pressed="true"]{color:var(--ncx-navy)}
-        .ncx-carts .stage{position:relative;margin-top:18px;padding:30px 22px 26px 66px;border-radius:16px;background:#fff;border:1px solid var(--ncx-rule)}
+        .ncx-carts .seg button{position:relative;z-index:1;background:none;border:0;padding:11px 12px;font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.88rem;color:var(--ncx-muted);cursor:pointer}
+        .ncx-carts .seg button[aria-pressed="true"]{color:var(--ncx-ink)}
+        .ncx-carts .stage{position:relative;margin-top:18px;padding:30px 22px 26px 66px;border-radius:16px;background:var(--ncx-white);border:1px solid var(--ncx-rule)}
         .ncx-carts .txline{position:absolute;left:22px;top:30px;bottom:26px;width:3px;border-radius:3px;background:var(--ncx-crimson);transform-origin:center top}
         .ncx-carts .rows{display:flex;flex-direction:column;gap:14px}
         .ncx-carts .rc{display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:12px 16px;border-radius:10px;font-size:.95rem}
         .ncx-carts .rc.a{background:var(--ncx-cloud);border:1px solid var(--ncx-rule);color:var(--ncx-muted)}
-        .ncx-carts .rc.b{background:#fff;border:1.5px solid var(--ncx-crimson);color:var(--ncx-body)}
-        .ncx-carts .hist{font-size:.74rem;font-weight:600;color:var(--ncx-crimson);background:#FFEBEE;border-radius:999px;padding:2px 10px}
-        .ncx-carts .nohist{font-size:.74rem;color:#9AA3B5}
+        .ncx-carts .rc.b{background:var(--ncx-white);border:1.5px solid var(--ncx-crimson);color:var(--ncx-body)}
+        .ncx-carts .hist{font-size:.74rem;font-weight:600;color:var(--ncx-crimson-ink);background:var(--ncx-crimson-tint);border-radius:999px;padding:2px 10px}
+        .ncx-carts .nohist{font-size:.74rem;color:var(--ncx-faint)}
         .ncx-carts .actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:18px}
-        .ncx-carts .btn-s{background:var(--ncx-navy);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.92rem;cursor:pointer}
+        .ncx-carts .btn-s{background:var(--ncx-navy);color:var(--ncx-on-navy);border:0;border-radius:8px;padding:11px 20px;font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.92rem;cursor:pointer}
         .ncx-carts .btn-s:hover{background:var(--ncx-crimson)}
         .ncx-carts .note{font-size:.92rem;color:var(--ncx-muted);flex:1;min-width:220px}
       `}</style>
-      <div className="wrap">
+      <div className="wrap ncx-container-narrow">
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

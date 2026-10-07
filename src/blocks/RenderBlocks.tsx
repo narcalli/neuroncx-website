@@ -36,6 +36,7 @@ import { ProductInActionBlock } from '@/blocks/ProductInAction/Component'
 import { TestimonialBlock } from '@/blocks/Testimonial/Component'
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
 import { CustomerDirectoryBlock } from '@/blocks/CustomerDirectory/Component'
+import { WhatsappWidgetBlock } from '@/blocks/WhatsappWidget/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
 import { ContactFormBlock } from '@/blocks/ContactForm/Component'
 import { PartnerStripBlock } from '@/blocks/PartnerStrip/Component'
@@ -85,6 +86,7 @@ const blockComponents = {
   testimonial: TestimonialBlock,
   caseStudyGrid: CaseStudyGridBlock,
   customerDirectory: CustomerDirectoryBlock,
+  whatsappWidget: WhatsappWidgetBlock,
   statHero: StatHeroBlock,
   useCases: UseCasesBlock,
   problemStatement: ProblemStatementBlock,
@@ -99,6 +101,7 @@ const blockComponents = {
 
 // Blocks that manage their own vertical spacing and should sit flush.
 const noMargin = [
+  'whatsappWidget',
   'conversationHero',
   'agenticHero',
   'heroFullBackground',

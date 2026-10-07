@@ -186,9 +186,8 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
       data-placement={placement}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-hfb{position:relative;overflow:hidden;isolation:isolate;background:#1A2035;
-          font-family:Inter,Arial,sans-serif;color:#fff;
+        .ncx-hfb{position:relative;overflow:hidden;isolation:isolate;background:var(--ncx-navy);
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-on-navy);
           height:min(88vh,760px)}
         .ncx-hfb[data-height="medium"]{height:min(64vh,560px)}
 
@@ -225,6 +224,9 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         .ncx-hfb[data-placement="right"] .overlay{display:none}
         .ncx-hfb[data-placement="right"] .bg{inset:0 0 0 40%;background:transparent}
         .ncx-hfb[data-placement="right"] .layer{
+        /* The #000 below are mask stencils, not colours: these gradients
+           supply an alpha channel only, so there is no token to point
+           them at. */
           -webkit-mask-image:
             linear-gradient(90deg,transparent 0%,#000 35%),
             linear-gradient(180deg,transparent 0%,#000 10%,#000 90%,transparent 100%);
@@ -242,26 +244,26 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         .ncx-hfb .container{max-width:1180px;margin:0 auto;width:100%;padding:0 32px 56px}
         .ncx-hfb .inner{max-width:640px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
         .ncx-hfb[data-placement="right"] .inner{max-width:44%}
-        .ncx-hfb .eyebrow{font-family:Poppins,Arial,sans-serif;font-size:14px;font-weight:600;
-          color:#FF6B6B;margin:0 0 14px}
-        .ncx-hfb h1{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-hfb .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
+          color:var(--ncx-crimson-on-navy);margin:0 0 14px}
+        .ncx-hfb h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(32px,5.2vw,56px);line-height:1.08;letter-spacing:-.02em;margin:0;
           max-width:14ch;text-wrap:balance}
         .ncx-hfb .word{display:inline-block;white-space:pre}
-        .ncx-hfb .subhead{margin:20px 0 0;font-size:18px;line-height:1.6;max-width:56ch;color:#E7E9F2}
+        .ncx-hfb .subhead{margin:20px 0 0;font-size:18px;line-height:1.6;max-width:56ch;color:var(--ncx-on-navy-soft)}
         .ncx-hfb .cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:14px}
-        .ncx-hfb .btn{font-family:Poppins,Arial,sans-serif;font-weight:500;font-size:15px;
+        .ncx-hfb .btn{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:15px;
           display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:10px;
           text-decoration:none;transition:transform .15s ease,background .15s ease,border-color .15s ease}
-        .ncx-hfb .btn-primary{background:#C62828;color:#fff}
-        .ncx-hfb .btn-primary:hover{background:#B02222}
-        .ncx-hfb .btn-ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.4)}
+        .ncx-hfb .btn-primary{background:var(--ncx-crimson);color:var(--ncx-on-navy)}
+        .ncx-hfb .btn-primary:hover{background:var(--ncx-crimson-hover)}
+        .ncx-hfb .btn-ghost{background:var(--ncx-on-navy-raise);color:var(--ncx-on-navy);border:1px solid var(--ncx-on-navy-rule-strong)}
         .ncx-hfb .btn-ghost:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.7)}
-        .ncx-hfb .btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+        .ncx-hfb .btn:focus-visible{outline:2px solid var(--ncx-on-navy);outline-offset:3px}
         .ncx-hfb .meta{list-style:none;display:flex;flex-wrap:wrap;gap:10px 18px;
-          margin:26px 0 0;padding:0;font-size:14px;color:#D7DAE6}
+          margin:26px 0 0;padding:0;font-size:14px;color:var(--ncx-on-navy-soft)}
         .ncx-hfb .meta li{display:flex;align-items:center;gap:8px}
-        .ncx-hfb .meta li::before{content:"";width:6px;height:6px;border-radius:50%;background:#C62828}
+        .ncx-hfb .meta li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ncx-crimson)}
 
         /* Entrance. Base state is fully visible — this only adds motion once
            the Animator client component marks the block as in view. */

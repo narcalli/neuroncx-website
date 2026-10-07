@@ -27,19 +27,18 @@ export async function Footer() {
   return (
     <footer className="ncx-footer">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
         .ncx-footer{background:#16203A;color:#fff;margin-top:auto;
-          font-family:Inter,Arial,sans-serif}
+          font-family:var(--font-body),Arial,sans-serif}
         .ncx-footer .inner{max-width:1120px;margin:0 auto;padding:64px 32px 36px}
         .ncx-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
         .ncx-footer .tagline{color:#9AA5BF;margin:16px 0 0;max-width:34ch;font-size:16px;line-height:1.6}
-        .ncx-footer h5{font-family:Poppins,Arial,sans-serif;font-size:14px;
+        .ncx-footer h5{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           font-weight:500;margin:0 0 14px;color:#9AA5BF}
         .ncx-footer a{display:block;color:#fff;text-decoration:none;font-size:16px;
           margin-bottom:9px;opacity:.85}
         .ncx-footer a:hover{opacity:1}
         .ncx-footer .note{margin-top:48px;padding-top:22px;border-top:1px solid rgba(255,255,255,.14);
-          font-family:Poppins,Arial,sans-serif;font-size:14px;color:#9AA5BF;
+          font-family:var(--font-display),Arial,sans-serif;font-size:14px;color:#9AA5BF;
           display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         .ncx-footer .note a{display:inline;margin:0 0 0 16px;color:#9AA5BF;font-size:14px}
         @media(max-width:900px){

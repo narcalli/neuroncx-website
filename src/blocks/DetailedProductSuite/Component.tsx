@@ -71,30 +71,28 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
   return (
     <section className={onDark ? 'ncx-dps on-dark' : 'ncx-dps'}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-dps{--crimson:#C62828;--crimson-tint:#FDECEF;--navy:#1A2035;--navy-tint:#EEF0F5;
-          --ink:#1A1A2E;--muted:#5B6478;--rule:#E4E7F0;--soft:#F5F5F7;
+        .ncx-dps{
           max-width:1120px;margin:0 auto;padding:56px 32px;
-          font-family:Inter,Arial,sans-serif;color:var(--ink)}
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
 
-        .ncx-dps .head .eyebrow{font-family:Poppins,Arial,sans-serif;font-size:14px;font-weight:600;
-          margin:0 0 12px;color:var(--crimson)}
-        .ncx-dps .head h2{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-dps .head .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
+          margin:0 0 12px;color:var(--ncx-crimson)}
+        .ncx-dps .head h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin:0;max-width:30ch;
-          color:var(--ink)}
-        .ncx-dps .head .intro{color:var(--muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
+          color:var(--ncx-body)}
+        .ncx-dps .head .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
 
         .ncx-dps.on-dark .head .eyebrow{color:rgba(255,255,255,.85)}
-        .ncx-dps.on-dark .head h2{color:#FFFFFF}
+        .ncx-dps.on-dark .head h2{color:var(--ncx-on-navy)}
         .ncx-dps.on-dark .head .intro{color:rgba(255,255,255,.72)}
 
         .ncx-dps .grid{margin-top:40px;display:grid;grid-template-columns:repeat(2,1fr);gap:28px;align-items:stretch}
         .ncx-dps .grid.cols-1{grid-template-columns:1fr}
 
         .ncx-dps .card{position:relative;overflow:hidden;display:flex;flex-direction:column;
-          background:#fff;border:1px solid var(--rule);border-radius:28px;padding:36px;isolation:isolate}
-        .ncx-dps .card.accent-crimson{--accent:var(--crimson);--accent-tint:var(--crimson-tint)}
-        .ncx-dps .card.accent-navy{--accent:var(--navy);--accent-tint:var(--navy-tint)}
+          background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:28px;padding:36px;isolation:isolate}
+        .ncx-dps .card.accent-crimson{--accent:var(--ncx-crimson);--accent-tint:var(--ncx-crimson-tint)}
+        .ncx-dps .card.accent-navy{--accent:var(--ncx-navy);--accent-tint:var(--ncx-rule-soft)}
 
         .ncx-dps .watermark{position:absolute;top:-18px;right:-18px;width:168px;height:168px;
           color:var(--accent);opacity:.08;z-index:0;pointer-events:none}
@@ -103,33 +101,33 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
         .ncx-dps .card > *{position:relative;z-index:1}
 
         .ncx-dps .card .eyebrow{display:block;margin:0 0 14px;color:var(--accent);
-          font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:12.5px;
+          font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;
           letter-spacing:.05em;text-transform:uppercase}
-        .ncx-dps .card h3{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-dps .card h3{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(21px,1.8vw,25px);letter-spacing:-.01em;line-height:1.25;margin:0}
-        .ncx-dps .card .tagline{font-family:Poppins,Arial,sans-serif;font-weight:600;
-          font-size:16.5px;line-height:1.45;color:var(--navy);margin:10px 0 0}
-        .ncx-dps .card .desc{color:var(--muted);font-size:15px;line-height:1.65;margin:12px 0 0}
+        .ncx-dps .card .tagline{font-family:var(--font-display),Arial,sans-serif;font-weight:600;
+          font-size:16.5px;line-height:1.45;color:var(--ncx-ink);margin:10px 0 0}
+        .ncx-dps .card .desc{color:var(--ncx-muted);font-size:15px;line-height:1.65;margin:12px 0 0}
 
         .ncx-dps .tiles{margin:26px 0 0;display:grid;grid-template-columns:repeat(2,1fr)}
         .ncx-dps .tile{display:flex;align-items:flex-start;gap:11px;padding:13px 0 13px 18px}
         .ncx-dps .tile:nth-child(odd){padding-left:0;padding-right:18px}
-        .ncx-dps .tile-vline{border-right:1px solid var(--rule)}
-        .ncx-dps .tile-hline{border-bottom:1px solid var(--rule)}
+        .ncx-dps .tile-vline{border-right:1px solid var(--ncx-rule)}
+        .ncx-dps .tile-hline{border-bottom:1px solid var(--ncx-rule)}
         .ncx-dps .tile-full{grid-column:1 / -1;padding-right:0}
         .ncx-dps .tile svg{flex:none;width:20px;height:20px;margin-top:1px}
-        .ncx-dps .tile .label{font-family:Poppins,Arial,sans-serif;font-weight:500;font-size:13.5px;
-          line-height:1.4;color:var(--ink)}
+        .ncx-dps .tile .label{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:13.5px;
+          line-height:1.4;color:var(--ncx-body)}
 
         .ncx-dps .more{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
         .ncx-dps .more li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;
-          line-height:1.5;color:var(--muted)}
+          line-height:1.5;color:var(--ncx-muted)}
         .ncx-dps .more .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);
           margin-top:7px}
 
         .ncx-dps .cta{margin-top:26px;align-self:flex-start;display:inline-flex;align-items:center;gap:8px;
-          background:var(--accent);color:#fff;text-decoration:none;
-          font-family:Poppins,Arial,sans-serif;font-weight:500;font-size:14.5px;
+          background:var(--accent);color:var(--ncx-on-navy);text-decoration:none;
+          font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:14.5px;
           padding:12px 20px;border-radius:999px;transition:opacity .15s ease}
         .ncx-dps .cta:hover{opacity:.88}
         .ncx-dps .cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
@@ -147,7 +145,7 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
         @media(max-width:520px){
           .ncx-dps .tiles{grid-template-columns:1fr}
           .ncx-dps .tile{padding-left:0!important;padding-right:0!important;border-right:0!important}
-          .ncx-dps .tile:not(:last-child){border-bottom:1px solid var(--rule)}
+          .ncx-dps .tile:not(:last-child){border-bottom:1px solid var(--ncx-rule)}
           .ncx-dps .tile:last-child{border-bottom:0}
         }
       `}</style>

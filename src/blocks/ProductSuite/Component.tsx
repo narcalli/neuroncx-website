@@ -102,56 +102,57 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
   return (
     <section className="ncx-suite">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-suite{--ink:#1A1A2E;--soft:#4A5573;--crimson:#C62828;--violet:#6E5BF2;
-          --cyan:#18B6AE;--rule:#E4E7F0;--mist:#F5F5F7;
+        .ncx-suite{
+          /* Products are told apart by weight, not by hue: four surfaces drawn
+             from navy and teal, which the palette already owns. Adding a fifth
+             product means another weight, not another colour. */
           max-width:1120px;margin:0 auto;padding:56px 32px;
-          font-family:Inter,Arial,sans-serif;color:var(--ink)}
-        .ncx-suite .label{font-family:Poppins,Arial,sans-serif;font-size:14px;
-          margin:0 0 12px;color:var(--crimson)}
-        .ncx-suite h2{font-family:Poppins,Arial,sans-serif;font-weight:500;
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-suite .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
+          margin:0 0 12px;color:var(--ncx-crimson-ink)}
+        .ncx-suite h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(28px,3.4vw,40px);letter-spacing:-.03em;margin:0;max-width:800px}
-        .ncx-suite .intro{color:var(--soft);margin:14px 0 0;max-width:62ch;font-size:18px;line-height:1.6}
+        .ncx-suite .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:18px;line-height:1.6}
         .ncx-suite .grid{margin-top:44px;display:grid;grid-auto-flow:dense;
           grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 
         .ncx-suite .pic{object-fit:contain}
 
         /* Tags card */
-        .ncx-suite .card{display:flex;flex-direction:column;background:#fff;
-          border:1px solid var(--rule);border-radius:24px;padding:14px;
+        .ncx-suite .card{display:flex;flex-direction:column;background:var(--ncx-white);
+          border:1px solid var(--ncx-rule);border-radius:24px;padding:14px;
           color:inherit;text-decoration:none;
           transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
-        .ncx-suite a.card:hover{transform:translateY(-3px);border-color:#D3D7E6;
+        .ncx-suite a.card:hover{transform:translateY(-3px);border-color:var(--ncx-rule);
           box-shadow:0 12px 28px rgba(26,26,46,.08)}
-        .ncx-suite a.card:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+        .ncx-suite a.card:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
         .ncx-suite .card.wide{grid-column:span 2}
         .ncx-suite .card.tall{grid-row:span 2}
         .ncx-suite .shot{position:relative;flex:none;height:230px;
-          background:var(--mist);border-radius:16px}
+          background:var(--ncx-cloud);border-radius:16px}
         .ncx-suite .card.tall .shot{flex:1 1 auto;height:auto;min-height:230px}
         .ncx-suite .shot .in{position:absolute;inset:18px}
         .ncx-suite .body{flex:1;display:flex;flex-direction:column;align-items:center;
           text-align:center;padding:20px 14px 10px}
         .ncx-suite .card.plain .body{padding-top:22px}
-        .ncx-suite h3{font-family:Poppins,Arial,sans-serif;font-weight:500;
+        .ncx-suite h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:21px;letter-spacing:-.02em;margin:0}
         .ncx-suite ul.pills{margin:14px 0 0;padding:0;list-style:none;display:flex;
           flex-wrap:wrap;justify-content:center;gap:8px}
-        .ncx-suite ul.pills li{font-family:Poppins,Arial,sans-serif;font-size:12.5px;
-          color:var(--soft);border:1px solid var(--rule);background:var(--mist);
+        .ncx-suite ul.pills li{font-family:var(--font-display),Arial,sans-serif;font-size:12.5px;
+          color:var(--ncx-muted);border:1px solid var(--ncx-rule);background:var(--ncx-cloud);
           padding:5px 11px;border-radius:999px}
-        .ncx-suite .summary{color:var(--soft);font-size:15.5px;line-height:1.6;margin:14px 0 0}
+        .ncx-suite .summary{color:var(--ncx-muted);font-size:15.5px;line-height:1.6;margin:14px 0 0}
         .ncx-suite .more{margin-top:auto;padding-top:18px;
-          font-family:Poppins,Arial,sans-serif;font-weight:500;font-size:14px;
-          color:var(--crimson);text-decoration:none;border-bottom:1px solid transparent}
+          font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:14px;
+          color:var(--ncx-crimson-ink);text-decoration:none;border-bottom:1px solid transparent}
         .ncx-suite a.more:hover,.ncx-suite a.card:hover .more{text-decoration:underline;
           text-underline-offset:4px}
-        .ncx-suite a.more:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+        .ncx-suite a.more:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
         /* Steps card */
         .ncx-suite .steps{grid-column:1 / -1;display:grid;grid-template-columns:1fr;
-          gap:8px;background:#fff;border:1px solid var(--rule);border-radius:28px;padding:14px}
+          gap:8px;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:28px;padding:14px}
         .ncx-suite .steps.has-pic{grid-template-columns:1fr 400px}
         .ncx-suite .steps.has-pic.flip{grid-template-columns:400px 1fr}
         .ncx-suite .steps.flip .panel{order:-1}
@@ -160,29 +161,29 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
         .ncx-suite .steps .summary{font-size:16.5px;max-width:58ch;margin:12px 0 0}
         .ncx-suite ol.flow{list-style:none;margin:26px 0 0;padding:0}
         .ncx-suite ol.flow li{position:relative;display:flex;gap:14px;
-          padding-bottom:16px;font-size:15.5px;line-height:1.5;color:var(--ink)}
+          padding-bottom:16px;font-size:15.5px;line-height:1.5;color:var(--ncx-body)}
         .ncx-suite ol.flow li:last-child{padding-bottom:0}
         .ncx-suite ol.flow li::after{content:"";position:absolute;left:13px;top:32px;
-          bottom:4px;width:2px;background:var(--rule)}
+          bottom:4px;width:2px;background:var(--ncx-rule)}
         .ncx-suite ol.flow li:last-child::after{display:none}
         .ncx-suite ol.flow .num{flex:none;width:28px;height:28px;border-radius:50%;
-          display:flex;align-items:center;justify-content:center;background:#F1EFFE;
-          color:#4B3BC9;font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:13px}
+          display:flex;align-items:center;justify-content:center;background:var(--ncx-rule-soft);
+          color:var(--ncx-ink);font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:13px}
         .ncx-suite ol.flow .txt{padding-top:2px}
         .ncx-suite .team{display:flex;align-items:flex-start;gap:10px;margin-top:18px;
-          background:var(--mist);border:1px solid var(--rule);border-radius:14px;
-          padding:14px 16px;font-size:14.5px;line-height:1.5;color:var(--soft)}
+          background:var(--ncx-cloud);border:1px solid var(--ncx-rule);border-radius:14px;
+          padding:14px 16px;font-size:14.5px;line-height:1.5;color:var(--ncx-muted)}
         .ncx-suite .team svg{flex:none;width:18px;height:18px;margin-top:2px}
-        .ncx-suite .note{margin:16px 0 0;font-size:14px;line-height:1.5;color:var(--soft)}
+        .ncx-suite .note{margin:16px 0 0;font-size:14px;line-height:1.5;color:var(--ncx-muted)}
         .ncx-suite .steps .more{align-self:flex-start;margin-top:auto;padding-top:22px}
         .ncx-suite .panel{position:relative;min-height:280px;border-radius:20px;
-          background:var(--mist)}
+          background:var(--ncx-cloud)}
         .ncx-suite .panel .in{position:absolute;inset:24px}
 
-        .ncx-suite .shot.tint-violet,.ncx-suite .panel.tint-violet{background:#F1EFFE}
-        .ncx-suite .shot.tint-cyan,.ncx-suite .panel.tint-cyan{background:#E3F6F5}
-        .ncx-suite .shot.tint-rose,.ncx-suite .panel.tint-rose{background:#FDECEF}
-        .ncx-suite .shot.tint-grey,.ncx-suite .panel.tint-grey{background:#EEF0F4}
+        .ncx-suite .shot.tint-violet,.ncx-suite .panel.tint-violet{background:var(--ncx-rule-soft)}
+        .ncx-suite .shot.tint-cyan,.ncx-suite .panel.tint-cyan{background:var(--ncx-teal-tint)}
+        .ncx-suite .shot.tint-rose,.ncx-suite .panel.tint-rose{background:var(--ncx-crimson-tint)}
+        .ncx-suite .shot.tint-grey,.ncx-suite .panel.tint-grey{background:var(--ncx-cloud)}
 
         @media(prefers-reduced-motion:reduce){
           .ncx-suite .card{transition:none}
@@ -241,7 +242,7 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
 
                   {p.teamControls ? (
                     <div className="team">
-                      <BlockIcon name="settings" fallback="settings" stroke="#4B3BC9" />
+                      <BlockIcon name="settings" fallback="settings" stroke="currentColor" />
                       <span>{p.teamControls}</span>
                     </div>
                   ) : null}

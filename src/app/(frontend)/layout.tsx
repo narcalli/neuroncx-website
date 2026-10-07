@@ -3,14 +3,12 @@ import type { Metadata } from 'next'
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
-import { IBM_Plex_Mono, Instrument_Sans, Inter } from 'next/font/google'
+import { IBM_Plex_Mono, Inter, Poppins } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
-import { Providers } from '@/providers'
-import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
@@ -18,15 +16,22 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 
-// Self-hosted at build time, so no render-blocking Google Fonts request.
-// Exposed as variables only — nothing here changes what the existing blocks
-// render, they keep naming their own families.
-const displayFont = Instrument_Sans({
+// The site's three faces, self-hosted at build time. Every block reads these
+// variables instead of importing from Google itself, so swapping a face is a
+// change here and nowhere else. Weights are the union of what the blocks were
+// requesting before they were centralised.
+const displayFont = Poppins({
   subsets: ['latin'],
+  weight: ['500', '600', '700'],
   display: 'swap',
   variable: '--font-display',
 })
-const bodyFont = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-body' })
+const bodyFont = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-body',
+})
 const labelFont = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
@@ -57,7 +62,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
     >
       <head>
-        <InitTheme />
         <link href={faviconIco} rel="icon" sizes="32x32" />
         <link href={faviconSvg} rel="icon" type="image/svg+xml" />
         {favicon32 ? <link href={favicon32} rel="icon" type="image/png" sizes="32x32" /> : null}
@@ -66,17 +70,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {settings.themeColor ? <meta name="theme-color" content={settings.themeColor} /> : null}
       </head>
       <body>
-        <Providers>
-          {/* <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          /> */}
+        {/* <AdminBar
+          adminBarProps={{
+            preview: isEnabled,
+          }}
+        /> */}
 
-          <Header />
-          {children}
-          <Footer />
-        </Providers>
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   )

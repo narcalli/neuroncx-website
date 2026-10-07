@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@600&display=swap');
 
 /* Layout tokens for this block — adjust here. The card's own look lives in
    ../OptionCard/OptionCard.module.css. */
@@ -10,15 +9,15 @@
   /* Section header */
   --header-gap: 40px;
   --header-gap-mobile: 28px;
-  --header-eyebrow: #c62828;
-  --header-title: #1a2035;
-  --header-description: #5b6478;
+  --header-eyebrow: var(--ncx-crimson-ink);
+  --header-title: var(--ncx-ink);
+  --header-description: var(--ncx-muted);
 
   /* Red card (Bento Grid only) */
-  --red-bg: #ffebee;
-  --red-border: #ffcdd2;
+  --red-bg: var(--ncx-crimson-tint);
+  --red-border: var(--ncx-crimson-tint);
 
-  --bg-frame: #ffffff;
+  --bg-frame: var(--ncx-white);
   --frame-radius: 32px;
   --frame-padding: 40px;
   --frame-padding-mobile: 20px;
@@ -83,7 +82,7 @@
 
 .onDark .eyebrow,
 .onDark .title {
-  color: #fff;
+  color: var(--ncx-on-navy);
 }
 
 .onDark .description {

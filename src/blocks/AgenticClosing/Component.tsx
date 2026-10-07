@@ -35,14 +35,13 @@ export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ct
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
-        .ncx-closing{padding:84px 0;text-align:center;background:linear-gradient(120deg,#fff,#FFF1F2 45%,#F6F7FA);background-size:240% 240%;
+        .ncx-closing{padding:84px 0;text-align:center;background:var(--ncx-cloud);background-size:240% 240%;
           animation:ncxBgMove 14s ease-in-out infinite alternate}
         @keyframes ncxBgMove{from{background-position:0% 40%}to{background-position:100% 60%}}
-        .ncx-closing h2{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.2rem);max-width:20ch;margin:0 auto;color:var(--ncx-navy)}
-        .ncx-closing .btn{display:inline-block;margin-top:30px;background:var(--ncx-crimson);color:#fff;font-family:Poppins,Arial,sans-serif;font-weight:600;
+        .ncx-closing h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.2rem);max-width:20ch;margin:0 auto;color:var(--ncx-ink)}
+        .ncx-closing .btn{display:inline-block;margin-top:30px;background:var(--ncx-crimson);color:var(--ncx-on-navy);font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           font-size:1rem;text-decoration:none;padding:15px 30px;border-radius:8px}
-        .ncx-closing .btn:hover{background:#A91F1F}
+        .ncx-closing .btn:hover{background:var(--ncx-crimson-hover)}
         @media (prefers-reduced-motion:reduce){.ncx-closing{animation:none}}
       `}</style>
       <div className="wrap" style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>

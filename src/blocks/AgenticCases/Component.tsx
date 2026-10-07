@@ -61,27 +61,31 @@ export const AgenticCasesBlock: React.FC<AgenticCasesProps> = ({ heading, cases,
   return (
     <section className="ncx-cases">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600&display=swap');
-        .ncx-cases{--ncx-indigo:#3B4A8C;padding:84px 0;font-family:Inter,Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-cases .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-        .ncx-cases h2{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0 0 40px;color:var(--ncx-navy)}
+        .ncx-cases{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-cases h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0 0 40px;color:var(--ncx-ink)}
         .ncx-cases .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-        .ncx-cases .case{position:relative;padding:24px 22px;border-radius:14px;background:#fff;border:1px solid var(--ncx-rule);transform-style:preserve-3d}
-        .ncx-cases .case:hover{box-shadow:0 26px 44px -30px rgba(26,32,53,.25)}
-        .ncx-cases .case h3{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:1.02rem;margin:0 0 10px;color:var(--ncx-navy)}
+        .ncx-cases .case{position:relative;padding:24px 22px;border-radius:14px;background:var(--ncx-white);border:1px solid var(--ncx-rule);transform-style:preserve-3d}
+        .ncx-cases .case:hover{box-shadow:0 26px 44px -30px var(--ncx-rule)}
+        .ncx-cases .case h3{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1.02rem;margin:0 0 10px;color:var(--ncx-ink)}
         .ncx-cases .case p{font-size:.95rem;margin:0;color:var(--ncx-body)}
-        .ncx-cases .case-link{display:inline-block;margin-top:14px;color:var(--ncx-crimson);font-weight:500;text-decoration:none}
+        /* Both are crimson at small scale, where flat --ncx-crimson measured
+           2.87:1 on navy. They part company inside a highlight: the link is
+           interactive, so it goes to --ncx-on-navy and keeps its affordance;
+           the tag is read-only, so it steps down to the soft tint. */
+        .ncx-cases .case-link{display:inline-block;margin-top:14px;color:var(--ncx-link);font-weight:500;text-decoration:none}
         .ncx-cases .case-link:hover{text-decoration:underline}
-        .ncx-cases .pendtag{display:inline-block;font-size:.68rem;letter-spacing:.04em;color:#9A3330;border:1px solid #E3B9B6;background:#FFEBEE;border-radius:4px;padding:2px 7px;margin-top:12px}
+        .ncx-cases .pendtag{display:inline-block;font-size:.68rem;letter-spacing:.04em;color:var(--ncx-crimson-ink);border:1px solid var(--ncx-crimson-tint);background:var(--ncx-crimson-tint);border-radius:4px;padding:2px 7px;margin-top:12px}
 
         /* Hover glow: a crimson-to-indigo border that fades in, and a spotlight that follows the cursor. */
         .ncx-cases .case.glow::before{content:"";position:absolute;inset:-1px;border-radius:15px;padding:2px;
-          background:linear-gradient(135deg,var(--ncx-crimson),var(--ncx-indigo));
+          background:linear-gradient(135deg,var(--ncx-crimson),var(--ncx-navy-tint));
+          /* #000 here is a mask stencil, not a colour: the gradient only supplies
+             an alpha channel, so there is no token to point it at. */
           -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
           mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
           opacity:0;transition:opacity .35s;pointer-events:none}
         .ncx-cases .case.glow::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;opacity:0;transition:opacity .3s;
-          background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(198,40,40,.08),transparent 58%)}
+          background:radial-gradient(circle at var(--mx,50%) var(--my,0%),var(--ncx-crimson-tint),transparent 58%)}
         .ncx-cases .case.glow:hover::before,.ncx-cases .case.glow:hover::after,.ncx-cases .case.glow:focus-within::before{opacity:1}
 
         @media (max-width:860px){.ncx-cases .grid{grid-template-columns:1fr;gap:28px}}
@@ -89,7 +93,7 @@ export const AgenticCasesBlock: React.FC<AgenticCasesProps> = ({ heading, cases,
           .ncx-cases .case.glow::before,.ncx-cases .case.glow::after{transition:none}
         }
       `}</style>
-      <div className="wrap">
+      <div className="wrap ncx-container-narrow">
         <h2>{heading}</h2>
         <div className="grid">
           {list.map((c, i) => (

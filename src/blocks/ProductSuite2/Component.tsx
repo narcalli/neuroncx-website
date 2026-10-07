@@ -27,16 +27,15 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
   return (
     <section className="ncx-suite2">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-suite2{--crimson:#C62828;--soft:#F4F6FB;--ink:#0B1F3A;--muted:#5B6478;
-          background:var(--soft);padding:56px 32px;
-          font-family:Inter,Arial,sans-serif;color:var(--ink)}
+        .ncx-suite2{
+          padding:56px 32px;
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-suite2 .inner{max-width:1120px;margin:0 auto}
-        .ncx-suite2 .eyebrow{font-family:Poppins,Arial,sans-serif;font-size:14px;font-weight:600;
-          margin:0 0 12px;color:var(--crimson)}
-        .ncx-suite2 h2{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-suite2 .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
+          margin:0 0 12px;color:var(--ncx-crimson)}
+        .ncx-suite2 h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin:0;max-width:26ch}
-        .ncx-suite2 .intro{color:var(--muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
+        .ncx-suite2 .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
 
         .ncx-suite2 .grid{margin-top:40px;display:grid;
           grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:stretch}

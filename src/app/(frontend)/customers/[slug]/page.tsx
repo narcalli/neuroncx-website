@@ -47,7 +47,7 @@ export default async function CustomerPage({ params }: Args) {
   return (
     <article className="ncx-case">
       <style>{`
-        .ncx-case{font-family:Inter,Arial,sans-serif;color:#1A1A2E}
+        .ncx-case{font-family:var(--font-body),Arial,sans-serif;color:#1A1A2E}
         .ncx-case__hero{background:var(--ncx-navy);color:#fff;padding:96px 24px 80px}
         .ncx-case__wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
         .ncx-case__crumb{font-size:13px;color:rgba(255,255,255,.7);text-decoration:none}
@@ -55,16 +55,16 @@ export default async function CustomerPage({ params }: Args) {
         .ncx-case__sectors{display:flex;flex-wrap:wrap;gap:8px}
         .ncx-case__sector{padding:4px 12px;border-radius:999px;background:var(--ncx-navy-tint);font-size:12px;font-weight:500}
         .ncx-case__client{font-weight:600;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:#FF8F8F;margin:0}
-        .ncx-case__title{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:clamp(2rem,4.5vw,3rem);line-height:1.15;margin:0}
+        .ncx-case__title{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(2rem,4.5vw,3rem);line-height:1.15;margin:0}
         .ncx-case__summary{font-size:18px;line-height:1.6;color:rgba(255,255,255,.85);margin:0;max-width:60ch}
         .ncx-case__metrics{background:var(--ncx-cloud);padding:48px 24px}
         .ncx-case__metric-row{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px}
-        .ncx-case__metric-value{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:36px;color:var(--ncx-crimson)}
+        .ncx-case__metric-value{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:36px;color:var(--ncx-crimson)}
         .ncx-case__metric-label{font-size:14px;color:var(--ncx-muted);margin-top:4px}
         .ncx-case__body{max-width:760px;margin:0 auto;padding:72px 24px}
         .ncx-case__close{background:var(--ncx-cloud);padding:72px 24px;text-align:center}
-        .ncx-case__close h2{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:28px;color:var(--ncx-navy);margin:0 0 24px}
-        .ncx-case__cta{display:inline-block;background:var(--ncx-crimson);color:#fff;font-family:Poppins,Arial,sans-serif;font-weight:600;padding:15px 30px;border-radius:8px;text-decoration:none}
+        .ncx-case__close h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:28px;color:var(--ncx-navy);margin:0 0 24px}
+        .ncx-case__cta{display:inline-block;background:var(--ncx-crimson);color:#fff;font-family:var(--font-display),Arial,sans-serif;font-weight:600;padding:15px 30px;border-radius:8px;text-decoration:none}
         .ncx-case__cta:hover{background:#A91F1F}
       `}</style>
 

@@ -50,24 +50,22 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
   return (
     <section className="ncx-epi">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600&display=swap');
-        .ncx-epi{padding:84px 0;font-family:Inter,Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-epi .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-        .ncx-epi h2{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-navy)}
+        .ncx-epi{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-epi h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-ink)}
         .ncx-epi .para{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
-        .ncx-epi .card{margin-top:46px;background:#fff;border:1px solid var(--ncx-rule);border-radius:16px;padding:24px 24px 22px}
+        .ncx-epi .card{margin-top:46px;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:16px;padding:24px 24px 22px}
         .ncx-epi .head{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.8rem;font-weight:500;margin-bottom:14px}
-        .ncx-epi .replay{background:none;border:1px solid var(--rule2,#CBD0DC);color:var(--ncx-body);border-radius:999px;padding:5px 14px;font-size:.78rem;font-weight:500;cursor:pointer;font-family:inherit}
+        .ncx-epi .replay{background:none;border:1px solid var(--ncx-rule);color:var(--ncx-body);border-radius:999px;padding:5px 14px;font-size:.78rem;font-weight:500;cursor:pointer;font-family:inherit}
         .ncx-epi .tlwrap{position:relative;height:112px}
         .ncx-epi .bar{position:absolute;left:0;right:0;top:14px;height:14px;border-radius:7px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule);overflow:hidden}
-        .ncx-epi .fill{position:absolute;inset:0;transform-origin:left center;background:linear-gradient(90deg,#C62828,#FF5A5F)}
+        .ncx-epi .fill{position:absolute;inset:0;transform-origin:left center;background:linear-gradient(90deg,var(--ncx-crimson),var(--ncx-crimson))}
         .ncx-epi .tl{list-style:none;margin:0;padding:0;position:absolute;inset:0}
         .ncx-epi .tl li{position:absolute;top:11px;transform:translateX(-50%)}
         .ncx-epi .pt{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:12px;font-weight:500;font-size:.78rem;color:var(--ncx-muted);font-family:inherit}
-        .ncx-epi .dot{display:block;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--rule2,#CBD0DC);transition:background .35s,border-color .35s,box-shadow .35s}
-        .ncx-epi .tl li.done .dot{background:var(--ncx-crimson);border-color:#fff;box-shadow:0 0 0 2px var(--ncx-crimson)}
+        .ncx-epi .dot{display:block;width:20px;height:20px;border-radius:50%;background:var(--ncx-white);border:3px solid var(--ncx-rule);transition:background .35s,border-color .35s,box-shadow .35s}
+        .ncx-epi .tl li.done .dot{background:var(--ncx-crimson);border-color:var(--ncx-on-navy);box-shadow:0 0 0 2px var(--ncx-crimson)}
         .ncx-epi .caption{margin-top:6px;border-radius:12px;padding:14px 18px;background:var(--ncx-cloud);border-left:4px solid var(--ncx-crimson);display:flex;flex-direction:column;gap:2px;min-height:76px;justify-content:center}
-        .ncx-epi .caption b{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:1rem}
+        .ncx-epi .caption b{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1rem}
         .ncx-epi .caption span{font-size:.95rem;color:var(--ncx-muted)}
         .ncx-epi .close{font-size:.88rem;color:var(--ncx-muted);margin-top:16px}
         @media (max-width:720px){
@@ -79,7 +77,7 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
           .ncx-epi .pt{flex-direction:row;gap:16px;font-size:.9rem}
         }
       `}</style>
-      <div className="wrap">
+      <div className="wrap ncx-container-narrow">
         <h2>{heading}</h2>
         {paras.map((p, i) => (
           <p className="para" key={i}>

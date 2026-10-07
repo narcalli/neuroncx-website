@@ -3,7 +3,10 @@
 
 @config '../../../tailwind.config.mjs';
 
-@custom-variant dark (&:is([data-theme='dark'] *));
+/* The site is light only. Kept so `dark:` utilities in the template's
+   shadcn primitives compile, but pointed at a class nothing carries — with
+   no variant at all they would fall back to prefers-color-scheme. */
+@custom-variant dark (&:is(.ncx-never-dark *));
 @custom-variant sm (@media (width >= theme(--breakpoint-sm)));
 @custom-variant md (@media (width >= theme(--breakpoint-md)));
 @custom-variant lg (@media (width >= theme(--breakpoint-lg)));
@@ -87,25 +90,29 @@
 }
 
 :root {
-  --background: oklch(100% 0 0deg);
-  --foreground: oklch(14.5% 0 0deg);
-  --card: oklch(96.5% 0.005 265deg);
-  --card-foreground: oklch(14.5% 0 0deg);
-  --popover: oklch(100% 0 0deg);
-  --popover-foreground: oklch(14.5% 0 0deg);
-  --primary: oklch(20.5% 0 0deg);
-  --primary-foreground: oklch(98.5% 0 0deg);
-  --secondary: oklch(97% 0 0deg);
-  --secondary-foreground: oklch(20.5% 0 0deg);
-  --muted: oklch(97% 0 0deg);
-  --muted-foreground: oklch(55.6% 0 0deg);
-  --accent: oklch(97% 0 0deg);
-  --accent-foreground: oklch(20.5% 0 0deg);
-  --destructive: oklch(57.7% 0.245 27.325deg);
-  --destructive-foreground: oklch(57.7% 0.245 27.325deg);
-  --border: oklch(92.2% 0 0deg);
-  --input: oklch(92.2% 0 0deg);
-  --ring: oklch(70.8% 0 0deg);
+  /* Light only: without this a visitor whose OS is dark gets dark form
+     controls, scrollbars and autofill on a light page. */
+  color-scheme: light;
+
+  --background: var(--ncx-paper);
+  --foreground: var(--ncx-body);
+  --card: var(--ncx-white);
+  --card-foreground: var(--ncx-body);
+  --popover: var(--ncx-white);
+  --popover-foreground: var(--ncx-body);
+  --primary: var(--ncx-navy);
+  --primary-foreground: var(--ncx-on-navy);
+  --secondary: var(--ncx-paper);
+  --secondary-foreground: var(--ncx-navy);
+  --muted: var(--ncx-paper);
+  --muted-foreground: var(--ncx-muted);
+  --accent: var(--ncx-paper);
+  --accent-foreground: var(--ncx-navy);
+  --destructive: var(--ncx-crimson);
+  --destructive-foreground: var(--ncx-on-navy);
+  --border: var(--ncx-rule);
+  --input: var(--ncx-rule);
+  --ring: var(--ncx-muted);
   --chart-1: oklch(64.6% 0.222 41.116deg);
   --chart-2: oklch(60% 0.118 184.704deg);
   --chart-3: oklch(39.8% 0.07 227.392deg);
@@ -124,56 +131,115 @@
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
 
-  /* NeuronCx brand tokens. Every block's own scoped <style> block has been
-     redeclaring these locally (search any block's .ncx-* selector) — this is
-     the first one to read them from here instead. Keep the two in step. */
+  /* NeuronCx design tokens. One namespace: 14 blocks already read --ncx-*,
+     so everything new joins that set rather than starting a parallel one.
+     Blocks are migrated onto these in later waves. */
+
+  /* Surfaces */
+  --ncx-paper: #f6f7fa;
+  --ncx-white: #ffffff;
+  --ncx-raised: #fbfcfe;
+  --ncx-cloud: #f5f5f7; /* back-compat only: the brand doc value */
+
+  /* Ink */
+  --ncx-ink: #171c2e;
+  --ncx-body: #1a1a2e;
+  --ncx-muted: #5a6379; /* was #6b7280 */
+  --ncx-faint: #8a92a6;
+
+  /* Lines */
+  --ncx-rule: #e2e6ef; /* was #e2e2e8 */
+  --ncx-rule-soft: #edf0f6;
+  --ncx-rule-strong: #c9ced8; /* hairline one step up from --ncx-rule */
+
+  /* Brand.
+     Crimson on navy is a question of AREA, not of text versus fill. At button
+     or band scale it reads: the eye has enough colour to judge, and the label
+     sits on top of the fill rather than on the navy. Below that — as text, as
+     a 1px border, as a small mark or an icon — #c62828 on #1a2035 measures
+     2.87:1 and disappears. Small crimson needs --ncx-crimson-ink (crimson on
+     light, --ncx-on-navy-soft inside a highlight), or the --ncx-crimson-on-navy
+     stop where it must stay red. Teal works the same way: --ncx-teal is the
+     fill hue, --ncx-teal-on-navy the small-area stop.
+
+     Decorative or interactive: the -ink stops are for text that is only read —
+     eyebrows, units, labels, captions. Text you can click is not that. A link
+     stepped down to the soft tint inside a highlight has lost its affordance
+     in the one section the page most wants acted on, which is the worst
+     possible moment to lose it. Interactive text uses --ncx-link: crimson on
+     light, full --ncx-on-navy inside a highlight. Whatever carries the
+     affordance alongside the colour — an underline, a chevron, a hover line —
+     carries it in both states.
+
+     Elevation inside a highlight comes from the raise surface and the
+     hairline, never from a shadow. --ncx-shadow and --ncx-lift are light-only
+     by design: a shadow needs something lighter beneath it to fall on, and on
+     navy it reads as dirt. There are deliberately no dark-state shadows.
+
+     A glow is not a shadow, and the test is what it is for. Depth: no — that
+     is the rule above. State: allowed, where the glow IS the indicator and
+     removing it would remove the information. AgenticFlowDemo's active node is
+     the case to measure against: a crimson bloom marking which step is live,
+     coloured by the state it reports, present in both light and highlight
+     because the state does not change with the ground. A glow that would
+     survive being replaced by a hairline is depth wearing a state's clothes,
+     and goes.
+
+     Surface or ink: a token's role matters, not its colour. Surfaces are
+     --ncx-white, --ncx-paper and --ncx-cloud; ink is --ncx-ink, --ncx-body and
+     --ncx-on-navy. Neither crosses over, because the highlight remaps them in
+     opposite directions. Two ways this has already gone wrong: navy used as
+     heading text went invisible, since the highlight steps --ncx-navy to
+     navy-tint so nested navy keeps a boundary; and white used as text became
+     the 4.3% raise surface, since --ncx-white is a surface. If text needs to be
+     navy use --ncx-ink, and if it needs to be white use --ncx-on-navy.
+
+     Once or twice: a colour used in one place stays a declared local in that
+     block, with a comment saying what it does. On its second use it becomes a
+     token here. One use is a detail; two is a pattern, and a pattern that is
+     not named drifts. ContextEngine's recessed #161D33 is the current example
+     of a local still waiting for its second use; --ncx-rule-strong is what the
+     rule looks like when one arrives, promoted out of JourneyEngine. */
   --ncx-navy: #1a2035;
   --ncx-navy-tint: #252d4a;
   --ncx-crimson: #c62828;
+  --ncx-crimson-hover: #a81f1f;
   --ncx-crimson-tint: #ffebee;
-  --ncx-cloud: #f5f5f7;
-  --ncx-white: #ffffff;
-  --ncx-body: #1a1a2e;
-  --ncx-muted: #6b7280;
-  --ncx-rule: #e2e2e8;
-}
+  --ncx-crimson-ink: #c62828; /* decorative crimson text; remapped on navy */
+  --ncx-link: var(--ncx-crimson); /* interactive text; goes white on navy */
 
-[data-theme='dark'] {
-  --background: oklch(14.5% 0 0deg);
-  --foreground: oklch(98.5% 0 0deg);
-  --card: oklch(17% 0 0deg);
-  --card-foreground: oklch(98.5% 0 0deg);
-  --popover: oklch(14.5% 0 0deg);
-  --popover-foreground: oklch(98.5% 0 0deg);
-  --primary: oklch(98.5% 0 0deg);
-  --primary-foreground: oklch(20.5% 0 0deg);
-  --secondary: oklch(26.9% 0 0deg);
-  --secondary-foreground: oklch(98.5% 0 0deg);
-  --muted: oklch(26.9% 0 0deg);
-  --muted-foreground: oklch(70.8% 0 0deg);
-  --accent: oklch(26.9% 0 0deg);
-  --accent-foreground: oklch(98.5% 0 0deg);
-  --destructive: oklch(39.6% 0.141 25.723deg);
-  --destructive-foreground: oklch(63.7% 0.237 25.331deg);
-  --border: oklch(26.9% 0 0deg);
-  --input: oklch(26.9% 0 0deg);
-  --ring: oklch(43.9% 0 0deg);
-  --chart-1: oklch(48.8% 0.243 264.376deg);
-  --chart-2: oklch(69.6% 0.17 162.48deg);
-  --chart-3: oklch(76.9% 0.188 70.08deg);
-  --chart-4: oklch(62.7% 0.265 303.9deg);
-  --chart-5: oklch(64.5% 0.246 16.439deg);
-  --sidebar: oklch(20.5% 0 0deg);
-  --sidebar-foreground: oklch(98.5% 0 0deg);
-  --sidebar-primary: oklch(48.8% 0.243 264.376deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(26.9% 0 0deg);
-  --sidebar-accent-foreground: oklch(98.5% 0 0deg);
-  --sidebar-border: oklch(26.9% 0 0deg);
-  --sidebar-ring: oklch(43.9% 0 0deg);
-  --success: oklch(28% 0.1 200deg);
-  --warning: oklch(35% 0.08 70deg);
-  --error: oklch(45% 0.1 25deg);
+  /* Supporting. Defined, deliberately unused until signed off. */
+  --ncx-teal: #136b74;
+  --ncx-teal-tint: #e4f1f1;
+  /* The teal counterpart of --ncx-crimson-ink, and used the same way:
+     teal as text or as a 1px mark, stepping to --ncx-teal-on-navy inside a
+     highlight. Flat --ncx-teal measures 1.9:1 on navy. */
+  --ncx-teal-ink: #136b74;
+
+  /* Flipping pair: both are declared light here and remapped inside a
+     highlight, so a block states its intent once and works in either state. */
+  --ncx-focus: var(--ncx-teal);
+  --ncx-hover-line: var(--ncx-crimson);
+
+  /* On navy: what a highlighted block remaps the set to.
+     The two -on-navy hues are tonal stops of teal and crimson, not new
+     colours: 6.47:1 and 6.69:1 on #1a2035 respectively. */
+  --ncx-on-navy: #ffffff;
+  --ncx-on-navy-soft: #a3abc6;
+  --ncx-on-navy-rule: rgba(255, 255, 255, 0.13);
+  --ncx-on-navy-raise: rgba(255, 255, 255, 0.045);
+  --ncx-on-navy-rule-strong: rgba(255, 255, 255, 0.34); /* hover/active hairline */
+  --ncx-teal-on-navy: #4fb2bb; /* positive state on dark */
+  --ncx-crimson-on-navy: #f08a8a; /* warning text on dark, never elsewhere */
+  --ncx-crimson-wash-on-navy: rgba(198, 40, 40, 0.22);
+  --ncx-teal-wash-on-navy: rgba(79, 178, 187, 0.18);
+
+  /* Depth and shape */
+  --ncx-shadow: 0 1px 2px rgba(20, 26, 45, 0.05), 0 8px 24px -12px rgba(20, 26, 45, 0.14);
+  --ncx-lift: 0 2px 4px rgba(20, 26, 45, 0.06), 0 16px 38px -16px rgba(20, 26, 45, 0.34);
+  --ncx-r-card: 12px;
+  --ncx-r-panel: 20px;
+  --ncx-r-section: 26px;
 }
 
 /* Header surfaces: the wash behind the page top, the four drifting gradient
@@ -186,32 +252,32 @@
   --g2: rgba(19, 107, 116, 0.34);
   --g3: rgba(198, 40, 40, 0.13);
   --g4: rgba(78, 112, 186, 0.26);
-  --nav-glass: rgba(255, 255, 255, 0.72);
   --scrim: rgba(246, 247, 250, 0.15);
 }
 
-/* Dark values live in two places: the system preference, and the explicit
-   theme switch the site sets on <html>. An explicit light choice wins. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --wash: #111722;
-    --g1: rgba(78, 112, 186, 0.26);
-    --g2: rgba(79, 178, 187, 0.22);
-    --g3: rgba(224, 81, 81, 0.14);
-    --g4: rgba(40, 52, 88, 0.5);
-    --nav-glass: rgba(21, 25, 36, 0.78);
-    --scrim: rgba(13, 16, 24, 0.17);
+/* The page container every full-width block shares: 1180px, 32px gutters,
+   20px below 900px. Nine blocks carried identical copies of this; they now
+   carry the class instead. Blocks whose values differ keep their own rule —
+   see the survey, those differences were not normalised. */
+.ncx-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (max-width: 900px) {
+  .ncx-container {
+    padding: 0 20px;
   }
 }
 
-[data-theme='dark'] {
-  --wash: #111722;
-  --g1: rgba(78, 112, 186, 0.26);
-  --g2: rgba(79, 178, 187, 0.22);
-  --g3: rgba(224, 81, 81, 0.14);
-  --g4: rgba(40, 52, 88, 0.5);
-  --nav-glass: rgba(21, 25, 36, 0.78);
-  --scrim: rgba(13, 16, 24, 0.17);
+/* The narrower container: 1080px with 24px gutters and no mobile step, which
+   the Agentic family and FAQ all shared verbatim. A second rule rather than a
+   variant of the first, because the two differ in every value. */
+.ncx-container-narrow {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 @theme inline {
@@ -262,14 +328,6 @@
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    font-family: var(--font-body), Arial, sans-serif;
   }
-}
-
-html {
-  opacity: 0;
-}
-
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
 }

@@ -123,10 +123,26 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   return (
     <section className="ncx-hrp" data-anim={anim}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-hrp{position:relative;overflow:hidden;isolation:isolate;background:#1A2035;
-          font-family:Inter,Arial,sans-serif;color:#fff;
-          min-height:min(86vh,720px);display:flex;align-items:center}
+        .ncx-hrp{position:relative;overflow:hidden;isolation:isolate;
+          background:var(--wash);color:var(--ncx-body);
+          font-family:var(--font-body),Arial,sans-serif;
+          min-height:min(86vh,720px);display:flex;align-items:center;
+          padding-top:calc(64px + clamp(24px,3vw,44px))}
+        /* Same stage as the other heroes: full bleed, four blooms, one layer. */
+        .ncx-hrp::before{
+          content:"";position:absolute;inset:-35%;z-index:0;pointer-events:none;
+          background:
+            radial-gradient(38% 46% at 18% 28%, var(--g1), transparent 66%),
+            radial-gradient(44% 52% at 78% 16%, var(--g2), transparent 66%),
+            radial-gradient(46% 54% at 62% 88%, var(--g3), transparent 66%),
+            radial-gradient(42% 50% at 8% 86%, var(--g4), transparent 66%);
+          animation:ncxDrift 26s ease-in-out infinite alternate;will-change:transform}
+        @keyframes ncxDrift{
+          0%{transform:translate3d(0,0,0) scale(1) rotate(0deg)}
+          50%{transform:translate3d(5%,-4%,0) scale(1.16) rotate(4deg)}
+          100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
+        }
+        @media(prefers-reduced-motion:reduce){.ncx-hrp::before{animation:none}}
 
         /* Subtle decorative glow behind the media — present regardless of
            what gets uploaded, purely for polish. */
@@ -137,6 +153,9 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
 
         .ncx-hrp .bg{position:absolute;z-index:1;top:0;bottom:0;left:40%;right:0}
         .ncx-hrp .bg-inner{position:absolute;inset:0;
+        /* The #000 below are mask stencils, not colours: these gradients
+           supply an alpha channel only, so there is no token to point
+           them at. */
           -webkit-mask-image:
             linear-gradient(90deg,transparent 0%,#000 22%),
             linear-gradient(180deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
@@ -156,25 +175,25 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         .ncx-hrp .content{position:relative;z-index:2;width:100%;padding:72px 0}
         .ncx-hrp .container{max-width:1180px;margin:0 auto;width:100%;padding:0 32px}
         .ncx-hrp .copy{max-width:min(520px,44%)}
-        .ncx-hrp .eyebrow{margin:0 0 16px;font-family:Poppins,Arial,sans-serif;font-size:14px;
-          font-weight:600;color:#F3B6B3;display:inline-flex;align-items:center;gap:8px}
+        .ncx-hrp .eyebrow{margin:0 0 16px;font-family:var(--font-display),Arial,sans-serif;font-size:14px;
+          font-weight:600;color:var(--ncx-crimson-ink);display:inline-flex;align-items:center;gap:8px}
         .ncx-hrp .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;
-          background:#C62828;box-shadow:0 0 0 4px rgba(198,40,40,.25)}
-        .ncx-hrp h1{font-family:Poppins,Arial,sans-serif;font-weight:600;
+          background:var(--ncx-crimson);box-shadow:0 0 0 4px var(--ncx-crimson-tint)}
+        .ncx-hrp h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           letter-spacing:-.025em;line-height:1.05;font-size:clamp(40px,5vw,67px);
           margin:0 0 20px;max-width:14ch;text-wrap:balance}
         .ncx-hrp .word{display:inline-block;white-space:pre}
-        .ncx-hrp .subhead{color:#C9CEDC;font-size:clamp(16px,1.3vw,18px);line-height:1.65;
+        .ncx-hrp .subhead{color:var(--ncx-muted);font-size:clamp(16px,1.3vw,18px);line-height:1.65;
           margin:0 0 30px;max-width:48ch}
         .ncx-hrp .cta{display:flex;gap:12px;flex-wrap:wrap}
-        .ncx-hrp .btn{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:15px;
+        .ncx-hrp .btn{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;
           display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;
           text-decoration:none;transition:transform .15s ease,background .15s ease,border-color .15s ease}
-        .ncx-hrp .btn-primary{background:#C62828;color:#fff}
-        .ncx-hrp .btn-primary:hover{background:#B02222;transform:translateY(-1px)}
-        .ncx-hrp .btn-ghost{background:rgba(255,255,255,.04);color:#fff;border:1px solid rgba(255,255,255,.24)}
-        .ncx-hrp .btn-ghost:hover{background:rgba(255,255,255,.09)}
-        .ncx-hrp .btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+        .ncx-hrp .btn-primary{background:var(--ncx-crimson);color:var(--ncx-on-navy)}
+        .ncx-hrp .btn-primary:hover{background:var(--ncx-crimson-hover);transform:translateY(-1px)}
+        .ncx-hrp .btn-ghost{background:var(--ncx-white);color:var(--ncx-ink);border:1px solid var(--ncx-rule)}
+        .ncx-hrp .btn-ghost:hover{background:var(--ncx-paper)}
+        .ncx-hrp .btn:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
         /* Entrance. Base state is fully visible — this only adds motion once
            the Animator client component marks the block as in view. */

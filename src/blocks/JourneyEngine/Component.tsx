@@ -73,62 +73,59 @@ export const JourneyEngineBlock: React.FC<Props> = ({
   return (
     <section className="ncx-journey">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .ncx-journey{--navy:#1A2035;--crimson:#C62828;--ink:#1A1A2E;--muted:#6B7280;
-          --line:#E4E4EA;--cloud:#F5F5F7;
-          background:#fff;padding:72px 0;font-family:Inter,Arial,sans-serif;color:var(--ink)}
-        .ncx-journey .inner{max-width:1180px;margin:0 auto;padding:0 32px}
-        .ncx-journey .eyebrow{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:.82rem;
-          letter-spacing:.04em;color:var(--crimson);margin:0 0 14px}
-        .ncx-journey h2{font-family:Poppins,Arial,sans-serif;font-weight:700;
+        .ncx-journey{
+          /* No band and no hairline: its neighbours carry their own edges. */
+          padding:72px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        .ncx-journey .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
+          letter-spacing:.04em;color:var(--ncx-crimson);margin:0 0 14px}
+        .ncx-journey h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.1;letter-spacing:-.02em;
           margin:0;max-width:18ch}
-        .ncx-journey .intro{color:var(--muted);margin:16px 0 0;font-size:1.02rem;line-height:1.6;
+        .ncx-journey .intro{color:var(--ncx-muted);margin:16px 0 0;font-size:1.02rem;line-height:1.6;
           max-width:58ch}
 
         .ncx-journey .tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
-        .ncx-journey .tab{font-family:Poppins,Arial,sans-serif;font-size:.92rem;font-weight:600;
-          padding:11px 20px;border-radius:999px;border:1px solid var(--line);background:#fff;
-          color:var(--muted);cursor:pointer;transition:all .2s}
-        .ncx-journey .tab:hover{border-color:#C9CDD8;color:var(--ink)}
-        .ncx-journey .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
-        .ncx-journey .tab:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+        .ncx-journey .tab{font-family:var(--font-display),Arial,sans-serif;font-size:.92rem;font-weight:600;
+          padding:11px 20px;border-radius:999px;border:1px solid var(--ncx-rule);background:var(--ncx-white);
+          color:var(--ncx-muted);cursor:pointer;transition:all .2s}
+        .ncx-journey .tab:hover{border-color:var(--ncx-rule-strong);color:var(--ncx-body)}
+        .ncx-journey .tab.on{background:var(--ncx-navy);border-color:var(--ncx-ink);color:var(--ncx-on-navy)}
+        .ncx-journey .tab:focus-visible{outline:2px solid var(--ncx-crimson);outline-offset:2px}
 
         .ncx-journey .rail{position:relative;margin-top:44px;display:flex;
           justify-content:space-between;gap:6px;overflow-x:auto;padding-bottom:4px}
         .ncx-journey .rail:before{content:"";position:absolute;left:28px;right:28px;top:29px;
-          height:2px;background:var(--line)}
-        .ncx-journey .fill{position:absolute;left:28px;top:29px;height:2px;background:var(--crimson);
+          height:2px;background:var(--ncx-rule)}
+        .ncx-journey .fill{position:absolute;left:28px;top:29px;height:2px;background:var(--ncx-crimson);
           transition:width .5s cubic-bezier(.22,.61,.36,1);z-index:1}
         .ncx-journey .stage{position:relative;z-index:2;flex:1;min-width:92px;background:none;
           border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;
-          gap:10px;font-family:Poppins,Arial,sans-serif;font-size:.82rem;font-weight:600;
-          color:var(--muted);transition:color .2s}
-        .ncx-journey .stage:hover{color:var(--ink)}
-        .ncx-journey .stage .ring{width:58px;height:58px;border-radius:50%;background:#fff;
-          border:2px solid var(--line);color:#B9BEC9;display:flex;align-items:center;
+          gap:10px;font-family:var(--font-display),Arial,sans-serif;font-size:.82rem;font-weight:600;
+          color:var(--ncx-muted);transition:color .2s}
+        .ncx-journey .stage:hover{color:var(--ncx-body)}
+        .ncx-journey .stage .ring{width:58px;height:58px;border-radius:50%;background:var(--ncx-white);
+          border:2px solid var(--ncx-rule);color:var(--ncx-faint);display:flex;align-items:center;
           justify-content:center;
           transition:background .25s,color .25s,border-color .25s,transform .25s}
-        .ncx-journey .stage.done .ring{border-color:var(--crimson);color:var(--crimson)}
+        .ncx-journey .stage.done .ring{border-color:var(--ncx-crimson);color:var(--ncx-crimson)}
         .ncx-journey .stage .ring svg{width:22px;height:22px}
-        .ncx-journey .stage.done{color:var(--ink)}
-        .ncx-journey .stage.on{color:var(--ink)}
-        .ncx-journey .stage.on .ring{background:var(--crimson);color:#fff;transform:scale(1.06)}
-        .ncx-journey .stage:focus-visible{outline:2px solid var(--crimson);outline-offset:4px;
+        .ncx-journey .stage.done{color:var(--ncx-body)}
+        .ncx-journey .stage.on{color:var(--ncx-body)}
+        .ncx-journey .stage.on .ring{background:var(--ncx-crimson);color:var(--ncx-on-navy);transform:scale(1.06)}
+        .ncx-journey .stage:focus-visible{outline:2px solid var(--ncx-crimson);outline-offset:4px;
           border-radius:10px}
 
-        .ncx-journey .detail{margin-top:34px;background:var(--cloud);border:1px solid var(--line);
+        .ncx-journey .detail{margin-top:34px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule);
           border-radius:16px;padding:28px;display:flex;align-items:flex-start;gap:22px}
         .ncx-journey .detail .mark{flex:0 0 54px;width:54px;height:54px;border-radius:14px;
-          background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
+          background:var(--ncx-navy);color:var(--ncx-on-navy);display:flex;align-items:center;justify-content:center}
         .ncx-journey .detail .mark svg{width:24px;height:24px}
-        .ncx-journey .detail h3{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:1.2rem;
+        .ncx-journey .detail h3{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:1.2rem;
           margin:0}
-        .ncx-journey .detail p{margin:8px 0 0;color:var(--muted);font-size:1rem;line-height:1.6}
+        .ncx-journey .detail p{margin:8px 0 0;color:var(--ncx-muted);font-size:1rem;line-height:1.6}
 
         @media(max-width:900px){
           .ncx-journey{padding:48px 0}
-          .ncx-journey .inner{padding:0 20px}
           .ncx-journey h2{max-width:100%}
           .ncx-journey .rail{justify-content:flex-start}
           .ncx-journey .rail:before{display:none}
@@ -139,7 +136,7 @@ export const JourneyEngineBlock: React.FC<Props> = ({
         @media(prefers-reduced-motion:reduce){.ncx-journey *{transition:none!important}}
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h2>{heading}</h2>
         {intro ? <p className="intro">{intro}</p> : null}

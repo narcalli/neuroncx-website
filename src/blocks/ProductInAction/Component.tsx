@@ -42,8 +42,8 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
       className={`ncx-pia${tinted ? ' is-tinted' : ''}${stacked ? ' is-stacked' : ''}${alternateSides ? ' is-alt' : ''}`}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap');
-        .ncx-pia{--stack-top:96px;--stack-offset:20px;padding:64px 0;background:#fff;font-family:Inter,Arial,sans-serif;color:#1A1A2E}
+        .ncx-pia{--stack-top:96px;--stack-offset:20px;padding:64px 0;
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-pia.is-tinted{background:var(--ncx-cloud)}
         @media(min-width:640px){.ncx-pia{padding:80px 0}}
         @media(min-width:1024px){.ncx-pia{padding:96px 0}}
@@ -51,32 +51,32 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
         @media(min-width:640px){.ncx-pia__wrap{padding:0 24px}}
 
         .ncx-pia__head{max-width:60ch;margin:0 auto 48px;text-align:center}
-        .ncx-pia .ncx-pia__eyebrow{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#C62828;margin:0 0 12px}
-        .ncx-pia h2{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.15;letter-spacing:-.02em;margin:0;color:var(--ncx-navy)}
-        .ncx-pia__intro{margin:16px 0 0;font-size:1.05rem;line-height:1.65;color:#475569}
+        .ncx-pia .ncx-pia__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 12px}
+        .ncx-pia h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.15;letter-spacing:-.02em;margin:0;color:var(--ncx-ink)}
+        .ncx-pia__intro{margin:16px 0 0;font-size:1.05rem;line-height:1.65;color:var(--ncx-muted)}
 
         .ncx-pia__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:32px}
-        .ncx-pia__card{position:relative;background:#fff;border:1px solid var(--ncx-rule);border-radius:24px;box-shadow:0 18px 40px -28px rgba(26,32,53,.35);overflow:visible}
+        .ncx-pia__card{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:24px;box-shadow:0 18px 40px -28px rgba(26,32,53,.35);overflow:visible}
         .ncx-pia__grid{display:grid;grid-template-columns:1fr;gap:28px;padding:28px}
         @media(min-width:640px){.ncx-pia__grid{padding:36px}}
 
         .ncx-pia__text{min-width:0;padding:4px 0}
         @media(min-width:1024px){.ncx-pia__text{padding:40px 8px 40px 40px}}
-        .ncx-pia__icon{display:inline-flex;width:36px;height:36px;color:#C62828}
+        .ncx-pia__icon{display:inline-flex;width:36px;height:36px;color:var(--ncx-crimson-ink)}
         .ncx-pia__icon svg{width:36px;height:36px}
-        .ncx-pia .ncx-pia__card h3{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:1.5rem;line-height:1.25;margin:16px 0 0;color:var(--ncx-navy)}
-        .ncx-pia__desc{margin:12px 0 0;font-size:1rem;line-height:1.65;color:#475569}
+        .ncx-pia .ncx-pia__card h3{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:1.5rem;line-height:1.25;margin:16px 0 0;color:var(--ncx-ink)}
+        .ncx-pia__desc{margin:12px 0 0;font-size:1rem;line-height:1.65;color:var(--ncx-muted)}
         .ncx-pia__bullets{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px}
-        .ncx-pia__bullets li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;line-height:1.5;color:#1A1A2E}
-        .ncx-pia__bullets svg{flex:0 0 auto;width:16px;height:16px;margin-top:3px;color:#C62828}
-        .ncx-pia__link{display:inline-block;margin-top:22px;color:#C62828;font-weight:600;text-decoration:none}
+        .ncx-pia__bullets li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;line-height:1.5;color:var(--ncx-body)}
+        .ncx-pia__bullets svg{flex:0 0 auto;width:16px;height:16px;margin-top:3px;color:var(--ncx-crimson-ink)}
+        .ncx-pia__link{display:inline-block;margin-top:22px;color:var(--ncx-link);font-weight:600;text-decoration:none}
         .ncx-pia__link:hover{text-decoration:underline}
 
         .ncx-pia__media{min-width:0}
-        .ncx-pia__frame{background:#F1F5F9;border-radius:20px;padding:20px}
+        .ncx-pia__frame{background:var(--ncx-cloud);border-radius:20px;padding:20px}
         @media(min-width:1024px){.ncx-pia__frame{padding:28px 0 28px 28px}}
-        .ncx-pia__shot{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:12px;box-shadow:0 22px 40px -24px rgba(26,32,53,.45);background:#fff}
-        .ncx-pia__caption{margin:12px 2px 0;font-size:.8rem;color:#64748B}
+        .ncx-pia__shot{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:12px;box-shadow:0 22px 40px -24px rgba(26,32,53,.45);background:var(--ncx-white)}
+        .ncx-pia__caption{margin:12px 2px 0;font-size:.8rem;color:var(--ncx-muted)}
 
         @media(min-width:1024px){
           .ncx-pia.is-stacked .ncx-pia__list{display:block}
@@ -117,7 +117,7 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
                   <div className="ncx-pia__text">
                     {card.icon ? (
                       <span className="ncx-pia__icon" aria-hidden="true">
-                        <BlockIcon name={card.icon} fallback="message" stroke="#C62828" />
+                        <BlockIcon name={card.icon} fallback="message" stroke="currentColor" />
                       </span>
                     ) : null}
                     <h3>{card.title}</h3>
@@ -127,7 +127,7 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
                         {card.bullets.map((b, j) =>
                           b?.text ? (
                             <li key={j}>
-                              <BlockIcon name="check" fallback="check" stroke="#C62828" />
+                              <BlockIcon name="check" fallback="check" stroke="currentColor" />
                               <span>{b.text}</span>
                             </li>
                           ) : null,

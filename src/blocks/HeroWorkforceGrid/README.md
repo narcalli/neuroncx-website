@@ -6,16 +6,13 @@ using the same generic `Animator` component from `HeroFullBackground/Animator.ts
 (adds an `.in` class once the block scrolls into view; content is fully visible
 without it, in case JS never runs).
 
-## The theme system
+## Colours
 
-Everything theme-dependent is a CSS custom property, scoped under
-`.ncx-hwg[data-theme="..."]`, set from the CMS's `theme` field via a
-`data-theme` attribute on the section. There is one stylesheet, not three —
-switching themes never swaps which CSS loads, only which values apply. The
-three palettes (`dark`, `red`, `white`) are ported from the reference file
-exactly, including that each theme changes the *card style*, not just the
-colours: bordered cards on dark, translucent white cards on red, shadowed
-white cards on white.
+One palette, declared as custom properties on `.ncx-hwg` and fed entirely from
+the `--ncx-*` tokens. The three themes this block used to carry (`dark`, `red`,
+`white`), the `data-theme` attribute that selected between them and the CMS
+`theme` field behind it have all been removed: the site is light only, so two
+of the three were unreachable and the field saved a value that changed nothing.
 
 ## The scrolling grid
 
@@ -43,18 +40,5 @@ white cards on white.
 
 ## Contrast
 
-Verified for real, not just by eye: computed the actual on-screen colours
-(compositing the red theme's translucent white cards over the red page
-background, since the nominal CSS values alone are misleading there) and
-checked WCAG contrast for card title and description text in all three
-themes. All pass AA with real margin — the tightest is the white theme's
-description text at 4.85:1 against a 4.5:1 requirement.
-
-## Known gap — not fixed here
-
-The site's persistent header stays dark navy regardless of this block's
-theme. On the White theme this leaves a visible hard seam directly under the
-header. This is a deliberate, flagged gap, not an oversight — making the
-header theme-aware touches every page on the site, not just this block, so
-it's left as a separate decision rather than changed quietly as a side effect
-of this task.
+Card title and description text were checked against the card surface for the
+single remaining palette; both clear AA with margin.
