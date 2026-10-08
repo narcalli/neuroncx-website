@@ -13,10 +13,10 @@ export const BenefitsBlock: React.FC<Props> = ({ label, heading, items }) => {
   if (!list.length) return null
 
   return (
-    <section className="ncx-benefits">
+    <section className="ncx-benefits ncx-container">
       <style>{`
         .ncx-benefits{
-          max-width:1120px;margin:0 auto;padding:48px 32px;
+          padding-block:48px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-benefits .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
@@ -27,7 +27,7 @@ export const BenefitsBlock: React.FC<Props> = ({ label, heading, items }) => {
         .ncx-benefits h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:19px;letter-spacing:-.015em;margin:0;padding-top:16px;border-top:2px solid var(--ncx-body)}
         .ncx-benefits p{margin:10px 0 0;color:var(--ncx-muted);font-size:17px;line-height:1.6;max-width:44ch}
-        @media(max-width:820px){.ncx-benefits{padding:36px 20px}
+        @media(max-width:820px){.ncx-benefits{padding-block:36px}
           .ncx-benefits .grid{margin-top:32px;gap:28px}}
       `}</style>
 

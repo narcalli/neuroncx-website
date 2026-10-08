@@ -26,7 +26,13 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         .ncx-orbit ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--ncx-rule)}
         .ncx-orbit li{padding:14px 12px;border-bottom:1px solid var(--ncx-rule);font-weight:500;border-left:4px solid transparent;transition:background .25s,border-color .25s}
         .ncx-orbit li.hl{background:var(--ncx-white);border-left-color:var(--ncx-crimson);padding-left:18px}
-        .ncx-orbit .orbit{position:relative;width:min(100%,420px);aspect-ratio:1;margin-inline:auto;--r:150px}
+        /* The radius follows the orbit's own width. It used to be a fixed 150px
+           while the orbit shrank with the screen, so on a phone the chips
+           circled past the edge and the whole page scrolled sideways. At the
+           full 420px this is exactly 150px, so desktop is unchanged; below
+           that it leaves 60px for half a chip, and the chips wrap to fit. */
+        .ncx-orbit .orbit{position:relative;width:min(100%,420px);aspect-ratio:1;margin-inline:auto;
+          container-type:inline-size;--r:min(150px,calc(50cqi - 60px))}
         .ncx-orbit .ring{position:absolute;border-radius:50%;border:1px dashed var(--ncx-rule);left:50%;top:50%;transform:translate(-50%,-50%)}
         .ncx-orbit .ring.r1{width:calc(var(--r)*2);height:calc(var(--r)*2)}
         .ncx-orbit .ring.r2{width:calc(var(--r)*1.15);height:calc(var(--r)*1.15);border-style:dotted}
@@ -42,11 +48,15 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         .ncx-orbit .on-node{position:absolute;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;border:1.5px solid var(--ncx-rule);background:var(--ncx-white);color:var(--ncx-body);
           border-radius:999px;padding:8px 14px;font-family:var(--font-body),Arial,sans-serif;font-weight:600;font-size:.85rem;cursor:pointer}
         .ncx-orbit .on-node.hl{background:var(--ncx-crimson);border-color:var(--ncx-crimson);color:var(--ncx-on-navy)}
+        /* After the chip's own rule, which would otherwise win on order. */
+        @container (max-width:419px){
+          .ncx-orbit .on-node{white-space:normal;max-width:120px;text-align:center;line-height:1.25;padding:6px 10px}
+        }
         .ncx-orbit .cap{margin:16px auto 0;text-align:center;font-size:.95rem;color:var(--ncx-muted);min-height:1.6em;max-width:36ch}
         @media (max-width:860px){.ncx-orbit .rel{grid-template-columns:1fr;gap:28px}}
         @media (prefers-reduced-motion:reduce){.ncx-orbit .spin{animation:none}}
       `}</style>
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         {intro ? <p className="sub">{intro}</p> : null}
         <div className="rel">

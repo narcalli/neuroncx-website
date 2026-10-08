@@ -69,10 +69,10 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
   const onDark = background === 'navy' || background === 'crimson'
 
   return (
-    <section className={onDark ? 'ncx-dps on-dark' : 'ncx-dps'}>
+    <section className={onDark ? 'ncx-dps on-dark ncx-container' : 'ncx-dps ncx-container'}>
       <style>{`
         .ncx-dps{
-          max-width:1120px;margin:0 auto;padding:56px 32px;
+          padding-block:56px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
 
         .ncx-dps .head .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
@@ -137,7 +137,7 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
           .ncx-dps .cta{transition:none}
         }
         @media(max-width:900px){
-          .ncx-dps{padding:40px 20px}
+          .ncx-dps{padding-block:40px}
           .ncx-dps .grid{margin-top:28px;grid-template-columns:1fr;gap:20px}
           .ncx-dps .card{padding:28px 24px;border-radius:22px}
           .ncx-dps .watermark{width:128px;height:128px}

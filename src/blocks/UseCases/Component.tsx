@@ -24,7 +24,6 @@ export const UseCasesBlock: React.FC<Props> = ({ label, heading, intro, cases })
       <style>{`
         .ncx-usecases{
           background:var(--ncx-cloud);padding:48px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-usecases .inner{max-width:1120px;margin:0 auto;padding:0 32px}
         .ncx-usecases .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-usecases h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
@@ -41,10 +40,10 @@ export const UseCasesBlock: React.FC<Props> = ({ label, heading, intro, cases })
         .ncx-usecases .outcome{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--ncx-rule);
           font-family:var(--font-display),Arial,sans-serif;font-size:15px;color:var(--ncx-body)}
         @media(max-width:820px){.ncx-usecases{padding:36px 0}
-          .ncx-usecases .inner{padding:0 20px}}
+          }
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {label ? <p className="label">{label}</p> : null}
         {heading ? <h2>{heading}</h2> : null}
         {intro ? <p className="intro">{intro}</p> : null}

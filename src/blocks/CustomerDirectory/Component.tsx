@@ -42,7 +42,7 @@ export const CustomerDirectoryBlock: React.FC<CustomerDirectoryProps> = async ({
     <section className="ncx-dir">
       <style>{`
         .ncx-dir{padding:88px 0;background:var(--ncx-cloud);font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-dir__wrap{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;gap:32px}
+        .ncx-dir__wrap{display:flex;flex-direction:column;gap:32px}
         .ncx-dir__eyebrow{font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 10px}
         .ncx-dir__heading{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.5rem,3vw,2rem);color:var(--ncx-ink);margin:0}
         .ncx-dir__intro{font-size:15px;line-height:1.6;color:var(--ncx-muted);margin:10px 0 0}
@@ -63,7 +63,7 @@ export const CustomerDirectoryBlock: React.FC<CustomerDirectoryProps> = async ({
         .ncx-dir__card{background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px}
         .ncx-dir__empty{margin:0;padding:32px 0;text-align:center;font-style:italic;font-size:14px;color:var(--ncx-muted)}
       `}</style>
-      <div className="ncx-dir__wrap">
+      <div className="ncx-dir__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header>
             {eyebrow ? <p className="ncx-dir__eyebrow">{eyebrow}</p> : null}

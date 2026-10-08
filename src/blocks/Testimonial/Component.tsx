@@ -85,7 +85,10 @@ export const TestimonialBlock: React.FC<TestimonialProps> = ({ eyebrow, heading,
     <section className="ncx-testi">
       <style>{`
         .ncx-testi{background:var(--ncx-cloud);padding:88px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-testi__wrap{max-width:760px;margin:0 auto;padding:0 24px}
+        /* The column is the shared container, so the eyebrow and heading line up
+           with every other block. The quote keeps a 760px measure: at 28px a
+           line across the full column runs past 75 characters. */
+        .ncx-testi__card,.ncx-testi__dots{max-width:760px}
         .ncx-testi__eyebrow{font-family:var(--font-body),Arial,sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-testi__heading{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.5rem,3vw,2rem);color:var(--ncx-ink);margin:0 0 32px}
         .ncx-testi__card{margin:0;position:relative}
@@ -106,7 +109,7 @@ export const TestimonialBlock: React.FC<TestimonialProps> = ({ eyebrow, heading,
         .ncx-testi__dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:var(--ncx-rule);cursor:pointer}
         .ncx-testi__dots button.is-active{background:var(--ncx-crimson)}
       `}</style>
-      <div className="ncx-testi__wrap">
+      <div className="ncx-testi__wrap ncx-container">
         {eyebrow ? <p className="ncx-testi__eyebrow">{eyebrow}</p> : null}
         {heading ? <h2 className="ncx-testi__heading">{heading}</h2> : null}
         {carousel ? (

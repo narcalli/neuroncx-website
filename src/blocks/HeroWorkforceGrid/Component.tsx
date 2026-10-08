@@ -119,8 +119,8 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
         }
         @media(prefers-reduced-motion:reduce){.ncx-hwg::before{animation:none}}
 
-        .ncx-hwg .inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;
-          padding:clamp(48px,7vw,88px) 24px;display:grid;
+        .ncx-hwg .inner{position:relative;z-index:1;
+          padding-block:clamp(48px,7vw,88px);display:grid;
           grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
           gap:clamp(28px,4vw,56px);align-items:center}
 
@@ -198,7 +198,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
         }
 
         @media(max-width:640px){
-          .ncx-hwg .inner{padding:40px 20px}
+          .ncx-hwg .inner{padding-block:40px}
           .ncx-hwg .grid-wrap{display:flex;overflow-x:auto;height:auto;gap:12px;
             -webkit-mask-image:none;mask-image:none;padding-bottom:4px;scroll-snap-type:x proximity}
           .ncx-hwg .grid-wrap .col{overflow:visible;min-width:78%;scroll-snap-align:start}
@@ -209,7 +209,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
 
       <div className="bg" />
 
-      <div className="inner">
+      <div className="inner ncx-container">
         <Animator className="copy">
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}

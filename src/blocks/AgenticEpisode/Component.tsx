@@ -77,7 +77,7 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
           .ncx-epi .pt{flex-direction:row;gap:16px;font-size:.9rem}
         }
       `}</style>
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         {paras.map((p, i) => (
           <p className="para" key={i}>

@@ -2,9 +2,6 @@
 /* Layout tokens for this block — adjust here. The card's own look lives in
    ../OptionCard/OptionCard.module.css. */
 .container {
-  --max-width: 1120px;
-  --gutter: 32px;
-  --gutter-mobile: 20px;
 
   /* Section header */
   --header-gap: 40px;
@@ -25,13 +22,10 @@
     0 24px 60px -20px rgba(26, 32, 53, 0.18),
     0 4px 16px rgba(26, 32, 53, 0.06);
 
-  /* Side gutter, so neither the cards nor the frame touch the screen edges. */
-  padding-inline: var(--gutter);
 }
 
+/* Width and side gutters come from the shared .ncx-container on this element. */
 .root {
-  max-width: var(--max-width);
-  margin-inline: auto;
 }
 
 /* Section header: each part is optional, so spacing sits between parts only. */
@@ -103,7 +97,8 @@
 }
 
 /* The block's "Content width" option is set: the page wrapper sets the width instead. */
-.uncapped {
+/* Doubled so it outranks the shared container's max-width. */
+.root.uncapped {
   max-width: none;
 }
 
@@ -115,10 +110,6 @@
 }
 
 @media (max-width: 767.98px) {
-  .container {
-    padding-inline: var(--gutter-mobile);
-  }
-
   .framed {
     padding: var(--frame-padding-mobile);
   }

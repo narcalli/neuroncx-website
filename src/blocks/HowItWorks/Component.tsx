@@ -17,10 +17,10 @@ export const HowItWorksBlock: React.FC<Props> = ({
   const items = steps || []
 
   return (
-    <section className="ncx-how">
+    <section className="ncx-how ncx-container">
       <style>{`
         .ncx-how{
-          max-width:1120px;margin:0 auto;padding:64px 32px;
+          padding-block:64px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);border-top:1px solid var(--ncx-rule)}
         .ncx-how .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
@@ -39,7 +39,7 @@ export const HowItWorksBlock: React.FC<Props> = ({
         .ncx-how .btn{font-family:var(--font-display),Arial,sans-serif;font-size:15px;
           font-weight:500;padding:12px 22px;border-radius:6px;text-decoration:none;
           background:var(--ncx-navy);color:var(--ncx-on-navy);display:inline-block}
-        @media(max-width:900px){.ncx-how{padding:44px 20px}.ncx-how .steps{gap:28px;margin-top:34px}}
+        @media(max-width:900px){.ncx-how{padding-block:44px}.ncx-how .steps{gap:28px;margin-top:34px}}
       `}</style>
 
       {label ? <p className="label">{label}</p> : null}

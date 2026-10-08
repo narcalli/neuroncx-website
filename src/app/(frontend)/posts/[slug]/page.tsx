@@ -38,7 +38,10 @@ export default async function Post({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
       <PostHero post={post} />
       <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
+        {/* w-full: as a centred flex item the container would shrink to its
+            text, and with paragraphs capped at 52ch that pulls the body off
+            the title's edge. */}
+        <div className="ncx-container w-full">
           <RichText className="max-w-3xl mx-auto" data={post.content} enableGutter={false} />
           {related.length > 0 && (
             <RelatedPosts

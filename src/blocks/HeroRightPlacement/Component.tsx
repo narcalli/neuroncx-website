@@ -208,7 +208,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         @keyframes ncx-hrp-breathe{from{transform:scale(1)}to{transform:scale(1.04)}}
 
         .ncx-hrp .content{position:relative;z-index:2;width:100%;padding:72px 0}
-        .ncx-hrp .container{max-width:1180px;margin:0 auto;width:100%;padding:0 32px}
+        .ncx-hrp .ncx-container{width:100%}
         .ncx-hrp .copy{max-width:min(520px,44%)}
         .ncx-hrp .eyebrow{margin:0 0 16px;font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           font-weight:600;color:var(--ncx-crimson-ink);display:inline-flex;align-items:center;gap:8px}
@@ -250,7 +250,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         }
 
         @media(max-width:1080px){
-          .ncx-hrp .container{padding:0 20px}
+          
         }
 
         @media(max-width:900px){
@@ -283,7 +283,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
       </div>
 
       <Animator className="content">
-        <div className="container">
+        <div className="ncx-container">
           <div className="copy">
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
 

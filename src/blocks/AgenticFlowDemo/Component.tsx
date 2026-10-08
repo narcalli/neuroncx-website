@@ -133,7 +133,7 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
         }
       `}</style>
 
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

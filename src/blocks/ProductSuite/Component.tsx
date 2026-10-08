@@ -100,13 +100,13 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
   const stepsBefore = items.map((_, i) => items.slice(0, i).filter((x) => x.cardStyle === 'steps').length)
 
   return (
-    <section className="ncx-suite">
+    <section className="ncx-suite ncx-container">
       <style>{`
         .ncx-suite{
           /* Products are told apart by weight, not by hue: four surfaces drawn
              from navy and teal, which the palette already owns. Adding a fifth
              product means another weight, not another colour. */
-          max-width:1120px;margin:0 auto;padding:56px 32px;
+          padding-block:56px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-suite .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
@@ -190,7 +190,7 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
           .ncx-suite a.card:hover{transform:none}
         }
         @media(max-width:900px){
-          .ncx-suite{padding:40px 20px}
+          .ncx-suite{padding-block:40px}
           .ncx-suite .grid{margin-top:32px;grid-template-columns:1fr}
           .ncx-suite .card.wide{grid-column:auto}
           .ncx-suite .card.tall{grid-row:auto}

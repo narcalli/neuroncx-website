@@ -93,7 +93,7 @@ export const AgenticCasesBlock: React.FC<AgenticCasesProps> = ({ heading, cases,
           .ncx-cases .case.glow::before,.ncx-cases .case.glow::after{transition:none}
         }
       `}</style>
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         <div className="grid">
           {list.map((c, i) => (

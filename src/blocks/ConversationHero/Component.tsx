@@ -94,8 +94,8 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         }
         /* Static field, not a hidden one. */
         @media(prefers-reduced-motion:reduce){.ncx-chero::before{animation:none}}
-        .ncx-chero .inner{position:relative;z-index:1;max-width:1160px;margin:0 auto;
-          padding:calc(64px + clamp(44px,6vw,76px)) clamp(20px,5vw,64px) clamp(36px,4.5vw,56px)}
+        .ncx-chero .inner{position:relative;z-index:1;
+          padding-block:calc(64px + clamp(44px,6vw,76px)) clamp(36px,4.5vw,56px)}
         .ncx-chero .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
 
         .ncx-chero .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
@@ -194,7 +194,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
       
       
 
-      <div className="inner">
+      <div className="inner ncx-container">
         <div className="grid">
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}

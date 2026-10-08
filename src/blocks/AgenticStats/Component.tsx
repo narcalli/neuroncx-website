@@ -58,7 +58,7 @@ export const AgenticStatsBlock: React.FC<AgenticStatsProps> = ({ eyebrow, headin
         @media (max-width:480px){.ncx-stats .tiles{grid-template-columns:1fr}}
         @media (prefers-reduced-motion:reduce){.ncx-stats .num.pending{animation:none}}
       `}</style>
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         {heading ? <h2>{heading}</h2> : null}
         <div className="tiles">

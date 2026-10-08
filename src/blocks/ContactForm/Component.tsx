@@ -73,10 +73,10 @@ export const ContactFormBlock: React.FC<Props> = ({
   }
 
   return (
-    <section className="ncx-contact">
+    <section className="ncx-contact ncx-container">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Source+Serif+4:opsz,wght@8..60,400&display=swap');
-        .ncx-contact{max-width:1120px;margin:0 auto;padding:56px 32px;
+        .ncx-contact{padding-block:56px;
           font-family:"Source Serif 4",Georgia,serif;color:var(--ncx-ink)}
         .ncx-contact .cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
         .ncx-contact .label{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:14px;
@@ -107,7 +107,7 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact .done{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:17px;
           line-height:1.6;color:var(--ncx-ink);margin:0}
         .ncx-contact .req{color:var(--ncx-crimson-ink)}
-        @media(max-width:860px){.ncx-contact{padding:40px 20px}
+        @media(max-width:860px){.ncx-contact{padding-block:40px}
           .ncx-contact .cols{grid-template-columns:1fr;gap:28px}}
       `}</style>
 

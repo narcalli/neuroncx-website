@@ -31,7 +31,6 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
           /* No band: the hairlines above and below are the separation. */
           border-top:1px solid var(--ncx-rule);border-bottom:1px solid var(--ncx-rule);
           padding:56px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);text-align:center}
-        .ncx-logowall .inner{max-width:1120px;margin:0 auto;padding:0 32px}
         .ncx-logowall .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
         .ncx-logowall h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
@@ -49,13 +48,13 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
           white-space:nowrap;transition:color .2s}
         .ncx-logowall .cell:hover .wordmark{color:var(--ncx-body)}
         @media(max-width:900px){.ncx-logowall{padding:40px 0}
-          .ncx-logowall .inner{padding:0 20px}
+          
           .ncx-logowall .grid{flex-wrap:wrap;justify-content:center;gap:26px 20px}
           .ncx-logowall .cell{flex:0 0 26%;height:34px}}
         @media(max-width:560px){.ncx-logowall .cell{flex:0 0 40%}}
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {label ? <p className="label">{label}</p> : null}
         {heading ? <h2>{heading}</h2> : null}
         {intro ? <p className="intro">{intro}</p> : null}

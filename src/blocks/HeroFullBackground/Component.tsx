@@ -241,7 +241,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         @keyframes ncx-hfb-pan-tight{from{transform:scale(1.01)}to{transform:scale(1.05)}}
 
         .ncx-hfb .content{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end}
-        .ncx-hfb .container{max-width:1180px;margin:0 auto;width:100%;padding:0 32px 56px}
+        .ncx-hfb .ncx-container{width:100%;padding-bottom:56px}
         .ncx-hfb .inner{max-width:640px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
         .ncx-hfb[data-placement="right"] .inner{max-width:44%}
         .ncx-hfb .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
@@ -300,12 +300,12 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         }
 
         @media(max-width:1080px){
-          .ncx-hfb .container{padding:0 20px 56px}
+          .ncx-hfb .ncx-container{padding-bottom:56px}
         }
 
         @media(max-width:767px){
           .ncx-hfb,.ncx-hfb[data-height="medium"]{height:auto;min-height:520px}
-          .ncx-hfb .container{padding:0 20px 40px}
+          .ncx-hfb .ncx-container{padding-bottom:40px}
           .ncx-hfb .inner{max-width:none}
           .ncx-hfb h1{font-size:clamp(28px,8vw,38px);max-width:none}
           .ncx-hfb .subhead{font-size:16px}
@@ -321,7 +321,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         @media(max-width:900px){
           .ncx-hfb[data-placement="right"]{display:flex;flex-direction:column;height:auto;min-height:0}
           .ncx-hfb[data-placement="right"] .content{position:static;order:1;display:block}
-          .ncx-hfb[data-placement="right"] .container{padding-bottom:32px}
+          .ncx-hfb[data-placement="right"] .ncx-container{padding-bottom:32px}
           .ncx-hfb[data-placement="right"] .inner{max-width:none}
           .ncx-hfb[data-placement="right"] .bg{position:relative;order:2;inset:auto;
             width:100%;height:260px;background:transparent}
@@ -377,7 +377,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
       <div className="overlay" />
 
       <Animator className="content">
-        <div className="container">
+        <div className="ncx-container">
           <div className="inner">
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
 

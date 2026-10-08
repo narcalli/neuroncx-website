@@ -76,7 +76,7 @@ export const BentoGrid: React.FC<BentoGridBlockProps> = ({
     gridAutoFlow: dense ? 'row dense' : 'row',
   } as React.CSSProperties
 
-  const rootClasses = [styles.root]
+  const rootClasses = [styles.root, 'ncx-container']
   // A chosen "Content width" (narrow / wide / full) replaces the default cap.
   if (width && width !== 'default') rootClasses.push(styles.uncapped)
 

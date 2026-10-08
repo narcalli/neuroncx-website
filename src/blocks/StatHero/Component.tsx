@@ -51,8 +51,8 @@ export const StatHeroBlock: React.FC<Props> = ({
           100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
         }
         @media(prefers-reduced-motion:reduce){.ncx-stathero::before{animation:none}}
-        .ncx-stathero .inner{position:relative;z-index:1;max-width:1120px;margin:0 auto;
-          padding:calc(64px + clamp(44px,6vw,76px)) clamp(20px,5vw,64px) 0}
+        .ncx-stathero .inner{position:relative;z-index:1;
+          padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
         .ncx-stathero .pill{display:inline-flex;align-items:center;gap:9px;
           font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-muted);
           border:1px solid var(--ncx-rule);background:var(--ncx-white);
@@ -83,7 +83,7 @@ export const StatHeroBlock: React.FC<Props> = ({
               .ncx-stathero .ncx-unit{font-style:normal;color:var(--ncx-crimson-ink)}
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {eyebrow ? (
           <p className="pill">
             <span className="spark" />

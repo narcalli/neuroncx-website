@@ -23,10 +23,10 @@ export const ArticleGridBlock: React.FC<Props> = async ({ heading, intro, limit 
   if (!posts.length) return null
 
   return (
-    <section className="ncx-articles">
+    <section className="ncx-articles ncx-container">
       <style>{`
         .ncx-articles{
-          max-width:1120px;margin:0 auto;padding:56px 32px 72px;
+          padding-block:56px 72px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);
           border-top:1px solid var(--ncx-rule)}
         .ncx-articles h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
@@ -43,7 +43,7 @@ export const ArticleGridBlock: React.FC<Props> = async ({ heading, intro, limit 
           font-size:19px;line-height:1.25;letter-spacing:-.015em;margin:0}
         .ncx-articles .excerpt{font-size:16px;color:var(--ncx-muted);margin:10px 0 0;line-height:1.55}
         @media(max-width:900px){
-          .ncx-articles{padding:40px 20px 48px}
+          .ncx-articles{padding-block:40px 48px}
           .ncx-articles .grid{grid-template-columns:1fr}
         }
       `}</style>

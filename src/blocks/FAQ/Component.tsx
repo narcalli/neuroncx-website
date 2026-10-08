@@ -87,7 +87,7 @@ export const FAQBlock: React.FC<FAQBlockProps> = ({ heading, intro, items, backg
         }
       `}</style>
 
-      <div className="inner ncx-container-narrow">
+      <div className="inner ncx-container">
         {heading ? <h2>{heading}</h2> : null}
         {intro ? <p className="intro">{intro}</p> : null}
 

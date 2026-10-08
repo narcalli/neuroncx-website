@@ -102,7 +102,7 @@ export const CaseStudyGridBlock: React.FC<CaseStudyGridProps> = async ({
              make a gradient, and no token pair does that. */
           --art-navy-2:#2E3A63;--art-slate-1:#3E4A6B;--art-slate-2:#7F93AD;--art-crimson-deep:#7A1F1F;
           padding:88px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-cs__wrap{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;gap:40px}
+        .ncx-cs__wrap{display:flex;flex-direction:column;gap:40px}
         .ncx-cs__head{display:flex;flex-direction:column;gap:12px;max-width:60ch}
         .ncx-cs__eyebrow{font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0}
         .ncx-cs__heading{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3vw,2rem);color:var(--ncx-ink);margin:0}
@@ -127,7 +127,7 @@ export const CaseStudyGridBlock: React.FC<CaseStudyGridProps> = async ({
         .ncx-cs__card:hover .ncx-cs__title{color:var(--ncx-link)}
         .ncx-cs__more{font-weight:500;font-size:14px;color:var(--ncx-link)}
       `}</style>
-      <div className="ncx-cs__wrap">
+      <div className="ncx-cs__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header className="ncx-cs__head">
             {eyebrow ? <p className="ncx-cs__eyebrow">{eyebrow}</p> : null}

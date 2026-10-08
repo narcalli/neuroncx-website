@@ -44,7 +44,7 @@ export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ct
         .ncx-closing .btn:hover{background:var(--ncx-crimson-hover)}
         @media (prefers-reduced-motion:reduce){.ncx-closing{animation:none}}
       `}</style>
-      <div className="wrap" style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         <motion.a ref={btnRef} className="btn" href={ctaUrl} style={{ x: sx, y: sy }}>
           {ctaLabel}

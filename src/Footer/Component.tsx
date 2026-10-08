@@ -37,7 +37,7 @@ export async function Footer() {
       <style>{`
         .ncx-footer{background:#16203A;color:#fff;margin-top:auto;
           font-family:var(--font-body),Arial,sans-serif}
-        .ncx-footer .inner{max-width:1120px;margin:0 auto;padding:64px 32px 36px}
+        .ncx-footer .inner{padding-block:64px 36px}
         .ncx-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
         .ncx-footer .tagline{color:#9AA5BF;margin:16px 0 0;max-width:34ch;font-size:16px;line-height:1.6}
         .ncx-footer h5{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
@@ -50,12 +50,12 @@ export async function Footer() {
           display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         .ncx-footer .note a{display:inline;margin:0 0 0 16px;color:#9AA5BF;font-size:14px}
         @media(max-width:900px){
-          .ncx-footer .inner{padding:44px 20px 28px}
+          .ncx-footer .inner{padding-block:44px 28px}
           .ncx-footer .cols{grid-template-columns:1fr;gap:32px}
         }
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         <div className="cols">
           <div>
             <Link href="/">

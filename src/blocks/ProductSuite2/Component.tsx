@@ -28,9 +28,8 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
     <section className="ncx-suite2">
       <style>{`
         .ncx-suite2{
-          padding:56px 32px;
+          padding-block:56px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-suite2 .inner{max-width:1120px;margin:0 auto}
         .ncx-suite2 .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
           margin:0 0 12px;color:var(--ncx-crimson)}
         .ncx-suite2 h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
@@ -41,12 +40,12 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
           grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:stretch}
 
         @media(max-width:900px){
-          .ncx-suite2{padding:40px 20px}
+          .ncx-suite2{padding-block:40px}
           .ncx-suite2 .grid{margin-top:28px}
         }
       `}</style>
 
-      <div className="inner">
+      <div className="inner ncx-container">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         {heading ? <h2>{heading}</h2> : null}
         {intro ? <p className="intro">{intro}</p> : null}

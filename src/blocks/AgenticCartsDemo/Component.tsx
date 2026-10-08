@@ -70,7 +70,7 @@ export const AgenticCartsDemoBlock: React.FC<AgenticCartsDemoProps> = ({
         .ncx-carts .btn-s:hover{background:var(--ncx-crimson)}
         .ncx-carts .note{font-size:.92rem;color:var(--ncx-muted);flex:1;min-width:220px}
       `}</style>
-      <div className="wrap ncx-container-narrow">
+      <div className="wrap ncx-container">
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

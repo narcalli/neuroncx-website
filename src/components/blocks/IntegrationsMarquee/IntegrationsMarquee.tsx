@@ -85,7 +85,7 @@ export const IntegrationsMarqueeBlock: React.FC<IntegrationsMarqueeBlockProps & 
 
   return (
     <div className={styles.container}>
-      <div className={styles.root}>
+      <div className={`${styles.root} ncx-container`}>
         {hasHeader ? (
           <header className={onDark ? `${styles.header} ${styles.onDark}` : styles.header}>
             {headEyebrow ? <p className={styles.eyebrow}>{headEyebrow}</p> : null}

@@ -20,10 +20,10 @@ export const IntegrationsBlock: React.FC<Props> = ({ label, heading, intro, item
   if (!list.length) return null
 
   return (
-    <section className="ncx-integrations">
+    <section className="ncx-integrations ncx-container">
       <style>{`
         .ncx-integrations{
-          max-width:1120px;margin:0 auto;padding:48px 32px;
+          padding-block:48px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-integrations .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
@@ -44,7 +44,7 @@ export const IntegrationsBlock: React.FC<Props> = ({ label, heading, intro, item
           font-weight:500;margin:0}
         .ncx-integrations .summary{margin:6px 0 0;color:var(--ncx-muted);font-size:15px;line-height:1.55}
         .ncx-integrations .footnote{margin:24px 0 0;color:var(--ncx-muted);font-size:16px}
-        @media(max-width:820px){.ncx-integrations{padding:36px 20px}
+        @media(max-width:820px){.ncx-integrations{padding-block:36px}
           .ncx-integrations .grid{margin-top:32px}}
       `}</style>
 

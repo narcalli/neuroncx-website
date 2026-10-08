@@ -60,10 +60,10 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
   let turn = 0
 
   return (
-    <section className="ncx-thread">
+    <section className="ncx-thread ncx-container">
       <style>{`
         .ncx-thread{
-          position:relative;max-width:1120px;margin:0 auto;padding:48px 32px;
+          position:relative;padding-block:48px;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-thread h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:34px;letter-spacing:-.025em;margin:0 0 44px}
@@ -87,7 +87,7 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
           color:var(--ncx-link);text-decoration:none;display:inline-block;margin-top:12px;
           border-bottom:1px solid currentColor}
         @media(max-width:900px){
-          .ncx-thread{padding:40px 20px}
+          .ncx-thread{padding-block:40px}
           .ncx-thread .spine{grid-template-columns:1fr;row-gap:26px}
           .ncx-thread .spine:before{left:4px}
           .ncx-thread .turn.left,.ncx-thread .turn.right{grid-column:1;padding-left:30px}

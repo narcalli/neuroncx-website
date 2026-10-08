@@ -59,8 +59,6 @@ export const PlatformLayersTwoBlock: React.FC<PlatformLayersTwoProps> = ({
         .ncx-ss{background:var(--ncx-paper);padding:64px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);scroll-margin-top:96px}
         .ncx-ss.is-navy{background:var(--ncx-navy);color:var(--ncx-on-navy)}
         @media(min-width:1024px){.ncx-ss{padding:96px 0}}
-        .ncx-ss__wrap{max-width:1280px;margin:0 auto;padding:0 16px}
-        @media(min-width:640px){.ncx-ss__wrap{padding:0 24px}}
 
         .ncx-ss__grid{display:grid;grid-template-columns:1fr;gap:40px}
         @media(min-width:1024px){.ncx-ss__grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:64px}}
@@ -112,7 +110,7 @@ export const PlatformLayersTwoBlock: React.FC<PlatformLayersTwoProps> = ({
         }
       `}</style>
 
-      <div className="ncx-ss__wrap">
+      <div className="ncx-ss__wrap ncx-container">
         <ScrollStackClient items={items} showIndicators={Boolean(showIndicators)}>
           {eyebrow ? <p className="ncx-ss__eyebrow">{eyebrow}</p> : null}
           <h2>{heading}</h2>

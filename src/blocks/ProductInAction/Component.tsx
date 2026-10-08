@@ -47,8 +47,6 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
         .ncx-pia.is-tinted{background:var(--ncx-cloud)}
         @media(min-width:640px){.ncx-pia{padding:80px 0}}
         @media(min-width:1024px){.ncx-pia{padding:96px 0}}
-        .ncx-pia__wrap{max-width:1280px;margin:0 auto;padding:0 16px}
-        @media(min-width:640px){.ncx-pia__wrap{padding:0 24px}}
 
         .ncx-pia__head{max-width:60ch;margin:0 auto 48px;text-align:center}
         .ncx-pia .ncx-pia__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 12px}
@@ -93,7 +91,7 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
         .ncx-pia__card:hover{box-shadow:0 22px 44px -26px rgba(26,32,53,.4)}
       `}</style>
 
-      <div className="ncx-pia__wrap">
+      <div className="ncx-pia__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header className="ncx-pia__head">
             {eyebrow ? <p className="ncx-pia__eyebrow">{eyebrow}</p> : null}
