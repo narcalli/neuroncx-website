@@ -12,6 +12,7 @@ type Props = {
   eyebrow?: string | null
   headline?: string | null
   subhead?: string | null
+  headingSize?: number | null
   primaryButtonLabel?: string | null
   primaryButtonLink?: string | null
   secondaryButtonLabel?: string | null
@@ -39,10 +40,16 @@ const parse = (raw?: string | null): Line[] =>
 // Each bubble lands 0.6s after the one before it, as in the reference.
 const STEP = 0.6
 
+// Heroes saved before the size field existed have no value, so they get 44.
+// Anything outside the field's 24 to 64 range is pulled back inside it.
+const headingPx = (size?: number | null) =>
+  typeof size === 'number' && Number.isFinite(size) ? Math.min(64, Math.max(24, size)) : 44
+
 export const ConversationHeroBlock: React.FC<Props> = ({
   eyebrow,
   headline,
   subhead,
+  headingSize,
   primaryButtonLabel,
   primaryButtonLink,
   secondaryButtonLabel,
@@ -64,7 +71,10 @@ export const ConversationHeroBlock: React.FC<Props> = ({
   const afterChat = messages.length * STEP + 0.3
 
   return (
-    <section className="ncx-chero">
+    <section
+      className="ncx-chero"
+      style={{ '--chero-h': `${headingPx(headingSize)}px` } as React.CSSProperties}
+    >
       <style>{`
         .ncx-chero{--wa:#25D366;--line:rgba(255,255,255,.12);
           /* The stage spans the viewport, like the header above and the
@@ -100,9 +110,12 @@ export const ConversationHeroBlock: React.FC<Props> = ({
 
         .ncx-chero .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
           letter-spacing:.04em;color:var(--ncx-crimson-ink);margin:0 0 14px}
+        /* The size comes from the editor's "Heading size" field. */
         .ncx-chero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
-          font-size:clamp(2.2rem,4.7vw,3.6rem);line-height:1.06;letter-spacing:-.02em;
+          font-size:var(--chero-h);line-height:1.06;letter-spacing:-.02em;
           margin:0;max-width:16ch}
+        /* On phones a large size would run off the screen, so it stops at 36px. */
+        @media(max-width:699px){.ncx-chero h1{font-size:min(var(--chero-h),36px)}}
         .ncx-chero .sub{margin:22px 0 0;font-size:1.06rem;line-height:1.6;
           color:var(--ncx-muted);max-width:52ch}
         .ncx-chero .cta{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
