@@ -163,7 +163,7 @@ export const HeroStackBlock: React.FC<HeroStackProps> = ({
           font-family:var(--font-body),Arial,sans-serif;
           height:calc(var(--pin-h) + (var(--n) - 1) * var(--step) + var(--bar))}
         .ncx-hstack .hs-pin{position:sticky;top:calc(var(--bar) + env(safe-area-inset-top,0px));
-          height:var(--pin-h);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr);
+          height:var(--pin-h);display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);
           gap:56px;align-items:center;overflow-x:clip}
         .ncx-hstack .hs-copy{display:flex;flex-direction:column;gap:22px;align-items:flex-start;min-width:0}
         .ncx-hstack .hs-eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0;
@@ -189,9 +189,13 @@ export const HeroStackBlock: React.FC<HeroStackProps> = ({
         .ncx-hstack .hs-deck{position:absolute;inset:0;
           transform:perspective(1500px) rotateY(-11deg) rotateX(5deg) rotateZ(1deg);transform-origin:30% 70%}
         /* --k is the card's depth in the stack, --out how far it has peeled
-           away, --fade hides cards past the visible depth. Set by paint(). */
+           away, --fade hides cards past the visible depth. Set by paint().
+           94% wide, not the reference's 80%: each card further back moves
+           right by 5.2% but also shrinks by 4.5%, so even the deepest card
+           ends barely past the front card's right edge. 80% left a fifth of
+           the column empty. */
         .ncx-hstack .hs-card{--k:0;--out:0;--fade:0;
-          position:absolute;left:0;bottom:0;width:80%;display:flex;flex-direction:column;
+          position:absolute;left:0;bottom:0;width:94%;display:flex;flex-direction:column;
           background:var(--hs-surface);border:1px solid var(--hs-line);border-radius:14px;overflow:hidden;
           box-shadow:0 26px 44px -26px var(--hs-shadow),0 2px 6px rgba(0,0,0,.08);
           transform-origin:0 100%;
