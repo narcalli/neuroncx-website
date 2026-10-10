@@ -20,6 +20,7 @@ import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FeatureThreadBlock } from '@/blocks/FeatureThread/Component'
 import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
+import { HeroStackBlock } from '@/blocks/HeroStack/Component'
 import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
@@ -67,6 +68,7 @@ const blockComponents = {
   contactForm: ContactFormBlock,
   content: ContentBlock,
   conversationHero: ConversationHeroBlock,
+  heroStack: HeroStackBlock,
   cta: CallToActionBlock,
   detailedProductSuite: DetailedProductSuiteBlock,
   faq: FAQBlock,
@@ -103,6 +105,7 @@ const blockComponents = {
 const noMargin = [
   'whatsappWidget',
   'conversationHero',
+  'heroStack',
   'agenticHero',
   'heroFullBackground',
   'heroRightPlacement',
