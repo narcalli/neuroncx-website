@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 
+import { loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { pickMedia } from '@/utilities/media'
 
 import styles from './IntegrationsMarquee.module.css'
@@ -63,14 +64,35 @@ function Row({ logos, durationSeconds, reverse }: { logos: MarqueeLogo[]; durati
   )
 }
 
-export const IntegrationsMarqueeBlock: React.FC<IntegrationsMarqueeBlockProps & { background?: string | null }> = ({
-  eyebrow,
-  title,
-  description,
-  logos,
-  background,
-}) => {
-  const items = (logos || []).filter((l) => l && l.name)
+// The marquee needs at least this many logos to fill its two rows.
+const MIN_LOGOS = 4
+const MAX_LOGOS = 40
+
+export const IntegrationsMarqueeBlock = async (
+  props: IntegrationsMarqueeBlockProps & { background?: string | null },
+) => {
+  const { eyebrow, title, description, logos, background, populateBy } = props
+
+  let items: MarqueeLogo[]
+  if (usesCollection(populateBy)) {
+    // Each integration's logo and name. An entry without a logo gets the
+    // monogram, as in the typed list.
+    items = (await loadIntegrations(props, MAX_LOGOS)).map((d) => ({
+      id: d.id,
+      name: d.name,
+      logo: d.logo && typeof d.logo === 'object' ? (d.logo as MarqueeLogo['logo']) : null,
+    }))
+    if (items.length < MIN_LOGOS) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `[IntegrationsMarquee] Only ${items.length} integration(s) matched; the marquee needs at least ${MIN_LOGOS}, so it is not shown. Widen the filter or publish more Live integrations.`,
+        )
+      }
+      return null
+    }
+  } else {
+    items = (logos || []).filter((l) => l && l.name)
+  }
   if (!items.length) return null
 
   const headEyebrow = eyebrow?.trim()

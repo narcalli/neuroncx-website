@@ -5,6 +5,8 @@
  * updated here too.
  */
 
+import type { IntegrationSource } from '@/utilities/integrations'
+
 export interface MarqueeLogoImage {
   url: string
   alt?: string | null
@@ -20,10 +22,13 @@ export interface MarqueeLogo {
   logo?: MarqueeLogoImage | string | null
 }
 
-export interface IntegrationsMarqueeBlockProps {
+// The "Show" switch fields come from the generated types, since they are
+// shared with the Integrations block.
+export interface IntegrationsMarqueeBlockProps extends IntegrationSource {
   blockType: 'integrationsMarquee'
   eyebrow?: string | null
   title?: string | null
   description?: string | null
-  logos: MarqueeLogo[]
+  /** The typed list. Only used when populateBy is manual or missing. */
+  logos?: MarqueeLogo[] | null
 }

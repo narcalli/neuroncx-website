@@ -1,8 +1,7 @@
 import React from 'react'
-import { draftMode } from 'next/headers'
 
 import type { Integration, IntegrationsBlock as IntegrationsBlockProps } from '@/payload-types'
-import { CMS_TAG, getMany } from '@/utilities/cms'
+import { loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { absoluteMediaUrl } from '@/utilities/media'
 
 // What one cell needs, whether it comes from the old typed list or the collection.
@@ -10,70 +9,24 @@ type Card = { id: string; name: string; summary?: string | null; logoUrl: string
 
 const MAX = 24
 
-const idOf = (v: string | Integration | null | undefined): string | null =>
-  typeof v === 'string' ? v : v && typeof v === 'object' ? v.id : null
-
 const logoUrlOf = (logo: unknown): string | null =>
   logo && typeof logo === 'object' && 'url' in logo ? absoluteMediaUrl((logo as { url?: string | null }).url) : null
 
 const toCard = (d: Integration): Card => ({ id: d.id, name: d.name, summary: d.summary, logoUrl: logoUrlOf(d.logo) })
-
-const byOrderThenName = (a: Integration, b: Integration) =>
-  (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name)
-
-/**
- * Entries from the Integrations collection. Only Live entries are ever asked
- * for. Outside preview only published ones are, and the CMS enforces the same
- * for visitors. In preview, drafts are included so an editor can check a new
- * entry before publishing it.
- */
-const fromCollection = async (block: IntegrationsBlockProps, draft: boolean): Promise<Card[]> => {
-  const query: Record<string, string | number | boolean | undefined> = {
-    'where[status][equals]': 'live',
-    depth: 1,
-    ...(draft ? { draft: 'true' } : { 'where[_status][equals]': 'published' }),
-  }
-  const opts = { draft, tags: [CMS_TAG, 'integrations'] }
-
-  if (block.populateBy === 'selection') {
-    // Hand-picked: fetch just those, then put them back in the editor's order.
-    const ids = (block.selectedDocs || []).map(idOf).filter((id): id is string => Boolean(id))
-    if (!ids.length) return []
-    const docs = await getMany<Integration>(
-      'integrations',
-      { ...query, 'where[id][in]': ids.join(','), limit: ids.length },
-      opts,
-    )
-    const found = new Map(docs.map((d) => [d.id, d]))
-    return ids.map((id) => found.get(id)).filter((d): d is Integration => Boolean(d)).map(toCard)
-  }
-
-  if (block.populateBy === 'filter') {
-    if (block.categories?.length) query['where[category][in]'] = block.categories.join(',')
-    if (block.products?.length) query['where[products][in]'] = block.products.join(',')
-  }
-  if (block.featuredOnly) query['where[featured][equals]'] = true
-  query.sort = 'order,name'
-  query.limit = Math.min(Math.max(block.limit || MAX, 1), MAX)
-
-  const docs = await getMany<Integration>('integrations', query, opts)
-  return [...docs].sort(byOrderThenName).map(toCard)
-}
 
 export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
   const { label, heading, intro, items, footnote, populateBy } = props
 
   // Blocks saved before populateBy existed have no value: they are the old
   // typed list, rendered exactly as before.
-  const list: Card[] =
-    !populateBy || populateBy === 'manual'
-      ? (items || []).map((it, i) => ({
-          id: it.id || String(i),
-          name: it.name,
-          summary: it.summary,
-          logoUrl: logoUrlOf(it.logo),
-        }))
-      : await fromCollection(props, (await draftMode()).isEnabled)
+  const list: Card[] = usesCollection(populateBy)
+    ? (await loadIntegrations(props, MAX)).map(toCard)
+    : (items || []).map((it, i) => ({
+        id: it.id || String(i),
+        name: it.name,
+        summary: it.summary,
+        logoUrl: logoUrlOf(it.logo),
+      }))
   if (!list.length) return null
 
   return (

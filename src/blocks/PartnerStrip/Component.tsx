@@ -1,13 +1,22 @@
 import React from 'react'
 
-type Props = {
+import { type IntegrationSource, loadIntegrations, usesCollection } from '@/utilities/integrations'
+
+type Props = IntegrationSource & {
   intro?: string | null
   partners?: { name?: string | null; id?: string | null }[] | null
   badges?: { name?: string | null; suffix?: string | null; id?: string | null }[] | null
 }
 
-export const PartnerStripBlock: React.FC<Props> = ({ intro, partners, badges }) => {
-  const names = partners || []
+const MAX_PARTNERS = 8
+
+export const PartnerStripBlock = async (props: Props) => {
+  const { intro, partners, badges, populateBy } = props
+  // The "Show" switch applies to the platforms only. Collection entries are
+  // shown by name, as text: this strip has no logos. Badges stay per block.
+  const names = usesCollection(populateBy)
+    ? (await loadIntegrations(props, MAX_PARTNERS)).map((d) => ({ id: d.id, name: d.name }))
+    : partners || []
   const marks = badges || []
   if (!names.length && !marks.length && !intro) return null
 
