@@ -28,12 +28,22 @@ type FetchOptions = {
   draft?: boolean
 }
 
+// Draft requests come from preview, where an editor expects to see work that
+// is not published yet. The CMS only shows drafts to a signed-in user, so a
+// draft request carries this API key when it is set. It stays on the server:
+// never rename it with a NEXT_PUBLIC_ prefix. Without it, preview shows
+// published content only, as before.
+const PREVIEW_API_KEY = process.env.CMS_PREVIEW_API_KEY
+
 const request = async <T>(path: string, query?: Query, opts: FetchOptions = {}): Promise<T | null> => {
   const { revalidate = 60, tags, draft } = opts
 
   try {
     const res = await fetch(buildUrl(path, query), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(draft && PREVIEW_API_KEY ? { Authorization: `users API-Key ${PREVIEW_API_KEY}` } : {}),
+      },
       // A draft request must never be served from cache.
       ...(draft
         ? { cache: 'no-store' as const }

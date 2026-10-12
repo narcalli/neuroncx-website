@@ -77,6 +77,7 @@ export interface Config {
     enquiries: Enquiry;
     sectors: Sector;
     caseStudies: CaseStudy;
+    integrations: Integration;
     redirects: Redirect;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
@@ -101,6 +102,7 @@ export interface Config {
     enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
     sectors: SectorsSelect<false> | SectorsSelect<true>;
     caseStudies: CaseStudiesSelect<false> | CaseStudiesSelect<true>;
+    integrations: IntegrationsSelect<false> | IntegrationsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -2346,6 +2348,12 @@ export interface IntegrationsBlock {
   label?: string | null;
   heading?: string | null;
   intro?: string | null;
+  populateBy?: ('all' | 'filter' | 'selection' | 'manual') | null;
+  categories?: ('messaging' | 'telephony' | 'crm-marketing' | 'hospital-systems' | 'payments' | 'data-bi')[] | null;
+  products?: ('crm' | 'campaigns' | 'call-quality' | 'bots' | 'knowledge-base' | 'workflows')[] | null;
+  featuredOnly?: boolean | null;
+  selectedDocs?: (string | Integration)[] | null;
+  limit?: number | null;
   items?:
     | {
         name: string;
@@ -2383,6 +2391,46 @@ export interface IntegrationsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'integrations';
+}
+/**
+ * The systems NeuronCx connects to. Each entry is written once and shown wherever integrations are listed.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations".
+ */
+export interface Integration {
+  id: string;
+  name: string;
+  /**
+   * Transparent PNG or SVG. Leave empty to show the name only.
+   */
+  logo?: (string | null) | Media;
+  /**
+   * What flows between the two systems, in plain words.
+   */
+  summary?: string | null;
+  category: 'messaging' | 'telephony' | 'crm-marketing' | 'hospital-systems' | 'payments' | 'data-bi';
+  connection?: ('native' | 'api-webhooks' | 'file-import') | null;
+  /**
+   * Only Live integrations show on the public site.
+   */
+  status: 'live' | 'pilot' | 'planned';
+  products?: ('crm' | 'campaigns' | 'call-quality' | 'bots' | 'knowledge-base' | 'workflows')[] | null;
+  /**
+   * Tick to include in the short list on the home page.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower numbers show first.
+   */
+  order?: number | null;
+  /**
+   * Only needed if this integration gets its own page later.
+   */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4008,6 +4056,10 @@ export interface PayloadLockedDocument {
         value: string | CaseStudy;
       } | null)
     | ({
+        relationTo: 'integrations';
+        value: string | Integration;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: string | Redirect;
       } | null)
@@ -4979,6 +5031,12 @@ export interface IntegrationsBlockSelect<T extends boolean = true> {
   label?: T;
   heading?: T;
   intro?: T;
+  populateBy?: T;
+  categories?: T;
+  products?: T;
+  featuredOnly?: T;
+  selectedDocs?: T;
+  limit?: T;
   items?:
     | T
     | {
@@ -5844,6 +5902,25 @@ export interface CaseStudiesSelect<T extends boolean = true> {
       };
   body?: T;
   featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations_select".
+ */
+export interface IntegrationsSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  summary?: T;
+  category?: T;
+  connection?: T;
+  status?: T;
+  products?: T;
+  featured?: T;
+  order?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
