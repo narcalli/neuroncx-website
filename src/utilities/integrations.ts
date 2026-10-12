@@ -16,8 +16,13 @@ export type IntegrationSource = Pick<
 export const usesCollection = (populateBy?: IntegrationSource['populateBy']): boolean =>
   Boolean(populateBy) && populateBy !== 'manual'
 
-const idOf = (v: string | Integration | null | undefined): string | null =>
+// A linked entry arrives as its id or, when the page was read with depth, as
+// the whole entry. Either way only the id is needed.
+const idOf = (v: string | { id: string } | null | undefined): string | null =>
   typeof v === 'string' ? v : v && typeof v === 'object' ? v.id : null
+
+const idsOf = (list?: (string | { id: string } | null)[] | null): string[] =>
+  (list || []).map(idOf).filter((id): id is string => Boolean(id))
 
 const byOrderThenName = (a: Integration, b: Integration) =>
   (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name)
@@ -53,9 +58,12 @@ export const loadIntegrations = async (source: IntegrationSource, max: number): 
     return ids.map((id) => found.get(id)).filter((d): d is Integration => Boolean(d))
   }
 
+  // Categories and products are linked entries; the CMS filters by their ids.
   if (source.populateBy === 'filter') {
-    if (source.categories?.length) query['where[category][in]'] = source.categories.join(',')
-    if (source.products?.length) query['where[products][in]'] = source.products.join(',')
+    const categories = idsOf(source.categories)
+    const products = idsOf(source.products)
+    if (categories.length) query['where[category][in]'] = categories.join(',')
+    if (products.length) query['where[products][in]'] = products.join(',')
   }
   if (source.featuredOnly) query['where[featured][equals]'] = true
   query.sort = 'order,name'
