@@ -3,8 +3,8 @@ import type { Customer, Sector } from '@/payload-types'
 /**
  * Shared rules for customers on the public site.
  *
- * The CMS already enforces clearance for visitors: an uncleared customer
- * arrives with its anonymised name, no slug, no logo and hasOwnPage false,
+ * The CMS already enforces Show real name for visitors: a customer with it
+ * off arrives with its anonymised name, no slug, no logo and hasOwnPage false,
  * and past customers and drafts never arrive at all. The checks here are a
  * second line of defence, so a mistake in one place cannot publish a name.
  */

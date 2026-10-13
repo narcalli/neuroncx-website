@@ -14,9 +14,9 @@ type Args = { params: Promise<{ slug: string }> }
 
 /**
  * A customer's own page. Shown only for a published customer with its own
- * page switched on. The CMS sets that to false for any customer whose name is
- * not cleared, and only returns cleared quotes and verified results, so
- * everything rendered here has been cleared.
+ * page switched on. The CMS sets that to false for any customer with Show
+ * real name off and strips their details, so every result and quote that
+ * arrives here may be shown.
  */
 const loadCustomer = async (slug: string): Promise<(Customer & { slug: string }) | null> => {
   const docs = await getMany<Customer>(

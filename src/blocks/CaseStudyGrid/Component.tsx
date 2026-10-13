@@ -14,9 +14,9 @@ const MAX_CARDS = 6
 // The three placeholder gradients from the approved mockup, used as written.
 const PLACEHOLDER_CLASSES = ['ncx-cs__img--1', 'ncx-cs__img--2', 'ncx-cs__img--3']
 
-// name is already anonymised by the CMS when the client's name is not cleared,
-// and a logo only arrives when it is cleared. A card links only to a customer
-// with its own page.
+// name is already anonymised by the CMS when Show real name is off, and a
+// logo only arrives when it is on. A card links only to a customer with its
+// own page.
 const CaseCard = ({ c, index, tilt }: { c: Customer; index: number; tilt: boolean }) => {
   const href = customerHref(c)
   const logo = pickMedia(c.image as MediaValue)

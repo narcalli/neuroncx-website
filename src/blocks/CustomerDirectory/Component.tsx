@@ -28,7 +28,7 @@ export const CustomerDirectoryBlock: React.FC<CustomerDirectoryProps> = async ({
 
   const docs = await getMany<Customer>('customers', query, { tags: [CMS_TAG, 'customers'] })
 
-  // name is already anonymised by the CMS for customers whose name is not cleared.
+  // name is already anonymised by the CMS for customers with Show real name off.
   const rows: DirectoryRow[] = publicCustomers(docs).sort(byOrderThenName).map((c) => ({
     id: c.id,
     href: customerHref(c),
