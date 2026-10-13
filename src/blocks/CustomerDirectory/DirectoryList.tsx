@@ -5,8 +5,9 @@ import Link from 'next/link'
 
 export type DirectoryRow = {
   id: string
-  slug: string
-  clientName: string
+  /** Set only for a customer with its own page. */
+  href: string | null
+  name: string
   summary: string
   sectors: { id: string; name: string }[]
 }
@@ -64,9 +65,7 @@ export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, empt
         <ul className="ncx-dir__cards">
           {visible.map((r) => (
             <li key={r.id} className="ncx-dir__card">
-              <Link href={`/customers/${r.slug}`} className="ncx-dir__name">
-                {r.clientName}
-              </Link>
+              <Name row={r} />
               <p className="ncx-dir__summary">{r.summary}</p>
               <Tags sectors={r.sectors} />
             </li>
@@ -77,9 +76,7 @@ export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, empt
           {visible.map((r) => (
             <li key={r.id} className="ncx-dir__row">
               <div className="ncx-dir__text">
-                <Link href={`/customers/${r.slug}`} className="ncx-dir__name">
-                  {r.clientName}
-                </Link>
+                <Name row={r} />
                 <p className="ncx-dir__summary">{r.summary}</p>
               </div>
               <Tags sectors={r.sectors} />
@@ -90,6 +87,16 @@ export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, empt
     </>
   )
 }
+
+// A link only for a customer with its own page; otherwise plain text.
+const Name = ({ row }: { row: DirectoryRow }) =>
+  row.href ? (
+    <Link href={row.href} className="ncx-dir__name">
+      {row.name}
+    </Link>
+  ) : (
+    <span className="ncx-dir__name">{row.name}</span>
+  )
 
 const Tags = ({ sectors }: { sectors: { id: string; name: string }[] }) =>
   sectors.length ? (

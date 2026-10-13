@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { getMany, CMS_TAG } from '@/utilities/cms'
-import { publicCaseStudyQuery, publicCases, sectorIds } from '@/utilities/caseStudies'
-import type { CaseStudy, CustomerDirectoryBlock as CustomerDirectoryProps, Sector } from '@/payload-types'
+import { byOrderThenName, customerHref, publicCustomerQuery, publicCustomers, sectorIds } from '@/utilities/customers'
+import type { Customer, CustomerDirectoryBlock as CustomerDirectoryProps, Sector } from '@/payload-types'
 
 import { DirectoryList, type DirectoryRow } from './DirectoryList'
 
@@ -19,19 +19,20 @@ export const CustomerDirectoryBlock: React.FC<CustomerDirectoryProps> = async ({
 }) => {
   const ids = sectorIds(sectors)
   const query: Record<string, string | number | boolean | undefined> = {
-    ...publicCaseStudyQuery,
-    sort: 'clientName',
+    ...publicCustomerQuery,
+    sort: 'order',
     limit: MAX_ROWS,
     depth: 1,
   }
   if (ids.length) query['where[sectors][in]'] = ids.join(',')
 
-  const docs = await getMany<CaseStudy>('caseStudies', query, { tags: [CMS_TAG, 'case-studies'] })
+  const docs = await getMany<Customer>('customers', query, { tags: [CMS_TAG, 'customers'] })
 
-  const rows: DirectoryRow[] = publicCases(docs).map((c) => ({
+  // name is already anonymised by the CMS for customers whose name is not cleared.
+  const rows: DirectoryRow[] = publicCustomers(docs).sort(byOrderThenName).map((c) => ({
     id: c.id,
-    slug: c.slug,
-    clientName: c.clientName,
+    href: customerHref(c),
+    name: c.name,
     summary: c.summary,
     sectors: ((c.sectors || []) as (string | Sector)[])
       .filter((s): s is Sector => typeof s === 'object' && s !== null)
@@ -54,7 +55,7 @@ export const CustomerDirectoryBlock: React.FC<CustomerDirectoryProps> = async ({
         .ncx-dir__row:last-child{border-bottom:0}
         .ncx-dir__text{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:2px}
         .ncx-dir__name{font-weight:600;font-size:15px;color:var(--ncx-ink);text-decoration:none}
-        .ncx-dir__name:hover{color:var(--ncx-link);text-decoration:underline}
+        a.ncx-dir__name:hover{color:var(--ncx-link);text-decoration:underline}
         .ncx-dir__summary{margin:0;font-size:13px;color:var(--ncx-muted)}
         .ncx-dir__tags{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
         .ncx-dir__tag{padding:4px 12px;border-radius:999px;background:var(--ncx-cloud);font-weight:500;font-size:12px;color:var(--ncx-ink)}

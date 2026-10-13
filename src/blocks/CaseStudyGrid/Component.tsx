@@ -4,8 +4,8 @@ import Link from 'next/link'
 
 import { getMany, CMS_TAG } from '@/utilities/cms'
 import { pickMedia, type MediaValue } from '@/utilities/media'
-import { publicCaseStudyQuery, publicCases, sectorIds } from '@/utilities/caseStudies'
-import type { CaseStudy, CaseStudyGridBlock as CaseStudyGridProps } from '@/payload-types'
+import { customerHref, publicCustomerQuery, publicCustomers, sectorIds } from '@/utilities/customers'
+import type { CaseStudyGridBlock as CaseStudyGridProps, Customer } from '@/payload-types'
 
 import { TiltAnchor } from './TiltAnchor'
 
@@ -14,17 +14,19 @@ const MAX_CARDS = 6
 // The three placeholder gradients from the approved mockup, used as written.
 const PLACEHOLDER_CLASSES = ['ncx-cs__img--1', 'ncx-cs__img--2', 'ncx-cs__img--3']
 
-const CaseCard = ({ c, index, tilt }: { c: CaseStudy; index: number; tilt: boolean }) => {
-  const href = `/customers/${c.slug}`
-  const logo = pickMedia(c.logo as MediaValue)
-  const title = c.outcomeHeadline || c.title
+// name is already anonymised by the CMS when the client's name is not cleared,
+// and a logo only arrives when it is cleared. A card links only to a customer
+// with its own page.
+const CaseCard = ({ c, index, tilt }: { c: Customer; index: number; tilt: boolean }) => {
+  const href = customerHref(c)
+  const logo = pickMedia(c.image as MediaValue)
 
   const frame = logo ? (
     <div className="ncx-cs__img ncx-cs__img--logo">
       <Image
         className="ncx-cs__logo"
         src={logo.src}
-        alt={c.clientName}
+        alt={c.name}
         width={logo.width || 400}
         height={logo.height || 200}
         sizes="(min-width: 860px) 33vw, 100vw"
@@ -37,7 +39,7 @@ const CaseCard = ({ c, index, tilt }: { c: CaseStudy; index: number; tilt: boole
         <span className="ncx-cs__dot" aria-hidden="true">
           <span />
         </span>
-        <span className="ncx-cs__name">{c.clientName}</span>
+        <span className="ncx-cs__name">{c.name}</span>
       </span>
     </div>
   )
@@ -46,11 +48,15 @@ const CaseCard = ({ c, index, tilt }: { c: CaseStudy; index: number; tilt: boole
     <>
       {frame}
       <span className="ncx-cs__body">
-        <span className="ncx-cs__title">{title}</span>
-        <span className="ncx-cs__more">Read story &rarr;</span>
+        {/* The placeholder art already shows the name; a logo card needs it in text. */}
+        {logo ? <span className="ncx-cs__client">{c.name}</span> : null}
+        <span className="ncx-cs__title">{c.summary}</span>
+        {href ? <span className="ncx-cs__more">Read story &rarr;</span> : null}
       </span>
     </>
   )
+
+  if (!href) return <div className="ncx-cs__card ncx-cs__card--static">{inner}</div>
 
   return tilt ? (
     <TiltAnchor href={href} className="ncx-cs__card">
@@ -73,23 +79,23 @@ export const CaseStudyGridBlock: React.FC<CaseStudyGridProps> = async ({
   selectedDocs,
   cardStyle,
 }) => {
-  let docs: (CaseStudy | null | undefined)[] = []
+  let docs: (Customer | string | null | undefined)[] = []
 
   if (populateBy === 'selection') {
-    docs = (selectedDocs || []).map((d) => (typeof d === 'object' ? d : null))
+    docs = selectedDocs || []
   } else {
     const ids = sectorIds(sectors)
     const query: Record<string, string | number | boolean | undefined> = {
-      ...publicCaseStudyQuery,
+      ...publicCustomerQuery,
       sort: '-updatedAt',
       limit: Math.min(limit || MAX_CARDS, MAX_CARDS),
       depth: 1,
     }
     if (ids.length) query['where[sectors][in]'] = ids.join(',')
-    docs = await getMany<CaseStudy>('caseStudies', query, { tags: [CMS_TAG, 'case-studies'] })
+    docs = await getMany<Customer>('customers', query, { tags: [CMS_TAG, 'customers'] })
   }
 
-  const items = publicCases(docs).slice(0, MAX_CARDS)
+  const items = publicCustomers(docs).slice(0, MAX_CARDS)
   if (!items.length) return null
 
   const tilt = cardStyle !== 'plain'
@@ -126,6 +132,9 @@ export const CaseStudyGridBlock: React.FC<CaseStudyGridProps> = async ({
         .ncx-cs__title{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:18px;line-height:1.4;color:var(--ncx-ink);transition:color .2s ease}
         .ncx-cs__card:hover .ncx-cs__title{color:var(--ncx-link)}
         .ncx-cs__more{font-weight:500;font-size:14px;color:var(--ncx-link)}
+        .ncx-cs__client{font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ncx-muted)}
+        .ncx-cs__card--static:hover .ncx-cs__img{transform:none}
+        .ncx-cs__card--static:hover .ncx-cs__title{color:var(--ncx-ink)}
       `}</style>
       <div className="ncx-cs__wrap ncx-container">
         {eyebrow || heading || intro ? (

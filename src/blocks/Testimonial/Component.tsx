@@ -3,7 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { pickMedia, type MediaValue } from '@/utilities/media'
-import type { CaseStudy, TestimonialBlock as TestimonialProps } from '@/payload-types'
+import type { Customer, TestimonialBlock as TestimonialProps } from '@/payload-types'
+import { customerHref } from '@/utilities/customers'
 
 import { TestimonialCarousel } from './Carousel'
 
@@ -21,8 +22,9 @@ const initials = (name: string) =>
 const QuoteCard = ({ q }: { q: Quote }) => {
   const photo = pickMedia(q.photo as MediaValue, 'square')
   const logo = pickMedia(q.logo as MediaValue)
-  const story = q.linkedStory && typeof q.linkedStory === 'object' ? (q.linkedStory as CaseStudy) : null
-  const storyHref = story && !story.clientPending && story.slug ? `/customers/${story.slug}` : null
+  // Linked only when the customer has its own page.
+  const story = q.linkedStory && typeof q.linkedStory === 'object' ? (q.linkedStory as Customer) : null
+  const storyHref = customerHref(story)
 
   return (
     <figure className="ncx-testi__card">
