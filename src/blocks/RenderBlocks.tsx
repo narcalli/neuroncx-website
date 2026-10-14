@@ -31,6 +31,7 @@ import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { StatHeroBlock } from '@/blocks/StatHero/Component'
 import { BenefitsBlock } from '@/blocks/Benefits/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
+import { IntegrationsLandingBlock } from '@/blocks/IntegrationsLanding/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
 import { ProductInActionBlock } from '@/blocks/ProductInAction/Component'
@@ -78,6 +79,7 @@ const blockComponents = {
   heroWorkforceGrid: HeroWorkforceGridBlock,
   howItWorks: HowItWorksBlock,
   integrations: IntegrationsBlock,
+  integrationsLanding: IntegrationsLandingBlock,
   integrationsMarquee: IntegrationsMarqueeBlock,
   logoWall: LogoWallBlock,
   mediaBlock: MediaBlock,
@@ -119,6 +121,7 @@ const noMargin = [
   'productInAction',
   'trustPanel',
   'statBand',
+  'integrationsLanding',
 ]
 
 export const RenderBlocks: React.FC<{

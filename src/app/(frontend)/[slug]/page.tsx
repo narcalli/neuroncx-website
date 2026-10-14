@@ -22,6 +22,7 @@ const flushFirstBlocks = [
   'statHero',
   'closingCta',
   'agenticHero',
+  'integrationsLanding',
 ]
 
 type Args = {
