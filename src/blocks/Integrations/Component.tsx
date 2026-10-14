@@ -1,18 +1,33 @@
+import Link from 'next/link'
 import React from 'react'
 
 import type { Integration, IntegrationsBlock as IntegrationsBlockProps } from '@/payload-types'
-import { loadIntegrations, usesCollection } from '@/utilities/integrations'
+import { integrationHref, loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { absoluteMediaUrl } from '@/utilities/media'
 
 // What one cell needs, whether it comes from the old typed list or the collection.
-type Card = { id: string; name: string; summary?: string | null; logoUrl: string | null }
+type Card = {
+  id: string
+  name: string
+  summary?: string | null
+  logoUrl: string | null
+  href?: string | null
+}
 
 const MAX = 24
 
 const logoUrlOf = (logo: unknown): string | null =>
-  logo && typeof logo === 'object' && 'url' in logo ? absoluteMediaUrl((logo as { url?: string | null }).url) : null
+  logo && typeof logo === 'object' && 'url' in logo
+    ? absoluteMediaUrl((logo as { url?: string | null }).url)
+    : null
 
-const toCard = (d: Integration): Card => ({ id: d.id, name: d.name, summary: d.summary, logoUrl: logoUrlOf(d.logo) })
+const toCard = (d: Integration): Card => ({
+  id: d.id,
+  name: d.name,
+  summary: d.summary,
+  logoUrl: logoUrlOf(d.logo),
+  href: integrationHref(d),
+})
 
 export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
   const { label, heading, intro, items, footnote, populateBy } = props
@@ -53,6 +68,10 @@ export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
         .ncx-integrations .name{font-family:var(--font-display),Arial,sans-serif;font-size:16px;
           font-weight:500;margin:0}
         .ncx-integrations .summary{margin:6px 0 0;color:var(--ncx-muted);font-size:15px;line-height:1.55}
+        a.cell{text-decoration:none;color:inherit;transition:background .18s ease}
+        a.cell:hover{background:var(--ncx-cloud)}
+        a.cell:hover .name{text-decoration:underline;text-underline-offset:3px}
+        a.cell:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:-2px}
         .ncx-integrations .footnote{margin:24px 0 0;color:var(--ncx-muted);font-size:16px}
         @media(max-width:820px){.ncx-integrations{padding-block:36px}
           .ncx-integrations .grid{margin-top:32px}}
@@ -64,8 +83,8 @@ export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
 
       <div className="grid">
         {list.map((it) => {
-          return (
-            <div className="cell" key={it.id}>
+          const body = (
+            <>
               <div className="mark">
                 {it.logoUrl ? (
                   <img src={it.logoUrl} alt="" loading="lazy" />
@@ -77,6 +96,16 @@ export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
                 <p className="name">{it.name}</p>
                 {it.summary ? <p className="summary">{it.summary}</p> : null}
               </div>
+            </>
+          )
+          // An entry with its own page links to it; the rest are plain cells.
+          return it.href ? (
+            <Link className="cell" href={it.href} key={it.id}>
+              {body}
+            </Link>
+          ) : (
+            <div className="cell" key={it.id}>
+              {body}
             </div>
           )
         })}

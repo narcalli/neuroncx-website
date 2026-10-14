@@ -6,6 +6,7 @@ import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { FAQBlock } from '@/blocks/FAQ/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { CMS_TAG, getMany } from '@/utilities/cms'
+import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import type {
   Integration,
@@ -38,48 +39,8 @@ export const loadMaster = async (
   return docs[0] || null
 }
 
-type LinkValue = {
-  type?: 'reference' | 'custom' | null
-  url?: string | null
-  newTab?: boolean | null
-  reference?: { relationTo?: string; value?: unknown } | null
-} | null | undefined
-
-// The same rule as the site's CMSLink: a page or post reference, or a custom URL.
-const hrefOf = (link: LinkValue): string | null => {
-  if (!link) return null
-  const value = link.reference?.value as { slug?: string } | undefined
-  if (link.type === 'reference' && value && typeof value === 'object' && value.slug) {
-    return `${link.reference?.relationTo !== 'pages' ? `/${link.reference?.relationTo}` : ''}/${value.slug}`
-  }
-  return link.url || null
-}
-
 const idsOf = (list?: (string | { id: string })[] | null) =>
   (list || []).map((x) => (typeof x === 'object' ? x.id : x)).filter(Boolean) as string[]
-
-// FAQ answers are plain text in the master record; the FAQ block takes rich text.
-const paragraph = (text: string) =>
-  ({
-    root: {
-      type: 'root',
-      version: 1,
-      direction: 'ltr',
-      format: '',
-      indent: 0,
-      children: [
-        {
-          type: 'paragraph',
-          version: 1,
-          direction: 'ltr',
-          format: '',
-          indent: 0,
-          textFormat: 0,
-          children: [{ type: 'text', version: 1, text, format: 0, detail: 0, mode: 'normal', style: '' }],
-        },
-      ],
-    },
-  }) as any
 
 export const IntegrationsLandingBlock: React.FC<
   Pick<IntegrationsLandingBlockProps, 'master'> & { record?: IntegrationsMaster | null }
@@ -94,7 +55,9 @@ export const IntegrationsLandingBlock: React.FC<
   )
   const onlyCategories = idsOf(m.filter?.categories as any)
   const products = idsOf(m.filter?.products as any)
-  const shown = onlyCategories.length ? categories.filter((c) => onlyCategories.includes(c.id)) : categories
+  const shown = onlyCategories.length
+    ? categories.filter((c) => onlyCategories.includes(c.id))
+    : categories
 
   const systems = ((m.heroSystems || []) as (string | Integration)[]).filter(
     (s): s is Integration => typeof s === 'object' && Boolean(s?.name),
@@ -150,7 +113,7 @@ export const IntegrationsLandingBlock: React.FC<
 
         .ncx-ihub__section{padding-block:72px}
         .ncx-ihub__section h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0 0 36px;color:var(--ncx-ink);max-width:24ch}
+          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 36px;color:var(--ncx-ink);max-width:24ch}
         .ncx-ihub__five{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
         .ncx-ihub__five li{background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-card);padding:22px 20px}
         .ncx-ihub__five .n{font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-crimson-ink);margin:0 0 10px}
@@ -301,7 +264,11 @@ export const IntegrationsLandingBlock: React.FC<
         <FAQBlock
           blockType="faq"
           heading={m.faqHeading || 'Questions about integrations'}
-          items={m.faqs.map((f, i) => ({ id: f.id || String(i), question: f.question, answer: paragraph(f.answer) }))}
+          items={m.faqs.map((f, i) => ({
+            id: f.id || String(i),
+            question: f.question,
+            answer: paragraph(f.answer),
+          }))}
           emitSchema
         />
       ) : null}

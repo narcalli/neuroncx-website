@@ -72,3 +72,11 @@ export const loadIntegrations = async (source: IntegrationSource, max: number): 
   const docs = await getMany<Integration>('integrations', query, opts)
   return [...docs].sort(byOrderThenName)
 }
+
+/**
+ * The address of an entry's own page, or null when it has none. The page
+ * exists only for a published, Live entry with Own page on (integrations.md
+ * in the CMS docs, section 4); the CMS only sends published entries here.
+ */
+export const integrationHref = (d?: Partial<Integration> | null): string | null =>
+  d && d.status === 'live' && d.hasOwnPage && d.slug ? `/integrations/${d.slug}` : null
