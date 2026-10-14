@@ -167,7 +167,7 @@ export default async function IntegrationPage({ params }: Args) {
           border:1px solid var(--ncx-rule);border-radius:999px;padding:5px 12px}
         .ncx-iitem h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(36px,4.6vw,56px);line-height:1.06;letter-spacing:-.035em;
-          margin:0;max-width:18ch;text-wrap:balance;color:var(--ncx-ink)}
+          margin:0;text-wrap:balance;color:var(--ncx-ink)}
         .ncx-iitem .sub{margin:24px 0 0;max-width:52ch;font-size:19px;line-height:1.65;color:var(--ncx-muted)}
         .ncx-iitem .cta{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
         .ncx-iitem .btn{font-family:var(--font-display),Arial,sans-serif;font-size:15px;font-weight:500;
@@ -197,7 +197,7 @@ export default async function IntegrationPage({ params }: Args) {
         .ncx-iitem__section{padding-block:72px}
         .ncx-iitem__section.is-band{background:var(--ncx-white);border-block:1px solid var(--ncx-rule)}
         .ncx-iitem__section h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 32px;color:var(--ncx-ink);max-width:26ch}
+          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 32px;color:var(--ncx-ink)}
 
         /* What moves */
         .ncx-iitem__table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.55}
