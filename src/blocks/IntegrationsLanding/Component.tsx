@@ -249,8 +249,7 @@ export const IntegrationsLandingBlock: React.FC<
       {m.fiveThings?.length ? (
         <section className="ncx-ihub__section">
           <div className="ncx-container">
-            {/* Placeholder heading: the master record has no field for it yet. */}
-            <h2>What connecting your systems gives you</h2>
+            <h2>{m.fiveThingsHeading || 'What connecting your systems gives you'}</h2>
             <ol className="ncx-ihub__five">
               {m.fiveThings.map((t, i) => (
                 <li key={t.id || i}>
@@ -267,8 +266,7 @@ export const IntegrationsLandingBlock: React.FC<
       {m.whenFeedsGoWrong?.length ? (
         <section className="ncx-ihub__section ncx-ihub__wrong">
           <div className="ncx-container">
-            {/* Placeholder heading: the master record has no field for it yet. */}
-            <h2>When feeds go wrong</h2>
+            <h2>{m.whenFeedsGoWrongHeading || 'When feeds go wrong'}</h2>
             <dl className="ncx-ihub__rows">
               {m.whenFeedsGoWrong.map((r, i) => (
                 <div className="ncx-ihub__row" key={r.id || i}>
@@ -291,8 +289,7 @@ export const IntegrationsLandingBlock: React.FC<
               </div>
               {apiHref ? (
                 <Link className="btn ghost" href={apiHref}>
-                  {/* Placeholder button text: the API card has no label field yet. */}
-                  Get in touch
+                  {m.apiCard.buttonLabel || 'Get in touch'}
                 </Link>
               ) : null}
             </div>
@@ -303,7 +300,7 @@ export const IntegrationsLandingBlock: React.FC<
       {m.faqs?.length ? (
         <FAQBlock
           blockType="faq"
-          heading="Questions about integrations"
+          heading={m.faqHeading || 'Questions about integrations'}
           items={m.faqs.map((f, i) => ({ id: f.id || String(i), question: f.question, answer: paragraph(f.answer) }))}
           emitSchema
         />
