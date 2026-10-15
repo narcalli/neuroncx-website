@@ -425,12 +425,16 @@ export default async function IntegrationPage({ params }: Args) {
         </div>
       </section>
 
-      <ClosingCtaBlock
-        heading={master?.closing?.heading || 'Connect the systems you already use'}
-        subhead={master?.closing?.subheading || null}
-        primaryLabel={ctaLabel}
-        primaryLink={ctaHref}
-      />
+      {/* Shown unless the item's "Show closing panel" is switched off. Items
+          saved before the switch existed have no value, so they keep it. */}
+      {d.showClosing !== false ? (
+        <ClosingCtaBlock
+          heading={master?.closing?.heading || 'Connect the systems you already use'}
+          subhead={master?.closing?.subheading || null}
+          primaryLabel={ctaLabel}
+          primaryLink={ctaHref}
+        />
+      ) : null}
     </article>
   )
 }
