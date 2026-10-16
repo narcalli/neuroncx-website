@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const CMS_URL = process.env.CMS_URL || 'http://localhost:3001'
+import { getPayloadURL } from '@/utilities/getURL'
 
 /**
  * Receives the contact form and forwards it to the CMS.
@@ -46,8 +46,14 @@ export async function POST(req: NextRequest) {
     sourcePage: String(body?.sourcePage || '').trim(),
   }
 
+  const cms = getPayloadURL()
+  if (!cms) {
+    console.error('Enquiry not sent: no CMS address (NEXT_PUBLIC_PAYLOAD_URL or CMS_URL) is set.')
+    return NextResponse.json({ error: 'Could not save your enquiry' }, { status: 502 })
+  }
+
   try {
-    const res = await fetch(`${CMS_URL.replace(/\/?$/, '')}/api/enquiries`, {
+    const res = await fetch(`${cms}/api/enquiries`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

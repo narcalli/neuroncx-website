@@ -84,8 +84,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   )
 }
 
+// metadataBase only when the site's address is known: without it there are
+// no relative share URLs left to resolve (see mergeOpenGraph, generateMeta).
+const siteUrl = getServerSideURL()
+
 export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
+  ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',

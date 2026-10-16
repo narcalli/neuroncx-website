@@ -8,7 +8,7 @@
  * copy of this logic is meant to move over to it next.
  */
 
-export const CMS_URL = process.env.CMS_URL || 'http://localhost:3001'
+import { getPayloadURL, getServerSideURL } from './getURL'
 
 type MediaSize = { url?: string | null; width?: number | null; height?: number | null }
 
@@ -42,7 +42,7 @@ const isLocalHost = (host: string) =>
  */
 const resizableHosts = (): Set<string> => {
   const hosts = new Set<string>()
-  ;[process.env.NEXT_PUBLIC_SERVER_URL, CMS_URL].forEach((u) => {
+  ;[getServerSideURL(), getPayloadURL()].forEach((u) => {
     const h = hostOf(u)
     if (h) hosts.add(h)
   })
@@ -61,10 +61,14 @@ export const isGifFile = (file: MediaFile): boolean => file.mimeType === 'image/
 export const isSvgFile = (file: MediaFile): boolean =>
   file.mimeType === 'image/svg+xml' || (file.url || '').split('?')[0].toLowerCase().endsWith('.svg')
 
-/** Turns a possibly-relative CMS address into one the browser can fetch. */
+/**
+ * Turns a possibly-relative CMS address into one the browser can fetch. With
+ * no CMS address set, a relative path is returned as it is (never localhost).
+ */
 export const absoluteMediaUrl = (url?: string | null): string | null => {
   if (!url) return null
-  return url.startsWith('/') ? new URL(url, CMS_URL).toString() : url
+  const base = getPayloadURL()
+  return url.startsWith('/') && base ? new URL(url, base).toString() : url
 }
 
 export type PickedMedia = {

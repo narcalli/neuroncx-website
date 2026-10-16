@@ -4,20 +4,22 @@ import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
+import { absoluteMediaUrl } from './media'
 import { getSiteSettings, siteFileUrl } from './siteSettings'
 
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
-  const serverUrl = getServerSideURL()
+// Share tags take full addresses only: Next would resolve a relative one
+// against localhost when the site's address is not set.
+const absoluteOnly = (url?: string | null): string | null =>
+  url && /^https?:\/\//.test(url) ? url : null
 
-  let url = serverUrl + '/website-template-OG.webp'
-
+// A media image's address on the CMS (its "og" size when there is one), else
+// the site's default share image. Null when there is no real address to use.
+const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null): string | null => {
   if (image && typeof image === 'object' && 'url' in image) {
-    const ogUrl = image.sizes?.og?.url
-
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+    return absoluteOnly(absoluteMediaUrl(image.sizes?.og?.url || image.url))
   }
-
-  return url
+  const serverUrl = getServerSideURL()
+  return serverUrl ? `${serverUrl}/website-template-OG.webp` : null
 }
 
 export const generateMeta = async (args: {
@@ -31,10 +33,11 @@ export const generateMeta = async (args: {
   const defaultTitle = settings.defaultTitle || 'Blog'
   const description = doc?.meta?.description || settings.defaultDescription || undefined
 
-  const shareImage = siteFileUrl(settings.defaultShareImage)
+  const shareImage = absoluteOnly(siteFileUrl(settings.defaultShareImage))
   const ogImage = doc?.meta?.image ? getImageURL(doc?.meta?.image) : shareImage || getImageURL(null)
 
   const title = doc?.meta?.title ? doc?.meta?.title + suffix : defaultTitle
+  const siteUrl = getServerSideURL()
 
   return {
     description,
@@ -48,7 +51,11 @@ export const generateMeta = async (args: {
           ]
         : undefined,
       title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
+      // Absolute when the site's address is known; left out otherwise, so it
+      // never resolves against localhost.
+      ...(siteUrl
+        ? { url: Array.isArray(doc?.slug) ? `${siteUrl}/${doc?.slug.join('/')}` : `${siteUrl}/` }
+        : {}),
     }),
     title,
   }

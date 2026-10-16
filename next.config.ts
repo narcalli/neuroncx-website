@@ -8,7 +8,33 @@ import { redirects } from './redirects'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
-const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+// The site's own address and the Payload CMS address (see src/utilities/getURL.ts).
+// localhost only while developing; a production build without them warns
+// instead of quietly pointing pages at localhost.
+const isDev = process.env.NODE_ENV === 'development'
+const SITE_URL = process.env.NEXT_PUBLIC_SERVER_URL || (isDev ? 'http://localhost:3000' : '')
+const PAYLOAD_URLS = [process.env.NEXT_PUBLIC_PAYLOAD_URL, process.env.CMS_URL].filter(
+  (u): u is string => Boolean(u),
+)
+if (isDev && !PAYLOAD_URLS.length) PAYLOAD_URLS.push('http://localhost:3001')
+
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.NEXT_PUBLIC_SERVER_URL) {
+    console.warn(
+      '\n[site URL] NEXT_PUBLIC_SERVER_URL is not set. Share links, canonical links and the sitemap will have no site address. Set it to the public site address, for example https://neuroncx.netlify.app.\n',
+    )
+  }
+  if (!process.env.NEXT_PUBLIC_PAYLOAD_URL) {
+    console.warn(
+      `\n[site URL] NEXT_PUBLIC_PAYLOAD_URL is not set. Images and live preview in the browser cannot reach the CMS${process.env.CMS_URL ? ' (CMS_URL covers server code only)' : ''}. Set it to the Payload CMS address, for example https://main.duebzy83yxxuo.amplifyapp.com.\n`,
+    )
+  }
+}
+
+const patternFor = (value: string) => {
+  const url = new URL(value)
+  return { hostname: url.hostname, protocol: url.protocol.replace(':', '') as 'http' | 'https' }
+}
 
 const nextConfig: NextConfig = {
   sassOptions: {
@@ -22,23 +48,9 @@ const nextConfig: NextConfig = {
     ],
     qualities: [100],
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', '') as 'http' | 'https',
-        }
-      }),
+      ...(SITE_URL ? [patternFor(SITE_URL)] : []),
       // Pictures served by the CMS, for example /api/media/file/... on its own site.
-      ...(process.env.CMS_URL
-        ? [
-            {
-              hostname: new URL(process.env.CMS_URL).hostname,
-              protocol: new URL(process.env.CMS_URL).protocol.replace(':', '') as 'http' | 'https',
-            },
-          ]
-        : []),
+      ...PAYLOAD_URLS.map(patternFor),
       // Direct S3 path-style URLs — bypasses Lambda so Next.js image optimizer
       // fetches source images from S3 directly, avoiding the 6 MB Lambda limit.
       ...(process.env.S3_REGION

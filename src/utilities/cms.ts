@@ -6,12 +6,13 @@
  * imported into a 'use client' component.
  */
 
-const CMS_URL = process.env.CMS_URL || 'http://localhost:3001'
+import { getPayloadURL } from './getURL'
 
 type Query = Record<string, string | number | boolean | undefined>
 
 const buildUrl = (path: string, query?: Query): string => {
-  const url = new URL(path.replace(/^\//, ''), CMS_URL.replace(/\/?$/, '/'))
+  // Throws when no CMS address is set; request() catches it and returns null.
+  const url = new URL(path.replace(/^\//, ''), `${getPayloadURL()}/`)
   if (query) {
     Object.entries(query).forEach(([k, v]) => {
       if (v !== undefined && v !== null) url.searchParams.append(k, String(v))

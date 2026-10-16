@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 
 import { BlockIcon } from '@/components/BlockIcon'
+import { getPayloadURL, getServerSideURL } from '@/utilities/getURL'
 
 type MediaSize = { url?: string | null }
 
@@ -35,8 +36,6 @@ type Props = {
   products?: Product[] | null
 }
 
-const CMS_URL = process.env.CMS_URL || 'http://localhost:3001'
-
 const TINTS = ['violet', 'cyan', 'rose', 'grey']
 
 const hostOf = (value?: string | null): string => {
@@ -51,7 +50,7 @@ const hostOf = (value?: string | null): string => {
 // Keep this list in step with images.remotePatterns there.
 const resizableHosts = (): Set<string> => {
   const hosts = new Set<string>()
-  ;[process.env.NEXT_PUBLIC_SERVER_URL, CMS_URL].forEach((u) => {
+  ;[getServerSideURL(), getPayloadURL()].forEach((u) => {
     const h = hostOf(u)
     if (h) hosts.add(h)
   })
@@ -76,7 +75,8 @@ const pickImage = (image: Product['image'], want: 'card' | 'wide' | 'tall'): Pic
   if (!raw) return null
 
   // Files saved by the CMS often have an address that starts with a slash.
-  const src = raw.startsWith('/') ? new URL(raw, CMS_URL).toString() : raw
+  const base = getPayloadURL()
+  const src = raw.startsWith('/') && base ? new URL(raw, base).toString() : raw
   const host = hostOf(src)
   if (!host) return null
 

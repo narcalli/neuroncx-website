@@ -3,7 +3,9 @@ declare global {
     interface ProcessEnv {
       PAYLOAD_SECRET: string
       DATABASE_URL: string
-      NEXT_PUBLIC_SERVER_URL: string
+      NEXT_PUBLIC_SERVER_URL?: string
+      NEXT_PUBLIC_PAYLOAD_URL?: string
+      CMS_URL?: string
       CRON_SECRET: string
       PREVIEW_SECRET: string
       S3_REGION: string

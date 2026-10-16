@@ -1,4 +1,4 @@
-import { getClientSideURL } from './getURL'
+import { getPayloadURL } from './getURL'
 
 /**
  * Processes media resource URL to ensure proper formatting
@@ -6,9 +6,9 @@ import { getClientSideURL } from './getURL'
  * @param cacheTag Optional cache tag to append to the URL
  * @returns Properly formatted URL with cache tag if provided
  *
- * For local paths (e.g. `/api/media/file/image.webp`) we resolve to absolute
- * URLs in runtime environments like Amplify, where Next.js image optimization
- * cannot self-fetch from localhost in serverless functions.
+ * Media files live on the Payload CMS, not on this site, so a local path
+ * (e.g. `/api/media/file/image.webp`) is resolved against the CMS address.
+ * When that address is not set, the path is left as it is.
  */
 export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | null): string => {
   if (!url) return ''
@@ -16,7 +16,7 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
   let resolvedURL = url
 
   if (url.startsWith('/')) {
-    const baseURL = getClientSideURL() || process.env.NEXT_PUBLIC_SERVER_URL || ''
+    const baseURL = getPayloadURL()
 
     if (baseURL) {
       resolvedURL = new URL(url, baseURL).toString()

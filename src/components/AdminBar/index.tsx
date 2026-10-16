@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 
 import './index.scss'
 
-import { getClientSideURL } from '@/utilities/getURL'
+import { getPayloadURL } from '@/utilities/getURL'
 
 const baseClass = 'admin-bar'
 
@@ -62,7 +62,7 @@ export const AdminBar: React.FC<{
             logo: 'text-white',
             user: 'text-white',
           }}
-          cmsURL={getClientSideURL()}
+          cmsURL={getPayloadURL()}
           collectionSlug={collection}
           collectionLabels={{
             plural: collectionLabels[collection]?.plural || 'Pages',
