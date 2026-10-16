@@ -10,6 +10,7 @@ import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/utilities/siteDefaults'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
@@ -88,11 +89,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 // no relative share URLs left to resolve (see mergeOpenGraph, generateMeta).
 const siteUrl = getServerSideURL()
 
+// The site-wide defaults (siteDefaults.ts). Each page's own metadata replaces them.
 export const metadata: Metadata = {
   ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
-    creator: '@payloadcms',
+    // TODO: add `creator` (and `site`) once NeuronCx has an X/Twitter handle.
   },
 }

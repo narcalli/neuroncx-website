@@ -1,22 +1,25 @@
 import type { Metadata } from 'next'
-import { getServerSideURL } from './getURL'
 
-const siteUrl = getServerSideURL()
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, defaultShareImage } from './siteDefaults'
 
-// The default share image needs the site's address. Without one it is left
-// out rather than pointing at localhost.
-const defaultOpenGraph: Metadata['openGraph'] = {
-  type: 'website',
-  description: 'An open-source blog built with Payload CMS and Next.js.',
-  ...(siteUrl ? { images: [{ url: `${siteUrl}/website-template-OG.webp` }] } : {}),
-  siteName: 'Blog',
-  title: 'Blog',
+// The site-wide Open Graph defaults. A page's own values replace them; the
+// default image is left out when the site's address is not set.
+const defaultOpenGraph = (): Metadata['openGraph'] => {
+  const image = defaultShareImage()
+  return {
+    type: 'website',
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    ...(image ? { images: [image] } : {}),
+  }
 }
 
 export const mergeOpenGraph = (og?: Metadata['openGraph']): Metadata['openGraph'] => {
+  const defaults = defaultOpenGraph()
   return {
-    ...defaultOpenGraph,
+    ...defaults,
     ...og,
-    images: og?.images ? og.images : defaultOpenGraph.images,
+    images: og?.images ? og.images : defaults?.images,
   }
 }

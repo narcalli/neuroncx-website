@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
-import { getServerSideURL } from './getURL'
 import { absoluteMediaUrl } from './media'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, siteUrlFor } from './siteDefaults'
 import { getSiteSettings, siteFileUrl } from './siteSettings'
 
 // Share tags take full addresses only: Next would resolve a relative one
@@ -12,51 +12,43 @@ import { getSiteSettings, siteFileUrl } from './siteSettings'
 const absoluteOnly = (url?: string | null): string | null =>
   url && /^https?:\/\//.test(url) ? url : null
 
-// A media image's address on the CMS (its "og" size when there is one), else
-// the site's default share image. Null when there is no real address to use.
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null): string | null => {
-  if (image && typeof image === 'object' && 'url' in image) {
-    return absoluteOnly(absoluteMediaUrl(image.sizes?.og?.url || image.url))
-  }
-  const serverUrl = getServerSideURL()
-  return serverUrl ? `${serverUrl}/website-template-OG.webp` : null
-}
+// A media image's address on the CMS (its "og" size when there is one).
+const mediaImageURL = (image?: Media | Config['db']['defaultIDType'] | null): string | null =>
+  image && typeof image === 'object' && 'url' in image
+    ? absoluteOnly(absoluteMediaUrl(image.sizes?.og?.url || image.url))
+    : null
 
+/**
+ * Metadata for a CMS page or post. Each value comes from the page's own SEO
+ * fields first, then the CMS Site Settings, then the site defaults
+ * (siteDefaults.ts). `path` is the page's address on this site, for og:url.
+ */
 export const generateMeta = async (args: {
   doc: Partial<Page> | Partial<Post> | null
+  path?: string
 }): Promise<Metadata> => {
-  const { doc } = args
+  const { doc, path } = args
   const settings = await getSiteSettings()
 
-  // Site Settings supply the defaults. Until they are filled in, the old values apply.
-  const suffix = settings.titleSuffix ?? ' | Blog'
-  const defaultTitle = settings.defaultTitle || 'Blog'
-  const description = doc?.meta?.description || settings.defaultDescription || undefined
+  const siteName = settings.siteName || SITE_NAME
+  const suffix = settings.titleSuffix ?? ''
+  const title = doc?.meta?.title ? doc.meta.title + suffix : settings.defaultTitle || DEFAULT_TITLE
+  const description = doc?.meta?.description || settings.defaultDescription || DEFAULT_DESCRIPTION
 
-  const shareImage = absoluteOnly(siteFileUrl(settings.defaultShareImage))
-  const ogImage = doc?.meta?.image ? getImageURL(doc?.meta?.image) : shareImage || getImageURL(null)
-
-  const title = doc?.meta?.title ? doc?.meta?.title + suffix : defaultTitle
-  const siteUrl = getServerSideURL()
+  // The page's own share image, else the Site Settings one; with neither,
+  // mergeOpenGraph supplies the site's default image.
+  const image = mediaImageURL(doc?.meta?.image) || absoluteOnly(siteFileUrl(settings.defaultShareImage))
+  const url = path ? siteUrlFor(path) : undefined
 
   return {
+    title,
     description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-            },
-          ]
-        : undefined,
+      siteName,
       title,
-      // Absolute when the site's address is known; left out otherwise, so it
-      // never resolves against localhost.
-      ...(siteUrl
-        ? { url: Array.isArray(doc?.slug) ? `${siteUrl}/${doc?.slug.join('/')}` : `${siteUrl}/` }
-        : {}),
+      description,
+      ...(image ? { images: [{ url: image }] } : {}),
+      ...(url ? { url } : {}),
     }),
-    title,
   }
 }

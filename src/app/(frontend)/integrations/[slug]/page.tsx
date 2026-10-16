@@ -14,6 +14,8 @@ import { CMS_TAG, getGlobal, getMany } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { integrationHref } from '@/utilities/integrations'
 import { pickMedia, type MediaValue } from '@/utilities/media'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { defaultShareImage } from '@/utilities/siteDefaults'
 import type {
   ConnectionType,
   Header,
@@ -122,8 +124,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const description = d.meta?.description || d.summary || undefined
   const origin = siteOrigin()
   const canonical = origin ? `${origin}/integrations/${slug}` : undefined
-  // The item's own share image only (its "og" size when there is one). The
-  // site-wide default image is not inherited, and a local address is never used.
+  // The item's own share image (its "og" size when there is one), else the
+  // site's default share image. A local address is never used.
   const picked = pickMedia(d.meta?.image as MediaValue, 'og')
   const image =
     picked && !isLocalHost(new URL(picked.src).hostname)
@@ -135,25 +137,24 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
         }
       : null
 
-  // openGraph and twitter replace the layout's site-wide defaults here, so
-  // none of those ("Blog", the template description, the localhost image)
-  // carries over to this page.
+  const shareImage = image?.url || defaultShareImage()?.url
+
+  // The item's own values, over the site-wide defaults (siteDefaults.ts).
   return {
     title,
     description,
     ...(canonical ? { alternates: { canonical } } : {}),
-    openGraph: {
-      type: 'website',
+    openGraph: mergeOpenGraph({
       title,
       description,
       ...(canonical ? { url: canonical } : {}),
       ...(image ? { images: [image] } : {}),
-    },
+    }),
     twitter: {
-      card: image ? 'summary_large_image' : 'summary',
+      card: shareImage ? 'summary_large_image' : 'summary',
       title,
       description,
-      ...(image ? { images: [image.url] } : {}),
+      ...(shareImage ? { images: [shareImage] } : {}),
     },
   }
 }

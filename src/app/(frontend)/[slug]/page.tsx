@@ -70,7 +70,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug({ slug: decodedSlug })
 
-  return generateMeta({ doc: page as any })
+  return generateMeta({ doc: page as any, path: decodedSlug === 'home' ? '/' : `/${decodedSlug}` })
 }
 
 /**
