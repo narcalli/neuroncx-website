@@ -37,7 +37,8 @@ export const generateMeta = async (args: {
 
   // The page's own share image, else the Site Settings one; with neither,
   // mergeOpenGraph supplies the site's default image.
-  const image = mediaImageURL(doc?.meta?.image) || absoluteOnly(siteFileUrl(settings.defaultShareImage))
+  const image =
+    mediaImageURL(doc?.meta?.image) || absoluteOnly(siteFileUrl(settings.defaultShareImage))
   const url = path ? siteUrlFor(path) : undefined
 
   return {

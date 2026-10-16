@@ -14,7 +14,12 @@ export const DEFAULT_DESCRIPTION =
   'NeuronCx is a CRM and omnichannel customer experience platform that brings every customer conversation and record into one place, for businesses in any industry.'
 
 /** The default share image, served from this site's public folder: 1200 x 630 pixels. */
-export const DEFAULT_OG_IMAGE = { path: '/og-default.webp', width: 1200, height: 630, alt: 'NeuronCx' }
+export const DEFAULT_OG_IMAGE = {
+  path: '/og-default.webp',
+  width: 1200,
+  height: 630,
+  alt: 'NeuronCx',
+}
 
 /**
  * The default share image as a full address on this site, or null when the
