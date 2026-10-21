@@ -26,12 +26,18 @@ export type CardDesignName = keyof typeof CARD_DESIGNS
 export const isCardDesign = (name: unknown): name is CardDesignName =>
   typeof name === 'string' && Object.prototype.hasOwnProperty.call(CARD_DESIGNS, name)
 
+/** Options only some designs read; the others ignore them. */
+export type CardDesignOptions = {
+  /** Logo card: the "All integrations" card at the end. */
+  showAllLink?: boolean
+}
+
 /** Renders the named design; an unknown or missing name falls back to the grid. */
 export const CardDesign = ({
   design,
   ...props
-}: CardDesignProps & { design?: string | null }): React.ReactElement => {
-  const Design: React.ComponentType<CardDesignProps> = isCardDesign(design)
+}: CardDesignProps & CardDesignOptions & { design?: string | null }): React.ReactElement => {
+  const Design: React.ComponentType<CardDesignProps & CardDesignOptions> = isCardDesign(design)
     ? CARD_DESIGNS[design]
     : CARD_DESIGNS.grid
   return React.createElement(Design, props)

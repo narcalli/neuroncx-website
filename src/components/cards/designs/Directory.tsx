@@ -8,13 +8,16 @@ import type { CardDesignProps } from '../types'
 /**
  * The directory design: the customer directory's cards, with filter pills
  * above them. Each item's badge is its tag and becomes a filter, so items
- * filter by, for example, category. A title links when its item has its own
- * page. Cards with gaps, so `lastRow` does not apply.
+ * filter by, for example, category. The filters show only when there are at
+ * least two tags to choose between (a block grouped by category has one per
+ * group, under its heading). A title links when its item has its own page.
+ * Cards with gaps, so `lastRow` does not apply.
  */
 export const CardDirectory: React.FC<
   CardDesignProps & { layout?: 'grid' | 'list'; filterLabel?: string }
 > = ({ items, columns, layout = 'grid', filterLabel = 'Filter by category' }) => {
   if (!items.length) return null
+  const tags = new Set(items.map((it) => it.badge).filter(Boolean))
   return (
     <div className="ncx-cdir">
       <style>{`${directoryListCss}
@@ -27,7 +30,7 @@ export const CardDirectory: React.FC<
           summary: it.text || it.tagline || '',
           sectors: it.badge ? [{ id: it.badge, name: it.badge }] : [],
         }))}
-        showFilters
+        showFilters={tags.size > 1}
         layout={layout}
         emptyStateText="Nothing to show yet."
         columns={columns}

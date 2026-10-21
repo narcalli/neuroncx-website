@@ -82,6 +82,7 @@ export interface Config {
     integrationCategories: IntegrationCategory;
     connectionTypes: ConnectionType;
     products: Product;
+    ncxPostContents: NcxPostContent;
     redirects: Redirect;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
@@ -111,6 +112,7 @@ export interface Config {
     integrationCategories: IntegrationCategoriesSelect<false> | IntegrationCategoriesSelect<true>;
     connectionTypes: ConnectionTypesSelect<false> | ConnectionTypesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    ncxPostContents: NcxPostContentsSelect<false> | NcxPostContentsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -2999,6 +3001,32 @@ export interface IntegrationsBlock {
   featuredOnly?: boolean | null;
   selectedDocs?: (string | Integration)[] | null;
   limit?: number | null;
+  cardDesign: {
+    design: 'grid' | 'logoCard' | 'directory' | 'feature' | 'story' | 'pill';
+    /**
+     * Leave empty to fit as many as the width allows.
+     */
+    columns?: ('2' | '3' | '4') | null;
+    lastRow?: ('stretch' | 'center' | 'leave') | null;
+    /**
+     * Show a heading for each category.
+     */
+    groupByCategory?: boolean | null;
+    /**
+     * Used only for integrations that have their own page.
+     */
+    linkLabel?: string | null;
+    look?: {
+      cardColor?: ('grey' | 'lavender' | 'white') | null;
+      border?: ('none' | 'solid' | 'gradient') | null;
+      borderColor?: ('blue' | 'violet' | 'crimson' | 'navy') | null;
+      /**
+       * A thin rule under the content, matches the border color.
+       */
+      accentLine?: boolean | null;
+    };
+    showAllLink?: boolean | null;
+  };
   items?:
     | {
         name: string;
@@ -4717,6 +4745,32 @@ export interface Enquiry {
   createdAt: string;
 }
 /**
+ * Website sections sent to NeuronCX post content for the WhatsApp bot. New ones wait for approval in the NCX dashboard.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ncxPostContents".
+ */
+export interface NcxPostContent {
+  id: string;
+  key: string;
+  sourceCollection: string;
+  sourceId: string;
+  sectionKey: string;
+  title?: string | null;
+  pcmId?: number | null;
+  /**
+   * Empty when the section needs sending again, or is archived.
+   */
+  hash?: string | null;
+  /**
+   * The section left the site, so its post content is archived in NCX.
+   */
+  archived?: boolean | null;
+  syncedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -4964,6 +5018,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'ncxPostContents';
+        value: string | NcxPostContent;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -5956,6 +6014,24 @@ export interface IntegrationsBlockSelect<T extends boolean = true> {
   featuredOnly?: T;
   selectedDocs?: T;
   limit?: T;
+  cardDesign?:
+    | T
+    | {
+        design?: T;
+        columns?: T;
+        lastRow?: T;
+        groupByCategory?: T;
+        linkLabel?: T;
+        look?:
+          | T
+          | {
+              cardColor?: T;
+              border?: T;
+              borderColor?: T;
+              accentLine?: T;
+            };
+        showAllLink?: T;
+      };
   items?:
     | T
     | {
@@ -7220,6 +7296,23 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ncxPostContents_select".
+ */
+export interface NcxPostContentsSelect<T extends boolean = true> {
+  key?: T;
+  sourceCollection?: T;
+  sourceId?: T;
+  sectionKey?: T;
+  title?: T;
+  pcmId?: T;
+  hash?: T;
+  archived?: T;
+  syncedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -7734,8 +7827,9 @@ export interface TaskRagSyncDoc {
     locale?: string | null;
   };
   output: {
-    chunksEmbedded?: number | null;
-    chunksDeleted?: number | null;
+    sent?: number | null;
+    unchanged?: number | null;
+    archived?: number | null;
   };
 }
 /**
@@ -7748,7 +7842,9 @@ export interface TaskRagPurgeDoc {
     id: string;
   };
   output: {
-    chunksDeleted?: number | null;
+    sent?: number | null;
+    unchanged?: number | null;
+    archived?: number | null;
   };
 }
 /**

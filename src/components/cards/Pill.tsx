@@ -11,6 +11,9 @@ import styles from './Pill.module.css'
  * `duplicate` and `repeat` are for the marquee: copies it adds to make the
  * loop seamless or to fill a row. Both are hidden from assistive tech, and
  * `repeat` is also marked so the marquee can hide it under reduced motion.
+ *
+ * `wrap` is for a still list: a long name wraps onto a second line instead
+ * of running off a narrow screen. The marquee keeps every pill on one line.
  */
 export const Pill: React.FC<{
   name: string
@@ -19,9 +22,10 @@ export const Pill: React.FC<{
   logo?: { src: string; unoptimized?: boolean } | null
   duplicate?: boolean
   repeat?: boolean
-}> = ({ name, initial, logo, duplicate, repeat }) => (
+  wrap?: boolean
+}> = ({ name, initial, logo, duplicate, repeat, wrap }) => (
   <div
-    className={styles.pill}
+    className={wrap ? `${styles.pill} ${styles.wrap}` : styles.pill}
     aria-hidden={duplicate || repeat || undefined}
     data-repeat={repeat ? 'true' : undefined}
   >

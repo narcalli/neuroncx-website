@@ -15,6 +15,7 @@ export const CardPills: React.FC<CardDesignProps> = ({ items }) => {
     <>
       <style>{`
         .ncx-cpills{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px}
+        .ncx-cpills > li{max-width:100%}
         .ncx-cpills a{display:block;border-radius:12px;text-decoration:none;transition:box-shadow .18s ease}
         .ncx-cpills a:hover{box-shadow:var(--ncx-shadow)}
         .ncx-cpills a:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
@@ -28,6 +29,7 @@ export const CardPills: React.FC<CardDesignProps> = ({ items }) => {
               name={it.title}
               initial={it.initial}
               logo={it.logo ? { src: it.logo.src, unoptimized: true } : null}
+              wrap
             />
           )
           return <li key={it.id}>{it.href ? <Link href={it.href}>{pill}</Link> : pill}</li>

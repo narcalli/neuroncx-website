@@ -25,6 +25,8 @@ export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
         .ncx-cstory__grid{list-style:none;margin:0;padding:0;display:grid;gap:32px;grid-template-columns:1fr}
         @media(min-width:860px){.ncx-cstory__grid{grid-template-columns:repeat(var(--cstory-cols),minmax(0,1fr))}}
         ${caseCardCss}
+        /* A long name on the placeholder art keeps clear of the edges. */
+        .ncx-cstory .ncx-cs__lockup{padding-inline:24px}
       `}</style>
       <ol className="ncx-cstory__grid">
         {items.map((it, i) => (

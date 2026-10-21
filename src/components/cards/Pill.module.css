@@ -46,3 +46,13 @@
   color: #1a2035;
   white-space: nowrap;
 }
+
+/* In a still list a long name wraps rather than running off a narrow
+   screen. The marquee does not use this. */
+.wrap {
+  max-width: 100%;
+}
+
+.wrap .name {
+  white-space: normal;
+}
