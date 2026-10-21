@@ -52,8 +52,10 @@ export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-integrations .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
+        /* The heading takes the full column, so it sits on one line wherever
+           it fits; on narrow screens it wraps into balanced lines. */
         .ncx-integrations h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:22ch}
+          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0;text-wrap:balance}
         .ncx-integrations .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
         .ncx-integrations .grid{margin-top:44px;display:grid;
           grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;
