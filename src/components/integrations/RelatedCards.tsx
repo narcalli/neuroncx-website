@@ -47,11 +47,19 @@ const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null 
  * a link only when that integration has its own page. Cards rise in one
  * after another as the row scrolls into view (CSS only); under reduced
  * motion nothing moves.
+ *
+ * Also the logo card design (components/cards), which can leave out the end
+ * card (`showAllLink`) and set the cards per row on wide screens (`columns`,
+ * 4 by default).
  */
-export const RelatedCards: React.FC<{ cards: RelatedCard[] }> = ({ cards }) => (
+export const RelatedCards: React.FC<{
+  cards: RelatedCard[]
+  showAllLink?: boolean
+  columns?: 2 | 3 | 4
+}> = ({ cards, showAllLink = true, columns }) => (
   <>
     <style>{`
-      .ncx-irel{list-style:none;margin:0;padding:0;display:grid;gap:16px;grid-template-columns:repeat(4,minmax(0,1fr))}
+      .ncx-irel{list-style:none;margin:0;padding:0;display:grid;gap:16px;grid-template-columns:repeat(var(--irel-cols,4),minmax(0,1fr))}
       .ncx-irel > li{display:flex}
       .ncx-irel__card{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:12px;
         background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-card);
@@ -86,10 +94,17 @@ export const RelatedCards: React.FC<{ cards: RelatedCard[] }> = ({ cards }) => (
       @media(prefers-reduced-motion:reduce){a.ncx-irel__card:hover{transform:none}}
       @keyframes ncxRelRise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
-      @media(max-width:1023.98px){.ncx-irel{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:1023.98px){.ncx-irel{grid-template-columns:repeat(var(--irel-mid,2),minmax(0,1fr))}}
       @media(max-width:639.98px){.ncx-irel{grid-template-columns:minmax(0,1fr)}}
     `}</style>
-    <ul className="ncx-irel">
+    <ul
+      className="ncx-irel"
+      style={
+        columns
+          ? ({ '--irel-cols': columns, '--irel-mid': Math.min(columns, 2) } as React.CSSProperties)
+          : undefined
+      }
+    >
       {cards.map((c, i) => {
         const icon = c.logoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -98,7 +113,7 @@ export const RelatedCards: React.FC<{ cards: RelatedCard[] }> = ({ cards }) => (
           <span className="ncx-irel__letter">{c.name.charAt(0)}</span>
         )
         return (
-          <li key={c.id} style={{ '--i': i % 4 } as React.CSSProperties}>
+          <li key={c.id} style={{ '--i': i % (columns || 4) } as React.CSSProperties}>
             {c.href ? (
               <Link className="ncx-irel__card" href={c.href}>
                 <Body icon={icon} name={c.name} text={c.text} />
@@ -111,15 +126,17 @@ export const RelatedCards: React.FC<{ cards: RelatedCard[] }> = ({ cards }) => (
           </li>
         )
       })}
-      <li style={{ '--i': cards.length % 4 } as React.CSSProperties}>
-        <Link className="ncx-irel__card is-all" href="/integrations">
-          <Body
-            icon={<GridIcon />}
-            name="All integrations"
-            text="Phone systems, CRMs, payments and more"
-          />
-        </Link>
-      </li>
+      {showAllLink ? (
+        <li style={{ '--i': cards.length % (columns || 4) } as React.CSSProperties}>
+          <Link className="ncx-irel__card is-all" href="/integrations">
+            <Body
+              icon={<GridIcon />}
+              name="All integrations"
+              text="Phone systems, CRMs, payments and more"
+            />
+          </Link>
+        </li>
+      ) : null}
     </ul>
   </>
 )

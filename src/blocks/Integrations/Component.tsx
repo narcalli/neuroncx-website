@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import React from 'react'
 
+import { CardGrid } from '@/components/cards/designs/Grid'
 import type { Integration, IntegrationsBlock as IntegrationsBlockProps } from '@/payload-types'
 import { integrationHref, loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { absoluteMediaUrl } from '@/utilities/media'
@@ -57,61 +57,27 @@ export const IntegrationsBlock = async (props: IntegrationsBlockProps) => {
         .ncx-integrations h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0;text-wrap:balance}
         .ncx-integrations .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
-        .ncx-integrations .grid{margin-top:44px;display:grid;
-          grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;
-          background:var(--ncx-rule);border:1px solid var(--ncx-rule);border-radius:12px;overflow:hidden}
-        .ncx-integrations .cell{background:var(--ncx-white);padding:24px 22px;display:flex;gap:14px;align-items:flex-start}
-        .ncx-integrations .mark{width:34px;height:34px;flex:0 0 34px;border-radius:8px;background:var(--ncx-cloud);
-          display:flex;align-items:center;justify-content:center;overflow:hidden}
-        .ncx-integrations .mark img{max-width:26px;max-height:26px;width:auto;height:auto;
-          object-fit:contain;mix-blend-mode:multiply}
-        .ncx-integrations .initial{font-family:var(--font-display),Arial,sans-serif;font-size:15px;
-          font-weight:500;color:var(--ncx-muted)}
-        .ncx-integrations .name{font-family:var(--font-display),Arial,sans-serif;font-size:16px;
-          font-weight:500;margin:0}
-        .ncx-integrations .summary{margin:6px 0 0;color:var(--ncx-muted);font-size:15px;line-height:1.55}
-        a.cell{text-decoration:none;color:inherit;transition:background .18s ease}
-        a.cell:hover{background:var(--ncx-cloud)}
-        a.cell:hover .name{text-decoration:underline;text-underline-offset:3px}
-        a.cell:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:-2px}
+        /* The cells themselves are the grid card design (components/cards). */
+        .ncx-integrations .ncx-cgrid{margin-top:44px}
         .ncx-integrations .footnote{margin:24px 0 0;color:var(--ncx-muted);font-size:16px}
         @media(max-width:820px){.ncx-integrations{padding-block:36px}
-          .ncx-integrations .grid{margin-top:32px}}
+          .ncx-integrations .ncx-cgrid{margin-top:32px}}
       `}</style>
 
       {label ? <p className="label">{label}</p> : null}
       {heading ? <h2>{heading}</h2> : null}
       {intro ? <p className="intro">{intro}</p> : null}
 
-      <div className="grid">
-        {list.map((it) => {
-          const body = (
-            <>
-              <div className="mark">
-                {it.logoUrl ? (
-                  <img src={it.logoUrl} alt="" loading="lazy" />
-                ) : (
-                  <span className="initial">{(it.name || '?').charAt(0)}</span>
-                )}
-              </div>
-              <div>
-                <p className="name">{it.name}</p>
-                {it.summary ? <p className="summary">{it.summary}</p> : null}
-              </div>
-            </>
-          )
-          // An entry with its own page links to it; the rest are plain cells.
-          return it.href ? (
-            <Link className="cell" href={it.href} key={it.id}>
-              {body}
-            </Link>
-          ) : (
-            <div className="cell" key={it.id}>
-              {body}
-            </div>
-          )
-        })}
-      </div>
+      <CardGrid
+        items={list.map((it) => ({
+          id: it.id,
+          title: it.name,
+          text: it.summary,
+          logo: it.logoUrl ? { src: it.logoUrl, alt: '' } : null,
+          initial: (it.name || '?').charAt(0),
+          href: it.href,
+        }))}
+      />
 
       {footnote ? <p className="footnote">{footnote}</p> : null}
     </section>
