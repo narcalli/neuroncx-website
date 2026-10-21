@@ -139,6 +139,9 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
   const closeTimer = useRef<number | null>(null)
   const panels = useRef(new Map<number, HTMLDivElement | null>())
   const triggers = useRef(new Map<number, HTMLButtonElement | null>())
+  // The pointer that pressed a dropdown trigger ("mouse", "touch", "pen"),
+  // read by its focus and click handlers; empty for the keyboard.
+  const pressedWith = useRef('')
   const [open, setOpen] = useState<number | null>(null)
   const pathname = usePathname()
 
@@ -454,13 +457,30 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
         />
       ) : null}
 
-      <div className="ncx-scrim" aria-hidden="true" onMouseEnter={() => setOpen(null)} />
+      {/* Behind an open dropdown: a mouse moving onto it, or a tap on it,
+          closes the dropdown. */}
+      <div
+        className="ncx-scrim"
+        aria-hidden="true"
+        onPointerEnter={(e) => {
+          if (e.pointerType === 'mouse') setOpen(null)
+        }}
+        onClick={() => setOpen(null)}
+      />
 
       <header className="ncx-nav" ref={navRef}>
         <div className="ncx-nav__in">
           {mark}
 
-          <nav className="ncx-nav__links" onMouseLeave={closeSoon} onMouseEnter={hold}>
+          <nav
+            className="ncx-nav__links"
+            onPointerLeave={(e) => {
+              if (e.pointerType === 'mouse') closeSoon()
+            }}
+            onPointerEnter={(e) => {
+              if (e.pointerType === 'mouse') hold()
+            }}
+          >
             {items.map((item, i) => {
               const { links, isDropdown } = entryFor(item)
 
@@ -476,10 +496,20 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
               const panelId = `ncx-menu-${item.id || i}`
 
               return (
+                // How a dropdown opens and closes, by the input that drives it:
+                // - mouse: hovering opens it; a click on the trigger opens it
+                //   and never closes it; leaving the menu closes it.
+                // - keyboard: focusing the trigger opens it; Enter or Space
+                //   keep it open; Escape closes it, focus staying put.
+                // - touch or pen: no hover. The first tap opens it, a second
+                //   tap on the same trigger closes it, a tap outside closes it.
+                // Told apart by each event's pointerType, not by the device,
+                // so a laptop with a touch screen works with either.
                 <div
                   key={item.id || i}
                   className={`ncx-navitem${open === i ? ' is-open' : ''}`}
-                  onMouseEnter={() => {
+                  onPointerEnter={(e) => {
+                    if (e.pointerType !== 'mouse') return
                     hold()
                     setOpen(i)
                   }}
@@ -492,8 +522,24 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
                     }}
                     aria-expanded={open === i}
                     aria-controls={panelId}
-                    onClick={() => setOpen((cur) => (cur === i ? null : i))}
-                    onFocus={() => setOpen(i)}
+                    onPointerDown={(e) => {
+                      pressedWith.current = e.pointerType
+                    }}
+                    onFocus={() => {
+                      // Focus from a press is left to the click below; only
+                      // keyboard focus opens the menu here.
+                      if (!pressedWith.current) setOpen(i)
+                    }}
+                    onBlur={() => {
+                      // A press dragged off the trigger never clicks; forget it.
+                      pressedWith.current = ''
+                    }}
+                    onClick={() => {
+                      const tapped = pressedWith.current !== '' && pressedWith.current !== 'mouse'
+                      pressedWith.current = ''
+                      if (tapped) setOpen((cur) => (cur === i ? null : i))
+                      else setOpen(i)
+                    }}
                   >
                     {item.label}
                     <Chevron />
