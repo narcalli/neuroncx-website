@@ -218,6 +218,17 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
   .ncx-mark__img{width:26px;height:26px}
   .ncx-topbar__in{font-size:12.5px;gap:9px;padding-right:40px}
 }
+/* Phones: the bar keeps the logo, Book a demo and the menu button. Sign in is
+   in the drawer's footer at this width. */
+@media (max-width:480px){
+  .ncx-nav__right .ncx-ghost{display:none}
+}
+/* The smallest phones: a slightly smaller logo pill, so the bar still fits
+   inside its side padding at 320px. */
+@media (max-width:360px){
+  .ncx-mark{font-size:14px;gap:7px;padding:5px 12px 5px 6px}
+  .ncx-mark__img{width:24px;height:24px}
+}
 /* ---------- menu button ----------
    Hidden by default and shown below 900px. Both display rules live here and
    nowhere else, so no other rule can override either one. */
@@ -233,6 +244,12 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
 .ncx-burger__label{font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;line-height:1}
 .ncx-burger__bars{display:flex;flex-direction:column;gap:5px}
 .ncx-burger__bars i{display:block;width:16px;height:2px;border-radius:2px;background:currentColor}
+/* Phones: icon only, a round 44px button. The aria-label (Open menu, Close
+   menu) still names it. */
+@media (max-width:480px){
+  .ncx-burger{width:44px;padding:0;justify-content:center}
+  .ncx-burger__label{display:none}
+}
 
 /* ---------- menu drawer ----------
    Full screen inside the viewport, above the bar (z 60) and the WhatsApp
