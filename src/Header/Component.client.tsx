@@ -44,6 +44,18 @@ const linksFor = (item: NavItem): Link[] => {
   return out
 }
 
+/**
+ * An item's links, and whether it opens a dropdown. A row that predates the
+ * type field reads back as "link", because that is the field's default, so
+ * the field alone cannot decide: a row is a plain link when it was explicitly
+ * set to one *and* has somewhere to go; otherwise its links win. Shared by the
+ * bar and the drawer, so both always agree.
+ */
+const entryFor = (item: NavItem): { links: Link[]; isDropdown: boolean } => {
+  const links = linksFor(item)
+  return { links, isDropdown: links.length > 0 && !(item.type === 'link' && item.href) }
+}
+
 const isExternal = (href?: string | null) => /^https?:\/\//.test(String(href || ''))
 
 /** Perceived brightness of a computed colour, or null when it is transparent. */
@@ -72,7 +84,7 @@ const backdropAt = (x: number, y: number): { section: number | null; nearest: nu
   const stack = document.elementsFromPoint(x, y)
   let nearest: number | null = null
   for (const hit of stack) {
-    if (hit.closest('.ncx-nav, .ncx-scrim, .ncx-topbar')) continue
+    if (hit.closest('.ncx-nav, .ncx-scrim, .ncx-topbar, .ncx-drawer')) continue
     let node: Element | null = hit
     while (node && node !== document.body && node !== document.documentElement) {
       const lum = luminanceOf(window.getComputedStyle(node).backgroundColor)
@@ -128,6 +140,8 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
   const panels = useRef(new Map<number, HTMLDivElement | null>())
   const triggers = useRef(new Map<number, HTMLButtonElement | null>())
   const [open, setOpen] = useState<number | null>(null)
+  // The menu drawer. Opened by the menu button, closed by its close button.
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = usePathname()
 
   // The panel is centred under its trigger, then clamped inside the header so
@@ -287,6 +301,19 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
 
   const signInHref = data.signInHref || 'https://dash.neuroncx.in'
 
+  const mark = (
+    <Link className="ncx-mark" href="/">
+      {logoSrc ? (
+        // Decorative: the wordmark beside it already says NeuronCx.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="ncx-mark__img" src={logoSrc} alt="" width={20} height={20} />
+      ) : (
+        <span className="ncx-mark__dot" aria-hidden="true" />
+      )}
+      NeuronCx
+    </Link>
+  )
+
   return (
     <>
       <style>{headerCss}</style>
@@ -303,25 +330,11 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
 
       <header className="ncx-nav" ref={navRef}>
         <div className="ncx-nav__in">
-          <Link className="ncx-mark" href="/">
-            {logoSrc ? (
-              // Decorative: the wordmark beside it already says NeuronCx.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="ncx-mark__img" src={logoSrc} alt="" width={20} height={20} />
-            ) : (
-              <span className="ncx-mark__dot" aria-hidden="true" />
-            )}
-            NeuronCx
-          </Link>
+          {mark}
 
           <nav className="ncx-nav__links" onMouseLeave={closeSoon} onMouseEnter={hold}>
             {items.map((item, i) => {
-              const links = linksFor(item)
-              // A row that predates the type field reads back as "link",
-              // because that is the field's default — so the field alone
-              // cannot decide. A row is a plain link when it was explicitly
-              // set to one *and* has somewhere to go; otherwise its links win.
-              const isDropdown = links.length > 0 && !(item.type === 'link' && item.href)
+              const { links, isDropdown } = entryFor(item)
 
               if (!isDropdown) {
                 if (!item.href) return null
@@ -404,13 +417,14 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
           </div>
 
           {/* Shown at phone and tablet width only (headerStyles.ts). Opens the
-              menu drawer once that exists; does nothing yet. */}
+              menu drawer below. */}
           <button
             className="ncx-burger"
             type="button"
-            aria-expanded={false}
+            aria-expanded={drawerOpen}
             aria-controls="ncx-drawer"
             aria-label="Open menu"
+            onClick={() => setDrawerOpen(true)}
           >
             <span className="ncx-burger__bars" aria-hidden="true">
               <i />
@@ -421,6 +435,96 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
           </button>
         </div>
       </header>
+
+      {/* The menu drawer for phone and tablet width: the same items as the bar,
+          full screen. Dropdowns list their links in a section that starts
+          collapsed. Hidden until the menu button opens it. */}
+      <div
+        className="ncx-drawer"
+        id="ncx-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        hidden={!drawerOpen}
+      >
+        <div className="ncx-drawer__bar">
+          {mark}
+          <button
+            className="ncx-drawer__close"
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <span className="ncx-drawer__x" aria-hidden="true" />
+          </button>
+        </div>
+
+        <nav className="ncx-drawer__body" aria-label="Menu">
+          <ul className="ncx-drawer__list">
+            {items.map((item, i) => {
+              const { links, isDropdown } = entryFor(item)
+
+              if (!isDropdown) {
+                if (!item.href) return null
+                return (
+                  <li className="ncx-drawer__item" key={item.id || i}>
+                    <Anchor className="ncx-drawer__row" href={item.href}>
+                      {item.label}
+                    </Anchor>
+                  </li>
+                )
+              }
+
+              const sectionId = `ncx-drawer-${item.id || i}`
+
+              return (
+                <li className="ncx-drawer__item" key={item.id || i}>
+                  <button
+                    className="ncx-drawer__row"
+                    type="button"
+                    aria-expanded={false}
+                    aria-controls={sectionId}
+                  >
+                    {item.label}
+                    <Chevron />
+                  </button>
+                  <ul className="ncx-drawer__sub" id={sectionId} hidden>
+                    {links.map((l, li) => (
+                      <React.Fragment key={l.id || li}>
+                        {l.groupHeading ? (
+                          <li className="ncx-drawer__eyebrow">{l.groupHeading}</li>
+                        ) : null}
+                        <li>
+                          <Anchor className="ncx-drawer__link" href={l.href} newTab={l.newTab}>
+                            <span>{l.label}</span>
+                            {l.badge ? <span className="ncx-badge-new">{l.badge}</span> : null}
+                          </Anchor>
+                        </li>
+                      </React.Fragment>
+                    ))}
+                  </ul>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
+
+        <div className="ncx-drawer__foot">
+          {data.ctaLabel ? (
+            <Anchor className="ncx-btn-pill ncx-drawer__cta" href={data.ctaHref || '/contact'}>
+              {data.ctaLabel}
+            </Anchor>
+          ) : null}
+          {data.signInLabel || (data.supportLabel && data.supportHref) ? (
+            <div className="ncx-drawer__minor">
+              {data.signInLabel ? <Anchor href={signInHref}>{data.signInLabel}</Anchor> : null}
+              {data.supportLabel && data.supportHref ? (
+                <Anchor href={data.supportHref}>{data.supportLabel}</Anchor>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </div>
     </>
   )
 }

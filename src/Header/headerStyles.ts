@@ -234,6 +234,84 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
 .ncx-burger__bars{display:flex;flex-direction:column;gap:5px}
 .ncx-burger__bars i{display:block;width:16px;height:2px;border-radius:2px;background:currentColor}
 
+/* ---------- menu drawer ----------
+   Full screen inside the viewport, above the bar (z 60) and the WhatsApp
+   widget (z 50). Its display rules all live here: the hidden attribute must
+   win over display:flex, and the drawer never shows above 900px, where the
+   full menu is in the bar. Always light, whatever the bar is riding on. */
+.ncx-drawer{
+  position:fixed;inset:0;z-index:70;
+  display:flex;flex-direction:column;
+  height:100vh;height:100dvh;
+  padding-top:env(safe-area-inset-top,0px);
+  background:var(--hdr-surface);color:var(--hdr-ink);
+  font-family:var(--font-body),Arial,sans-serif;
+}
+.ncx-drawer[hidden]{display:none}
+@media (min-width:901px){
+  .ncx-drawer{display:none}
+}
+/* The top bar matches the main bar: 64px, the logo pill on the left. */
+.ncx-drawer__bar{
+  flex:none;height:64px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding-inline:clamp(14px,2vw,28px);border-bottom:1px solid var(--hdr-line);
+}
+.ncx-drawer__close{
+  flex:none;width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--hdr-line);border-radius:999px;background:var(--hdr-surface);color:var(--hdr-ink);
+  cursor:pointer;
+}
+.ncx-drawer__x{position:relative;width:16px;height:16px}
+.ncx-drawer__x::before,.ncx-drawer__x::after{
+  content:"";position:absolute;left:0;top:7px;width:16px;height:2px;border-radius:2px;background:currentColor;
+}
+.ncx-drawer__x::before{transform:rotate(45deg)}
+.ncx-drawer__x::after{transform:rotate(-45deg)}
+/* Only the body scrolls; the top bar and the footer stay put. */
+.ncx-drawer__body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.ncx-drawer__list{list-style:none;margin:0;padding:0}
+.ncx-drawer__item + .ncx-drawer__item{border-top:1px solid var(--hdr-line)}
+.ncx-drawer__row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;min-height:56px;padding:0 clamp(18px,5vw,28px);
+  font-family:inherit;font-size:17px;font-weight:500;line-height:1.3;text-align:left;
+  color:var(--hdr-ink);text-decoration:none;background:none;border:0;cursor:pointer;
+}
+/* The bar's down chevron, turned to point right. */
+.ncx-drawer__row svg{flex:none;width:12px;height:12px;opacity:.55;transform:rotate(-90deg)}
+.ncx-drawer__row:hover{color:var(--hdr-teal)}
+/* A dropdown's links: indented behind a 2px rule. */
+.ncx-drawer__sub{
+  list-style:none;margin:0 clamp(18px,5vw,28px) 16px;padding:0 0 0 16px;
+  border-left:2px solid var(--hdr-line);
+}
+.ncx-drawer__eyebrow{
+  font-family:var(--font-label),'IBM Plex Mono',monospace;
+  font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--hdr-teal);padding:14px 0 4px;
+}
+.ncx-drawer__sub > .ncx-drawer__eyebrow:first-child{padding-top:4px}
+.ncx-drawer__link{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;
+  font-size:16px;line-height:1.35;color:var(--hdr-ink);text-decoration:none;
+}
+.ncx-drawer__link:hover{color:var(--hdr-teal)}
+.ncx-drawer__foot{
+  flex:none;display:flex;flex-direction:column;gap:12px;
+  padding:16px clamp(18px,5vw,28px) calc(16px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid var(--hdr-line);
+}
+/* The bar's CTA style, full width. The selector outweighs the phone-size
+   tweak to .ncx-btn-pill in the 900px block above. */
+.ncx-drawer .ncx-drawer__cta{
+  display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;
+  padding:0 22px;font-size:12px;letter-spacing:.12em;
+}
+.ncx-drawer__minor{display:flex;justify-content:center;gap:28px}
+.ncx-drawer__minor a{font-size:15px;color:var(--hdr-ink);text-decoration:none;padding:8px 4px}
+.ncx-drawer__minor a:hover{color:var(--hdr-teal)}
+.ncx-drawer :focus-visible{outline:2px solid var(--hdr-teal);outline-offset:-2px;border-radius:6px}
+
 @media (prefers-reduced-motion:reduce){
   .ncx-nav,.ncx-nav *,.ncx-topbar,.ncx-topbar *,.ncx-scrim{transition:none!important;animation:none!important}
 }
