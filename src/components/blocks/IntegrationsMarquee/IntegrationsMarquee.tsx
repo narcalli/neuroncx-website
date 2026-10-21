@@ -21,12 +21,24 @@ function resolveLogoImage(logo: MarqueeLogo['logo'], name: string) {
   return pickMedia(logo)
 }
 
-function Pill({ logo, duplicate }: { logo: MarqueeLogo; duplicate?: boolean }) {
+function Pill({
+  logo,
+  duplicate,
+  repeat,
+}: {
+  logo: MarqueeLogo
+  duplicate?: boolean
+  repeat?: boolean
+}) {
   const image = resolveLogoImage(logo.logo, logo.name)
   const initial = logo.name.trim().charAt(0).toUpperCase()
 
   return (
-    <div className={styles.pill} aria-hidden={duplicate || undefined}>
+    <div
+      className={styles.pill}
+      aria-hidden={duplicate || repeat || undefined}
+      data-repeat={repeat ? 'true' : undefined}
+    >
       {image ? (
         <span className={styles.icon}>
           <Image src={image.src} alt="" fill sizes="36px" unoptimized={image.unoptimized} />
@@ -41,22 +53,34 @@ function Pill({ logo, duplicate }: { logo: MarqueeLogo; duplicate?: boolean }) {
   )
 }
 
+// A row repeats its logos until it holds at least this many, so one copy is
+// wider than the page column and no blank stretch scrolls past.
+const MIN_PER_ROW = 10
+
 function Row({ logos, durationSeconds, reverse }: { logos: MarqueeLogo[]; durationSeconds: number; reverse?: boolean }) {
+  const filled = [...logos]
+  while (filled.length < MIN_PER_ROW) filled.push(...logos)
+
   return (
     <div className={styles.row}>
       <div
         className={reverse ? `${styles.track} ${styles.reverse}` : styles.track}
         style={{ '--dur': `${durationSeconds}s` } as React.CSSProperties}
       >
+        {/* Repeats added to fill the row are hidden from assistive tech and, under reduced motion, not shown. */}
         <div className={styles.copy}>
-          {logos.map((logo, i) => (
-            <Pill logo={logo} key={logo.id || i} />
+          {filled.map((logo, i) => (
+            <Pill
+              logo={logo}
+              repeat={i >= logos.length}
+              key={`${logo.id || i % logos.length}-${i}`}
+            />
           ))}
         </div>
         {/* A second, identical copy so the loop has no seam — hidden from assistive tech and, under reduced motion, hidden entirely. */}
         <div className={styles.copy} data-duplicate="true">
-          {logos.map((logo, i) => (
-            <Pill logo={logo} duplicate key={logo.id || i} />
+          {filled.map((logo, i) => (
+            <Pill logo={logo} duplicate key={`${logo.id || i % logos.length}-${i}`} />
           ))}
         </div>
       </div>
@@ -64,9 +88,13 @@ function Row({ logos, durationSeconds, reverse }: { logos: MarqueeLogo[]; durati
   )
 }
 
-// The marquee needs at least this many logos to fill its two rows.
+// The marquee needs at least this many logos to fill its rows.
 const MIN_LOGOS = 4
 const MAX_LOGOS = 40
+// From this many logos there are three rows; below it, two.
+const THREE_ROWS_FROM = 9
+// Seconds per loop, by row. Different speeds keep the rows from lining up.
+const ROW_SECONDS = [40, 48, 44]
 
 export const IntegrationsMarqueeBlock = async (
   props: IntegrationsMarqueeBlockProps & { background?: string | null },
@@ -101,9 +129,12 @@ export const IntegrationsMarqueeBlock = async (
   const hasHeader = Boolean(headEyebrow || headTitle || headDescription)
   const onDark = background === 'navy' || background === 'crimson'
 
-  const half = Math.ceil(items.length / 2)
-  const row1 = items.slice(0, half)
-  const row2 = items.slice(half)
+  // Logos are dealt round-robin, so the rows come out the same length and
+  // each row gets a mix. Rows alternate direction.
+  const rowCount = items.length >= THREE_ROWS_FROM ? 3 : 2
+  const rows = Array.from({ length: rowCount }, (_, r) =>
+    items.filter((_, i) => i % rowCount === r),
+  ).filter((row) => row.length)
 
   return (
     <div className={styles.container}>
@@ -118,8 +149,9 @@ export const IntegrationsMarqueeBlock = async (
 
         <div className={styles.marquee}>
           <div className={styles.rows}>
-            <Row logos={row1} durationSeconds={40} />
-            {row2.length ? <Row logos={row2} durationSeconds={48} reverse /> : null}
+            {rows.map((row, i) => (
+              <Row logos={row} durationSeconds={ROW_SECONDS[i]} reverse={i % 2 === 1} key={i} />
+            ))}
           </div>
         </div>
       </div>
