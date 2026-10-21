@@ -91,10 +91,12 @@ export const headerCss = `
 .ncx-nav.on-dark::before{background:var(--hdr-veil-dark)}
 .ncx-nav.on-dark.is-stuck::before{background:var(--hdr-veil-dark-stuck)}
 .ncx-nav.on-dark .ncx-navlink,
-.ncx-nav.on-dark .ncx-ghost{color:#fff}
+.ncx-nav.on-dark .ncx-ghost,
+.ncx-nav.on-dark .ncx-burger{color:#fff}
 .ncx-nav.on-dark .ncx-navlink:hover,
 .ncx-nav.on-dark .ncx-ghost:hover{color:#fff;opacity:.72}
-.ncx-nav.on-dark .ncx-mark{background:transparent;border-color:rgba(255,255,255,.28);color:#fff}
+.ncx-nav.on-dark .ncx-mark,
+.ncx-nav.on-dark .ncx-burger{background:transparent;border-color:rgba(255,255,255,.28);color:#fff}
 .ncx-nav.on-dark .ncx-navitem.is-open .ncx-navlink{background:rgba(255,255,255,.16);box-shadow:none;color:#fff}
 /* Edge-anchored, like the reference bar: logo hard left, actions hard right. */
 .ncx-nav__in{
@@ -202,10 +204,10 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
   .ncx-scrim{background:rgba(23,28,46,.22)}
 }
 
-@media (max-width:1040px){
+@media (max-width:1100px){
   .ncx-navlink{padding:0 11px;font-size:13.5px}
 }
-@media (max-width:760px){
+@media (max-width:900px){
   .ncx-nav__links{display:none}
   /* Same place as the centre links: it belongs in the drawer at this width. */
   .ncx-support,.ncx-sep{display:none}
@@ -216,6 +218,22 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
   .ncx-mark__img{width:26px;height:26px}
   .ncx-topbar__in{font-size:12.5px;gap:9px;padding-right:40px}
 }
+/* ---------- menu button ----------
+   Hidden by default and shown below 900px. Both display rules live here and
+   nowhere else, so no other rule can override either one. */
+.ncx-burger{
+  display:none;align-items:center;gap:9px;flex:none;
+  height:44px;padding:0 17px;border-radius:999px;
+  border:1px solid var(--hdr-line);background:var(--hdr-surface);color:var(--hdr-ink);
+  font-family:inherit;cursor:pointer;
+}
+@media (max-width:900px){
+  .ncx-burger{display:flex}
+}
+.ncx-burger__label{font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;line-height:1}
+.ncx-burger__bars{display:flex;flex-direction:column;gap:5px}
+.ncx-burger__bars i{display:block;width:16px;height:2px;border-radius:2px;background:currentColor}
+
 @media (prefers-reduced-motion:reduce){
   .ncx-nav,.ncx-nav *,.ncx-topbar,.ncx-topbar *,.ncx-scrim{transition:none!important;animation:none!important}
 }

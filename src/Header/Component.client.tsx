@@ -402,6 +402,23 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
               </Anchor>
             ) : null}
           </div>
+
+          {/* Shown at phone and tablet width only (headerStyles.ts). Opens the
+              menu drawer once that exists; does nothing yet. */}
+          <button
+            className="ncx-burger"
+            type="button"
+            aria-expanded={false}
+            aria-controls="ncx-drawer"
+            aria-label="Open menu"
+          >
+            <span className="ncx-burger__bars" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="ncx-burger__label">Menu</span>
+          </button>
         </div>
       </header>
     </>
