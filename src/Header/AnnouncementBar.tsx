@@ -1,9 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 
 const KEY = 'ncx-announcement-dismissed'
+
+// Only this bar writes the key, and it also keeps its own state when it
+// does, so there is no change to listen for.
+const subscribe = () => () => {}
+
+const readDismissed = (): boolean => {
+  try {
+    return window.sessionStorage.getItem(KEY) === '1'
+  } catch {
+    // Storage unavailable. Leave the bar up.
+    return false
+  }
+}
 
 type Props = {
   text: string
@@ -18,14 +31,9 @@ type Props = {
  */
 export const AnnouncementBar: React.FC<Props> = ({ text, ctaLabel, ctaHref }) => {
   const [dismissed, setDismissed] = useState(false)
-
-  useEffect(() => {
-    try {
-      if (window.sessionStorage.getItem(KEY) === '1') setDismissed(true)
-    } catch {
-      // Storage unavailable. Leave the bar up.
-    }
-  }, [])
+  // The server, and the first render in the browser, show the bar; a
+  // dismissal stored earlier this session hides it right after hydration.
+  const dismissedBefore = useSyncExternalStore(subscribe, readDismissed, () => false)
 
   const dismiss = () => {
     setDismissed(true)
@@ -36,7 +44,7 @@ export const AnnouncementBar: React.FC<Props> = ({ text, ctaLabel, ctaHref }) =>
     }
   }
 
-  if (dismissed) return null
+  if (dismissed || dismissedBefore) return null
 
   const external = /^https?:\/\//.test(String(ctaHref || ''))
 

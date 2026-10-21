@@ -57,7 +57,8 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
 
   if (!groups.length) return null
 
-  let turn = 0
+  // Every item in reading order, so each one's side alternates down the spine.
+  const turns = groups.flatMap((group) => group.items.map((item) => ({ group, item })))
 
   return (
     <section className="ncx-thread ncx-container">
@@ -98,24 +99,18 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
       {heading ? <h2>{heading}</h2> : null}
 
       <div className="spine">
-        {groups.map((group) =>
-          group.items.map((item: any) => {
-            const side = turn % 2 === 0 ? 'left' : 'right'
-            turn += 1
-            return (
-              <div className={`turn ${side}`} key={item.id}>
-                <span className="cat">{CATEGORY_LABELS[group.category] || group.category}</span>
-                <h3>{item.title}</h3>
-                <p>{item.summary}</p>
-                {hideCategoryLinks ? null : (
-                  <a className="more" href={CATEGORY_PATHS[group.category] || '#'}>
-                    More on {CATEGORY_LABELS[group.category] || group.category}
-                  </a>
-                )}
-              </div>
-            )
-          }),
-        )}
+        {turns.map(({ group, item }, i) => (
+          <div className={`turn ${i % 2 === 0 ? 'left' : 'right'}`} key={item.id}>
+            <span className="cat">{CATEGORY_LABELS[group.category] || group.category}</span>
+            <h3>{item.title}</h3>
+            <p>{item.summary}</p>
+            {hideCategoryLinks ? null : (
+              <a className="more" href={CATEGORY_PATHS[group.category] || '#'}>
+                More on {CATEGORY_LABELS[group.category] || group.category}
+              </a>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   )
