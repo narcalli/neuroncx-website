@@ -140,9 +140,34 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
   const panels = useRef(new Map<number, HTMLDivElement | null>())
   const triggers = useRef(new Map<number, HTMLButtonElement | null>())
   const [open, setOpen] = useState<number | null>(null)
-  // The menu drawer. Opened by the menu button, closed by its close button.
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = usePathname()
+
+  // The menu drawer: whether it is open, and which of its dropdown sections
+  // is expanded (one at a time).
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [section, setSection] = useState<number | null>(null)
+  const drawerRef = useRef<HTMLDivElement | null>(null)
+  const burgerRef = useRef<HTMLButtonElement | null>(null)
+  const closeRef = useRef<HTMLButtonElement | null>(null)
+  // Read by the effects below once the drawer has closed: whether focus goes
+  // back to the menu button, and whether the page goes back to where it was
+  // scrolled.
+  const restoreFocus = useRef(false)
+  const restoreScroll = useRef(true)
+
+  /**
+   * Closes the drawer. A plain close (its close button, the menu button,
+   * Escape) puts focus back on the menu button and the page back where it
+   * was. A tapped link puts the scroll back but not the focus, since the page
+   * is about to change. A route change restores neither: the new page owns
+   * both.
+   */
+  const closeDrawer = useCallback((opts: { focus?: boolean; scroll?: boolean } = {}) => {
+    restoreFocus.current = opts.focus ?? true
+    restoreScroll.current = opts.scroll ?? true
+    setDrawerOpen(false)
+    setSection(null)
+  }, [])
 
   // The panel is centred under its trigger, then clamped inside the header so
   // a right-hand menu cannot hang off the edge. Measured, because the width of
@@ -259,10 +284,113 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
     // Re-reads the dark sections after a client-side navigation.
   }, [pathname])
 
-  // Any navigation closes whatever was open.
+  // Any navigation closes whatever was open, the drawer included, so it is
+  // never left open over a new page.
   useEffect(() => {
     setOpen(null)
-  }, [pathname])
+    closeDrawer({ focus: false, scroll: false })
+  }, [pathname, closeDrawer])
+
+  // Opening moves focus to the drawer's close button; closing returns it to
+  // the menu button.
+  useEffect(() => {
+    if (drawerOpen) {
+      closeRef.current?.focus()
+    } else if (restoreFocus.current) {
+      restoreFocus.current = false
+      burgerRef.current?.focus()
+    }
+  }, [drawerOpen])
+
+  // While the drawer is open the page behind it does not scroll. The body is
+  // pinned at its current offset (position: fixed), which also holds on iOS
+  // Safari, where overflow: hidden alone does not; it is released on close.
+  useEffect(() => {
+    if (!drawerOpen) return
+    const body = document.body
+    const y = window.scrollY
+    const was = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+    }
+    Object.assign(body.style, {
+      position: 'fixed',
+      top: `-${y}px`,
+      left: '0',
+      right: '0',
+      width: '100%',
+    })
+    return () => {
+      Object.assign(body.style, was)
+      if (restoreScroll.current) {
+        window.scrollTo({ top: y, left: 0, behavior: 'instant' as ScrollBehavior })
+      }
+    }
+  }, [drawerOpen])
+
+  // Escape closes the drawer, and Tab stays inside it. Focus that leaves it
+  // some other way (a screen reader, a stray click) is brought back.
+  useEffect(() => {
+    if (!drawerOpen) return
+    const drawer = drawerRef.current
+    if (!drawer) return
+    // Links in a collapsed section have no box, so they drop out here.
+    const focusables = () =>
+      Array.from(
+        drawer.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.getClientRects().length > 0)
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        closeDrawer()
+        return
+      }
+      if (e.key !== 'Tab') return
+      const list = focusables()
+      if (!list.length) return
+      const first = list[0]
+      const last = list[list.length - 1]
+      const active = document.activeElement
+      const inside = active instanceof HTMLElement && drawer.contains(active)
+      if (e.shiftKey && (!inside || active === first)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (!inside || active === last)) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    const onFocusIn = (e: FocusEvent) => {
+      if (!drawer.contains(e.target as Node)) closeRef.current?.focus()
+    }
+
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('focusin', onFocusIn)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('focusin', onFocusIn)
+    }
+  }, [drawerOpen, closeDrawer])
+
+  // Above 900px the drawer is never shown (headerStyles.ts). If the window
+  // grows past that while it is open, close it, so the page is not left
+  // locked behind a drawer nobody can see.
+  useEffect(() => {
+    if (!drawerOpen) return
+    const wide = window.matchMedia('(min-width: 901px)')
+    const onChange = () => {
+      if (wide.matches) closeDrawer({ focus: false })
+    }
+    onChange()
+    wide.addEventListener('change', onChange)
+    return () => wide.removeEventListener('change', onChange)
+  }, [drawerOpen, closeDrawer])
 
   // The scrim is a sibling of the nav, so it keys off a class on <body>.
   useEffect(() => {
@@ -416,15 +544,16 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
             ) : null}
           </div>
 
-          {/* Shown at phone and tablet width only (headerStyles.ts). Opens the
-              menu drawer below. */}
+          {/* Shown at phone and tablet width only (headerStyles.ts). Opens and
+              closes the menu drawer below. */}
           <button
+            ref={burgerRef}
             className="ncx-burger"
             type="button"
             aria-expanded={drawerOpen}
             aria-controls="ncx-drawer"
-            aria-label="Open menu"
-            onClick={() => setDrawerOpen(true)}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => (drawerOpen ? closeDrawer() : setDrawerOpen(true))}
           >
             <span className="ncx-burger__bars" aria-hidden="true">
               <i />
@@ -438,22 +567,27 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
 
       {/* The menu drawer for phone and tablet width: the same items as the bar,
           full screen. Dropdowns list their links in a section that starts
-          collapsed. Hidden until the menu button opens it. */}
+          collapsed; one opens at a time. Any link tapped in it closes it. */}
       <div
+        ref={drawerRef}
         className="ncx-drawer"
         id="ncx-drawer"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
         hidden={!drawerOpen}
+        onClick={(e) => {
+          if ((e.target as Element).closest('a[href]')) closeDrawer({ focus: false })
+        }}
       >
         <div className="ncx-drawer__bar">
           {mark}
           <button
+            ref={closeRef}
             className="ncx-drawer__close"
             type="button"
             aria-label="Close menu"
-            onClick={() => setDrawerOpen(false)}
+            onClick={() => closeDrawer()}
           >
             <span className="ncx-drawer__x" aria-hidden="true" />
           </button>
@@ -482,13 +616,14 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
                   <button
                     className="ncx-drawer__row"
                     type="button"
-                    aria-expanded={false}
+                    aria-expanded={section === i}
                     aria-controls={sectionId}
+                    onClick={() => setSection((cur) => (cur === i ? null : i))}
                   >
                     {item.label}
                     <Chevron />
                   </button>
-                  <ul className="ncx-drawer__sub" id={sectionId} hidden>
+                  <ul className="ncx-drawer__sub" id={sectionId} hidden={section !== i}>
                     {links.map((l, li) => (
                       <React.Fragment key={l.id || li}>
                         {l.groupHeading ? (

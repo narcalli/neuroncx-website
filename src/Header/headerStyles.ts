@@ -277,8 +277,10 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
   font-family:inherit;font-size:17px;font-weight:500;line-height:1.3;text-align:left;
   color:var(--hdr-ink);text-decoration:none;background:none;border:0;cursor:pointer;
 }
-/* The bar's down chevron, turned to point right. */
-.ncx-drawer__row svg{flex:none;width:12px;height:12px;opacity:.55;transform:rotate(-90deg)}
+/* The bar's down chevron, turned to point right; it points down again while
+   its section is open. */
+.ncx-drawer__row svg{flex:none;width:12px;height:12px;opacity:.55;transform:rotate(-90deg);transition:transform .2s ease}
+.ncx-drawer__row[aria-expanded="true"] svg{transform:none}
 .ncx-drawer__row:hover{color:var(--hdr-teal)}
 /* A dropdown's links: indented behind a 2px rule. */
 .ncx-drawer__sub{
@@ -313,6 +315,6 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
 .ncx-drawer :focus-visible{outline:2px solid var(--hdr-teal);outline-offset:-2px;border-radius:6px}
 
 @media (prefers-reduced-motion:reduce){
-  .ncx-nav,.ncx-nav *,.ncx-topbar,.ncx-topbar *,.ncx-scrim{transition:none!important;animation:none!important}
+  .ncx-nav,.ncx-nav *,.ncx-topbar,.ncx-topbar *,.ncx-scrim,.ncx-drawer,.ncx-drawer *{transition:none!important;animation:none!important}
 }
 `
