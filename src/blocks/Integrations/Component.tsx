@@ -1,13 +1,9 @@
 import React from 'react'
 
 import { fromIntegration } from '@/components/cards/adapters/integration'
+import { mergeCardDesign, type SavedCardDesign } from '@/components/cards/defaults'
 import { CardDesign, type CardDesignOptions } from '@/components/cards/registry'
-import {
-  initialOf,
-  type CardColumns,
-  type CardDesignProps,
-  type CardItem,
-} from '@/components/cards/types'
+import { initialOf, type CardDesignProps, type CardItem } from '@/components/cards/types'
 import type {
   Integration,
   IntegrationCategory,
@@ -17,9 +13,10 @@ import { loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 
 // Blocks saved before the card design settings existed, and blocks the
-// Integrations landing builds itself, have no settings: they draw as before.
+// Integrations landing builds itself, have no settings, or only some: each
+// missing one falls back to the CMS default, so they draw as before.
 type Props = Omit<IntegrationsBlockProps, 'cardDesign'> & {
-  cardDesign?: Partial<IntegrationsBlockProps['cardDesign']> | null
+  cardDesign?: SavedCardDesign | null
 }
 
 type Group = { key: string; name: string | null; order: number; items: CardItem[] }
@@ -56,15 +53,14 @@ const groupByCategory = (docs: Integration[], card: (d: Integration) => CardItem
 export const IntegrationsBlock = async (props: Props) => {
   const { label, heading, intro, items, footnote, populateBy, cardDesign } = props
 
-  const settings = cardDesign || {}
-  const design = settings.design || 'grid'
-  const linkLabel = settings.linkLabel?.trim() || null
+  const settings = mergeCardDesign(cardDesign)
+  const { design, linkLabel } = settings
   const layout: Omit<CardDesignProps, 'items'> & CardDesignOptions = {
-    // Empty fits as many cards as the width allows.
-    columns: settings.columns ? (Number(settings.columns) as CardColumns) : undefined,
-    lastRow: settings.lastRow || 'leave',
-    look: design === 'feature' ? settings.look || undefined : undefined,
-    showAllLink: settings.showAllLink !== false,
+    // No fixed number per row: the design's own (the grid fits the width).
+    columns: settings.columns ?? undefined,
+    lastRow: settings.lastRow,
+    look: design === 'feature' ? settings.look : undefined,
+    showAllLink: settings.showAllLink,
   }
   // Every design shows a link only on cards whose integration has its own page.
   const toCard = (d: Integration): CardItem => ({ ...fromIntegration(d), linkLabel })
