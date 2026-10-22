@@ -18,7 +18,6 @@ export const CARD_DESIGN_DEFAULTS = {
   columns: null,
   lastRow: 'leave',
   groupByCategory: false,
-  showAllLink: true,
   allowItemDesigns: true,
 } as const
 
@@ -47,7 +46,6 @@ export type SavedCardDesign = {
     borderColor?: string | null
     accentLine?: boolean | null
   } | null
-  showAllLink?: boolean | null
   allowItemDesigns?: boolean | null
 }
 
@@ -59,7 +57,6 @@ export type CardDesignSettings = {
   groupByCategory: boolean
   linkLabel: string | null
   look: { cardColor: CardColor; border: CardBorder; borderColor: CardBorderColor; accentLine: boolean }
-  showAllLink: boolean
   allowItemDesigns: boolean
 }
 
@@ -87,7 +84,6 @@ export const mergeCardDesign = (saved?: SavedCardDesign | null): CardDesignSetti
       borderColor: oneOf(look.borderColor, ['blue', 'violet', 'crimson', 'navy'], CARD_LOOK_DEFAULTS.borderColor),
       accentLine: look.accentLine ?? CARD_LOOK_DEFAULTS.accentLine,
     },
-    showAllLink: s.showAllLink ?? CARD_DESIGN_DEFAULTS.showAllLink,
     allowItemDesigns: s.allowItemDesigns ?? CARD_DESIGN_DEFAULTS.allowItemDesigns,
   }
 }

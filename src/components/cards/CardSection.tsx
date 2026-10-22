@@ -17,20 +17,18 @@ type Group = { design: CardDesignName; items: CardItem[] }
  * order inside a group. Every group uses the section's settings, only the
  * design changes. A section that ends up with one group draws exactly as
  * before; with more, an empty "cards per row" becomes 3 for every group, so
- * the groups line up. The "All integrations" card closes the last logo card
- * group only.
+ * the groups line up. Logo cards here never get the "All integrations" card.
  */
 export const CardSection: React.FC<{ items: CardItem[]; settings: CardDesignSettings }> = ({
   items,
   settings,
 }) => {
-  const { design, columns, lastRow, look, showAllLink, allowItemDesigns } = settings
+  const { design, columns, lastRow, look, allowItemDesigns } = settings
   // The look only means something to the feature card, as before.
-  const layoutFor = (d: CardDesignName, cols: CardColumns | undefined, allLink: boolean) => ({
+  const layoutFor = (d: CardDesignName, cols: CardColumns | undefined) => ({
     columns: cols,
     lastRow,
     look: d === 'feature' ? look : undefined,
-    showAllLink: allLink,
   })
 
   const groups: Group[] = []
@@ -48,20 +46,19 @@ export const CardSection: React.FC<{ items: CardItem[]; settings: CardDesignSett
 
   if (groups.length < 2) {
     const only = groups[0]?.design ?? design
-    return <CardDesign design={only} items={items} {...layoutFor(only, columns ?? undefined, showAllLink)} />
+    return <CardDesign design={only} items={items} {...layoutFor(only, columns ?? undefined)} />
   }
 
   const cols = columns ?? 3
-  const lastLogoGroup = groups.map((g) => g.design).lastIndexOf('logoCard')
   return (
     <div className="ncx-csection">
       <style>{`.ncx-csection{display:grid;grid-template-columns:minmax(0,1fr);row-gap:18px}`}</style>
-      {groups.map((g, i) => (
+      {groups.map((g) => (
         <CardDesign
           key={g.design}
           design={g.design}
           items={g.items}
-          {...layoutFor(g.design, cols, showAllLink && i === lastLogoGroup)}
+          {...layoutFor(g.design, cols)}
         />
       ))}
     </div>

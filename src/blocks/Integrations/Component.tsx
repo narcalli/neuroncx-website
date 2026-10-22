@@ -117,14 +117,10 @@ export const IntegrationsBlock = async (props: Props) => {
       {intro ? <p className="intro">{intro}</p> : null}
 
       <div className="cards">
-        {groups.map((group, i) => (
+        {groups.map((group) => (
           <div className="group" key={group.key}>
             {group.name ? <h3 className="group-name">{group.name}</h3> : null}
-            <CardSection
-              items={group.items}
-              // One "All integrations" card, after the last group.
-              settings={{ ...settings, showAllLink: settings.showAllLink && i === groups.length - 1 }}
-            />
+            <CardSection items={group.items} settings={settings} />
           </div>
         ))}
       </div>
