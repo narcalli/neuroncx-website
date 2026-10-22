@@ -5,6 +5,7 @@ import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getBySlug, CMS_TAG } from '@/utilities/cms'
@@ -47,9 +48,20 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { hero, layout } = page as any
 
   // A page whose hero is disabled and whose first block is flush gets no top padding.
+  // A hidden block never renders, so the first block is the first one shown.
   const heroDisabled = !hero || hero.type === 'none'
-  const firstBlockType = Array.isArray(layout) && layout.length ? String(layout[0]?.blockType) : ''
+  const firstBlock = Array.isArray(layout) ? layout.find((b: any) => b && !b.hidden) : undefined
+  const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
+
+  // The breadcrumbs go inside whatever renders first: the configured hero,
+  // else a flush first block, else a container above the blocks (on the
+  // page's light background, so never on dark there).
+  const onDark = heroDisabled
+    ? startsFlush && (firstBlockType === 'heroFullBackground' || firstBlock?.background === 'navy')
+    : hero.type === 'highImpact'
+  const crumbs =
+    decodedSlug === 'home' ? null : <Breadcrumbs items={buildTrail({ page })} onDark={onDark} />
 
   return (
     <article className={startsFlush ? 'pb-24' : 'pt-16 pb-24'}>
@@ -58,8 +70,11 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
+      <RenderHero {...hero} leading={crumbs} />
+      {heroDisabled && !startsFlush && crumbs ? (
+        <div className="ncx-container pt-8">{crumbs}</div>
+      ) : null}
+      <RenderBlocks blocks={layout} leading={startsFlush ? crumbs : undefined} />
     </article>
   )
 }

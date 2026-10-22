@@ -6,6 +6,7 @@ import React from 'react'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { FAQBlock } from '@/blocks/FAQ/Component'
 import { loadMaster } from '@/blocks/IntegrationsLanding/Component'
+import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
 import { EdgeCases, type EdgeRow } from '@/components/integrations/EdgeCases'
 import { RelatedCards, type RelatedCard } from '@/components/integrations/RelatedCards'
 import { SetupLanes, type SetupRow } from '@/components/integrations/SetupLanes'
@@ -232,15 +233,6 @@ export default async function IntegrationPage({ params }: Args) {
         .ncx-iitem__hero{background:var(--ncx-cloud);padding:0 0 clamp(56px,7vw,88px)}
         .ncx-iitem__hero .inner{padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
         .ncx-iitem__intro{max-width:820px}
-        .ncx-iitem .crumb{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
-          font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-muted);
-          border:1px solid var(--ncx-rule);background:var(--ncx-white);
-          padding:7px 15px;border-radius:999px;margin:0 0 24px}
-        .ncx-iitem .crumb a{color:var(--ncx-muted);text-decoration:none}
-        .ncx-iitem .crumb a:hover{color:var(--ncx-ink)}
-        .ncx-iitem .crumb [aria-current]{color:var(--ncx-ink)}
-        .ncx-iitem .crumb .sep{color:var(--ncx-faint)}
-        .ncx-iitem .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
         .ncx-iitem .tags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
         .ncx-iitem .tags li{font-size:12px;font-weight:500;color:var(--ncx-ink);background:var(--ncx-white);
           border:1px solid var(--ncx-rule);border-radius:999px;padding:5px 12px}
@@ -303,14 +295,7 @@ export default async function IntegrationPage({ params }: Args) {
 
       <header className="ncx-iitem__hero">
         <div className="inner ncx-container">
-          <nav className="crumb" aria-label="Breadcrumb">
-            <span className="spark" aria-hidden="true" />
-            <Link href="/integrations">Integrations</Link>
-            <span className="sep" aria-hidden="true">
-              /
-            </span>
-            <span aria-current="page">{d.name}</span>
-          </nav>
+          <Breadcrumbs items={buildTrail({ integration: d })} />
 
           <div
             className="ncx-iitem__intro"

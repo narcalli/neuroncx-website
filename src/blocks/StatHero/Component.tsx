@@ -12,6 +12,8 @@ type Props = {
   secondaryLabel?: string | null
   secondaryLink?: string | null
   stats?: Stat[] | null
+  /** Shown first, at the top of the hero's padding (the page's breadcrumbs). */
+  leading?: React.ReactNode
 }
 
 export const StatHeroBlock: React.FC<Props> = ({
@@ -23,6 +25,7 @@ export const StatHeroBlock: React.FC<Props> = ({
   secondaryLabel,
   secondaryLink,
   stats,
+  leading,
 }) => {
   const items = stats || []
 
@@ -84,6 +87,7 @@ export const StatHeroBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="inner ncx-container">
+        {leading}
         {eyebrow ? (
           <p className="pill">
             <span className="spark" />

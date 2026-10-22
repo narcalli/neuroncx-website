@@ -12,7 +12,8 @@ const heroes = {
   mediumImpact: MediumImpactHero,
 }
 
-export const RenderHero: React.FC<Page['hero']> = (props) => {
+/** leading: shown at the top of the hero's own padding, e.g. the page's breadcrumbs. */
+export const RenderHero: React.FC<Page['hero'] & { leading?: React.ReactNode }> = (props) => {
   const { type } = props || {}
 
   if (!type || type === 'none') return null

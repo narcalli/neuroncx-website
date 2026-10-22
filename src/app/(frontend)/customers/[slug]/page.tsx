@@ -7,6 +7,7 @@ import React from 'react'
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { BlockIcon } from '@/components/BlockIcon'
+import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
 import RichText from '@/components/RichText'
 import { getMany, CMS_TAG } from '@/utilities/cms'
 import {
@@ -196,15 +197,6 @@ export default async function CustomerPage({ params }: Args) {
         }
         @media(prefers-reduced-motion:reduce){.ncx-cust__hero::before{animation:none}}
         .ncx-cust__hero .inner{position:relative;z-index:1;padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
-        .ncx-cust .crumb{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
-          font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-muted);
-          border:1px solid var(--ncx-rule);background:var(--ncx-white);
-          padding:7px 15px;border-radius:999px;margin:0 0 24px}
-        .ncx-cust .crumb a{color:var(--ncx-muted);text-decoration:none}
-        .ncx-cust .crumb a:hover{color:var(--ncx-ink)}
-        .ncx-cust .crumb [aria-current]{color:var(--ncx-ink)}
-        .ncx-cust .crumb .sep{color:var(--ncx-faint)}
-        .ncx-cust .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
         .ncx-cust__grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr);gap:56px;align-items:start}
         .ncx-cust__grid.is-single{grid-template-columns:minmax(0,1fr)}
         .ncx-cust .sectors{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
@@ -306,14 +298,7 @@ export default async function CustomerPage({ params }: Args) {
 
       <header className="ncx-cust__hero">
         <div className="inner ncx-container">
-          <nav className="crumb" aria-label="Breadcrumb">
-            <span className="spark" aria-hidden="true" />
-            <Link href="/customers">Customers</Link>
-            <span className="sep" aria-hidden="true">
-              /
-            </span>
-            <span aria-current="page">{c.name}</span>
-          </nav>
+          <Breadcrumbs items={buildTrail({ customer: c })} />
 
           <div className={`ncx-cust__grid${hasCard ? '' : ' is-single'}`}>
             <div>

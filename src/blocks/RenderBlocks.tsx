@@ -126,12 +126,16 @@ const noMargin = [
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
+  /** Given to the first block shown, to place at the top of its own padding (e.g. the page's breadcrumbs). */
+  leading?: React.ReactNode
 }> = (props) => {
-  const { blocks } = props
+  const { blocks, leading } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
   if (hasBlocks) {
+    // A hidden block never renders, so the first block shown takes leading.
+    const firstShown = blocks.findIndex((b) => b && !(b as any).hidden)
     return (
       <Fragment>
         {blocks.map((block, index) => {
@@ -143,6 +147,7 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               // Appearance options chosen in the admin, applied by the wrapper.
               const b = block as any
+              const lead = index === firstShown ? leading : undefined
 
               return (
                 <BlockWrapper
@@ -157,7 +162,7 @@ export const RenderBlocks: React.FC<{
                   flush={noMargin.includes(String(blockType))}
                 >
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
+                  <Block {...block} disableInnerContainer leading={lead} />
                 </BlockWrapper>
               )
             }

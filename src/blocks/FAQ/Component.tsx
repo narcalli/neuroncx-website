@@ -3,6 +3,7 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import RichText from '@/components/RichText'
+import { faqPage, jsonLdHtml } from '@/utilities/jsonLd'
 
 import type { FAQBlock as FAQBlockProps } from '@/payload-types'
 
@@ -28,21 +29,14 @@ export const FAQBlock: React.FC<FAQBlockProps> = ({ heading, intro, items, backg
 
   const bg = background === 'white' ? 'white' : 'cloud'
 
-  // schema.org FAQPage structured data. No page-level JSON-LD assembler exists
-  // in this repo yet (checked), so this is the only script tag for it.
+  // schema.org FAQPage structured data (utilities/jsonLd.ts).
   const schema = emitSchema
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: list.map((item) => ({
-          '@type': 'Question',
-          name: item.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: convertLexicalToPlaintext({ data: item.answer as unknown as DefaultTypedEditorState }),
-          },
+    ? faqPage(
+        list.map((item) => ({
+          question: item.question,
+          answer: convertLexicalToPlaintext({ data: item.answer as unknown as DefaultTypedEditorState }),
         })),
-      }
+      )
     : null
 
   return (
@@ -98,16 +92,7 @@ export const FAQBlock: React.FC<FAQBlockProps> = ({ heading, intro, items, backg
         </div>
       </div>
 
-      {schema ? (
-        // Next.js's documented pattern for JSON-LD: dangerouslySetInnerHTML avoids
-        // React HTML-escaping characters inside the JSON string, which would
-        // otherwise corrupt it. This is JSON.stringify output, not user HTML —
-        // unrelated to the richText answer above, which goes through RichText.
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      ) : null}
+      {schema ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(schema)} /> : null}
     </section>
   )
 }
