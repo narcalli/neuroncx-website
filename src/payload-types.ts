@@ -82,6 +82,8 @@ export interface Config {
     integrationCategories: IntegrationCategory;
     connectionTypes: ConnectionType;
     products: Product;
+    lists: List;
+    crmFeatures: CrmFeature;
     ncxPostContents: NcxPostContent;
     redirects: Redirect;
     'payload-mcp-api-keys': PayloadMcpApiKey;
@@ -112,6 +114,8 @@ export interface Config {
     integrationCategories: IntegrationCategoriesSelect<false> | IntegrationCategoriesSelect<true>;
     connectionTypes: ConnectionTypesSelect<false> | ConnectionTypesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    lists: ListsSelect<false> | ListsSelect<true>;
+    crmFeatures: CrmFeaturesSelect<false> | CrmFeaturesSelect<true>;
     ncxPostContents: NcxPostContentsSelect<false> | NcxPostContentsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
@@ -130,11 +134,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     siteSettings: SiteSetting;
+    whatsappLists: WhatsappList;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    whatsappLists: WhatsappListsSelect<false> | WhatsappListsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -874,6 +880,10 @@ export interface Integration {
    * What flows between the two systems, in plain words.
    */
   summary?: string | null;
+  /**
+   * Leave empty to follow the section. Used only where the section allows it.
+   */
+  cardDesign?: ('grid' | 'logoCard' | 'feature' | 'story') | null;
   /**
    * 3 to 4 short claims for the strip under the page hero, for example: Every status tracked.
    */
@@ -3022,7 +3032,11 @@ export interface IntegrationsBlock {
   cardDesign: {
     design: 'grid' | 'logoCard' | 'directory' | 'feature' | 'story' | 'pill';
     /**
-     * Leave empty to fit as many as the width allows.
+     * When off, every card uses the design above.
+     */
+    allowItemDesigns?: boolean | null;
+    /**
+     * Leave empty to fit as many as the width allows. If integrations use different designs and this is empty, every group shows 3 per row.
      */
     columns?: ('2' | '3' | '4') | null;
     lastRow?: ('stretch' | 'center' | 'leave') | null;
@@ -4745,6 +4759,371 @@ export interface Enquiry {
   createdAt: string;
 }
 /**
+ * Short lists other collections group their entries by, such as CRM areas and agent families.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lists".
+ */
+export interface List {
+  id: string;
+  name: string;
+  /**
+   * Which list this entry belongs to.
+   */
+  type: 'crmArea' | 'agentFamily';
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Lower shows first, on hub pages and in WhatsApp menus.
+   */
+  order?: number | null;
+  /**
+   * One line shown above the area's features on the CRM hub page.
+   */
+  intro?: string | null;
+  /**
+   * The problem the family solves, in the team's words.
+   */
+  painLine?: string | null;
+  /**
+   * How the agents in the family work together.
+   */
+  summary?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Capabilities of the NeuronCx CRM, such as Customer 360. Only Live and Pilot entries reach the website, WhatsApp and the knowledge base.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "crmFeatures".
+ */
+export interface CrmFeature {
+  id: string;
+  name: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Shown first wherever this collection is listed.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower shows first, on grids and in WhatsApp lists.
+   */
+  order?: number | null;
+  /**
+   * Lets blocks pull out the entries that most set NeuronCx apart.
+   */
+  isUSP?: boolean | null;
+  /**
+   * Only Live and Pilot entries appear on the website, WhatsApp and the knowledge base.
+   */
+  status: 'live' | 'pilot' | 'planned';
+  /**
+   * Gives this entry a page of its own and adds it to the sitemap. The Page tab appears while this is on.
+   */
+  hasOwnPage?: boolean | null;
+  /**
+   * Groups features on the CRM hub page and in WhatsApp menus.
+   */
+  area: string | List;
+  /**
+   * Which of the three home page problems this answers. Optional.
+   */
+  problemSolved?: ('strangerFollowUp' | 'silentDropOff' | 'duplicateRecords')[] | null;
+  /**
+   * A short line under the name. Aim for 45 characters.
+   */
+  tagline?: string | null;
+  /**
+   * One line on what it does. Aim for 120 characters.
+   */
+  summary: string;
+  /**
+   * From the shared icon library.
+   */
+  icon?:
+    | (
+        | 'message'
+        | 'chat'
+        | 'check'
+        | 'calendar'
+        | 'card'
+        | 'document'
+        | 'refresh'
+        | 'bolt'
+        | 'layers'
+        | 'gauge'
+        | 'plug'
+        | 'shield'
+        | 'shieldCheck'
+        | 'lock'
+        | 'globe'
+        | 'server'
+        | 'eye'
+        | 'users'
+        | 'user'
+        | 'phone'
+        | 'smartphone'
+        | 'mail'
+        | 'messageCircle'
+        | 'send'
+        | 'inbox'
+        | 'headphones'
+        | 'mic'
+        | 'video'
+        | 'bell'
+        | 'handshake'
+        | 'stethoscope'
+        | 'heartPulse'
+        | 'hospital'
+        | 'activity'
+        | 'flask'
+        | 'pill'
+        | 'graduationCap'
+        | 'building'
+        | 'mapPin'
+        | 'database'
+        | 'cloud'
+        | 'workflow'
+        | 'bot'
+        | 'sparkles'
+        | 'search'
+        | 'chart'
+        | 'trendingUp'
+        | 'target'
+        | 'rocket'
+        | 'key'
+        | 'fileText'
+        | 'clipboardList'
+        | 'link'
+        | 'settings'
+        | 'puzzle'
+        | 'timer'
+        | 'clock'
+        | 'badgeCheck'
+        | 'star'
+        | 'briefcase'
+      )
+    | null;
+  /**
+   * Optional. Logos go here for integrations.
+   */
+  image?: (string | null) | Media;
+  /**
+   * The full description. Also indexed for the knowledge base.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * The teams or roles that use it, such as front desk or call centre.
+   */
+  whoItsFor?: string | null;
+  /**
+   * One line on how a sales-pipeline CRM handles this. Never name a competitor.
+   */
+  legacyGap?: string | null;
+  /**
+   * The page heading. Needed to publish with Own page on.
+   */
+  heroHeading?: string | null;
+  heroSubheading?: string | null;
+  /**
+   * 3 to 6 outcomes, each with a short line.
+   */
+  benefits?:
+    | {
+        title: string;
+        line: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * 3 to 5 steps, in order.
+   */
+  howItWorks?:
+    | {
+        title: string;
+        line: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Up to 4, one per vertical where possible.
+   */
+  useCases?:
+    | {
+        title: string;
+        line: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The closing button. Type a label to choose where it goes.
+   */
+  cta?: {
+    label?: string | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: string | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: string | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  /**
+   * Up to 3. Leave empty to show other entries from this collection, by order.
+   */
+  related?: (string | CrmFeature)[] | null;
+  /**
+   * Demo-tenant screenshots only.
+   */
+  screenshots?:
+    | {
+        image: string | Media;
+        alt: string;
+        id?: string | null;
+      }[]
+    | null;
+  integrations?: (string | Integration)[] | null;
+  /**
+   * Visitors see each customer as the customers collection allows: real names only where Show real name is on.
+   */
+  customers?: (string | Customer)[] | null;
+  /**
+   * Up to 6. Questions phrased the way a buyer would ask them.
+   */
+  faqs?:
+    | {
+        question: string;
+        /**
+         * Plain text, no formatting.
+         */
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  waRowTitle?: string | null;
+  /**
+   * Aim for 60 characters.
+   */
+  waRowDescription?: string | null;
+  /**
+   * Aim for 30 characters.
+   */
+  waHeader?: string | null;
+  /**
+   * Aim for 300 characters.
+   */
+  waBody?: string | null;
+  /**
+   * 3 to 5 short lines, sent inside the body.
+   */
+  waKeyPoints?:
+    | {
+        line: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Aim for 30 characters.
+   */
+  waFooter?: string | null;
+  /**
+   * Up to 3, which is the WhatsApp limit.
+   */
+  waButtons?:
+    | {
+        label: string;
+        /**
+         * The reply the assistant receives when the button is tapped, for example book-demo.
+         */
+        action: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sent when the person wants more. Normally the entry's own page when Own page is on, otherwise its place on the parent page.
+   */
+  waLink?: string | null;
+  /**
+   * Only published entries with this on are sent to the knowledge base.
+   */
+  includeInKbase?: boolean | null;
+  /**
+   * A complete answer to "What is this?", written for the virtual agents.
+   */
+  kbAnswer?: string | null;
+  /**
+   * Short, checkable facts. One fact per line.
+   */
+  kbFacts?:
+    | {
+        fact: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How a customer might ask about it.
+   */
+  kbQuestions?:
+    | {
+        question: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Other names people use for it.
+   */
+  kbSynonyms?:
+    | {
+        synonym: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * So answers that have gone stale can be found and fixed.
+   */
+  kbLastReviewed?: string | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Website sections sent to NeuronCX post content for the WhatsApp bot. New ones wait for approval in the NCX dashboard.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -5022,6 +5401,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'lists';
+        value: string | List;
+      } | null)
+    | ({
+        relationTo: 'crmFeatures';
+        value: string | CrmFeature;
       } | null)
     | ({
         relationTo: 'ncxPostContents';
@@ -6031,6 +6418,7 @@ export interface IntegrationsBlockSelect<T extends boolean = true> {
     | T
     | {
         design?: T;
+        allowItemDesigns?: T;
         columns?: T;
         lastRow?: T;
         groupByCategory?: T;
@@ -7111,6 +7499,7 @@ export interface IntegrationsSelect<T extends boolean = true> {
   logo?: T;
   tagline?: T;
   summary?: T;
+  cardDesign?: T;
   glance?:
     | T
     | {
@@ -7297,6 +7686,148 @@ export interface ProductsSelect<T extends boolean = true> {
   icon?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lists_select".
+ */
+export interface ListsSelect<T extends boolean = true> {
+  name?: T;
+  type?: T;
+  generateSlug?: T;
+  slug?: T;
+  order?: T;
+  intro?: T;
+  painLine?: T;
+  summary?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "crmFeatures_select".
+ */
+export interface CrmFeaturesSelect<T extends boolean = true> {
+  name?: T;
+  generateSlug?: T;
+  slug?: T;
+  featured?: T;
+  order?: T;
+  isUSP?: T;
+  status?: T;
+  hasOwnPage?: T;
+  area?: T;
+  problemSolved?: T;
+  tagline?: T;
+  summary?: T;
+  icon?: T;
+  image?: T;
+  description?: T;
+  whoItsFor?: T;
+  legacyGap?: T;
+  heroHeading?: T;
+  heroSubheading?: T;
+  benefits?:
+    | T
+    | {
+        title?: T;
+        line?: T;
+        id?: T;
+      };
+  howItWorks?:
+    | T
+    | {
+        title?: T;
+        line?: T;
+        id?: T;
+      };
+  useCases?:
+    | T
+    | {
+        title?: T;
+        line?: T;
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  related?: T;
+  screenshots?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        id?: T;
+      };
+  integrations?: T;
+  customers?: T;
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  waRowTitle?: T;
+  waRowDescription?: T;
+  waHeader?: T;
+  waBody?: T;
+  waKeyPoints?:
+    | T
+    | {
+        line?: T;
+        id?: T;
+      };
+  waFooter?: T;
+  waButtons?:
+    | T
+    | {
+        label?: T;
+        action?: T;
+        id?: T;
+      };
+  waLink?: T;
+  includeInKbase?: T;
+  kbAnswer?: T;
+  kbFacts?:
+    | T
+    | {
+        fact?: T;
+        id?: T;
+      };
+  kbQuestions?:
+    | T
+    | {
+        question?: T;
+        id?: T;
+      };
+  kbSynonyms?:
+    | T
+    | {
+        synonym?: T;
+        id?: T;
+      };
+  kbLastReviewed?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -7684,6 +8215,34 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * The list button and section title the WhatsApp assistant uses for each collection.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsappLists".
+ */
+export interface WhatsappList {
+  id: string;
+  /**
+   * One row per collection.
+   */
+  lists?:
+    | {
+        collection: 'crmFeatures' | 'microApps' | 'omnichannelCx';
+        /**
+         * The button that opens the list in WhatsApp.
+         */
+        waListButton?: string | null;
+        /**
+         * The heading above the rows in the list.
+         */
+        waSectionTitle?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -7807,6 +8366,23 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   manifestShortName?: T;
   manifestDisplay?: T;
   manifestBackground?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "whatsappLists_select".
+ */
+export interface WhatsappListsSelect<T extends boolean = true> {
+  lists?:
+    | T
+    | {
+        collection?: T;
+        waListButton?: T;
+        waSectionTitle?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
