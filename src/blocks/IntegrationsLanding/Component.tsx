@@ -5,6 +5,7 @@ import React from 'react'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { FAQBlock } from '@/blocks/FAQ/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
+import { IntegrationsMarqueeBlock } from '@/components/blocks/IntegrationsMarquee/IntegrationsMarquee'
 import { CMS_TAG, getMany } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { pickMedia, type MediaValue } from '@/utilities/media'
@@ -42,6 +43,35 @@ export const loadMaster = async (
 const idsOf = (list?: (string | { id: string })[] | null) =>
   (list || []).map((x) => (typeof x === 'object' ? x.id : x)).filter(Boolean) as string[]
 
+type Section = { key: string; category: IntegrationCategory; label: string | null; heading: string | null; intro: string | null }
+
+/**
+ * The integration sections. With rows in the master's "Integration sections"
+ * list: those categories, in that order, each with the text typed in its row.
+ * Without: every category (or the ones the master's filter picks), in
+ * category order, with the category's own name, hub heading and hub intro.
+ */
+const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): Section[] => {
+  const byId = new Map(categories.map((c) => [c.id, c]))
+  const rows = (m.integrationSections || []).flatMap((row): Section[] => {
+    const id = typeof row.category === 'object' ? row.category?.id : row.category
+    const category = id ? byId.get(id) : undefined
+    return category
+      ? [{ key: row.id || category.id, category, label: row.eyebrow || null, heading: row.heading || null, intro: row.intro || null }]
+      : []
+  })
+  if (rows.length) return rows
+
+  const only = idsOf(m.filter?.categories as any)
+  return (only.length ? categories.filter((c) => only.includes(c.id)) : categories).map((c) => ({
+    key: c.id,
+    category: c,
+    label: c.name,
+    heading: c.hubHeading || null,
+    intro: c.description || null,
+  }))
+}
+
 export const IntegrationsLandingBlock: React.FC<
   Pick<IntegrationsLandingBlockProps, 'master'> & { record?: IntegrationsMaster | null }
 > = async ({ master, record }) => {
@@ -53,16 +83,15 @@ export const IntegrationsLandingBlock: React.FC<
     { sort: 'order', limit: 50, depth: 0 },
     { tags: [CMS_TAG, 'integration-categories'] },
   )
-  const onlyCategories = idsOf(m.filter?.categories as any)
   const products = idsOf(m.filter?.products as any)
-  const shown = onlyCategories.length
-    ? categories.filter((c) => onlyCategories.includes(c.id))
-    : categories
+  const sections = sectionsOf(m, categories)
 
+  const centred = m.heroLayout === 'centred'
   const systems = ((m.heroSystems || []) as (string | Integration)[]).filter(
     (s): s is Integration => typeof s === 'object' && Boolean(s?.name),
   )
-  const image = pickMedia(m.hero?.image as MediaValue)
+  // The centred hero has no image.
+  const image = centred ? null : pickMedia(m.hero?.image as MediaValue)
   const primaryHref = hrefOf(m.cta?.link as LinkValue)
   const secondaryHref = hrefOf(m.hero?.secondaryCta?.link as LinkValue)
   const apiHref = hrefOf(m.apiCard?.link as LinkValue)
@@ -110,6 +139,10 @@ export const IntegrationsLandingBlock: React.FC<
         .ncx-ihub__visual{background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);
           box-shadow:var(--ncx-shadow);padding:18px}
         .ncx-ihub__visual img{width:100%;height:auto;display:block;border-radius:12px}
+        /* Centred: one column, everything on the centre line. */
+        .ncx-ihub__hero.is-centred .ncx-ihub__grid{justify-items:center;text-align:center}
+        .ncx-ihub__hero.is-centred h1,.ncx-ihub__hero.is-centred .sub{margin-inline:auto}
+        .ncx-ihub__hero.is-centred .cta,.ncx-ihub__hero.is-centred .systems{justify-content:center}
 
         .ncx-ihub__section{padding-block:72px}
         .ncx-ihub__section h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
@@ -144,7 +177,7 @@ export const IntegrationsLandingBlock: React.FC<
         }
       `}</style>
 
-      <header className="ncx-ihub__hero">
+      <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`}>
         <div className="inner ncx-container">
           <div className={`ncx-ihub__grid${image ? '' : ' is-single'}`}>
             <div>
@@ -195,16 +228,20 @@ export const IntegrationsLandingBlock: React.FC<
         </div>
       </header>
 
-      {shown.map((c) => (
+      {m.logoStripOn ? (
+        <IntegrationsMarqueeBlock blockType="integrationsMarquee" {...(m.logoStrip || {})} />
+      ) : null}
+
+      {sections.map((s) => (
         <IntegrationsBlock
-          key={c.id}
+          key={s.key}
           blockType="integrations"
           populateBy="filter"
-          categories={[c.id]}
+          categories={[s.category.id]}
           products={products}
-          label={c.name}
-          heading={c.hubHeading}
-          intro={c.description}
+          label={s.label}
+          heading={s.heading}
+          intro={s.intro}
           limit={24}
         />
       ))}
