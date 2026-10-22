@@ -21,7 +21,21 @@ export type CardItem = {
   /** Set only when the item has its own page. */
   href?: string | null
   linkLabel?: string | null
+  /** The design the item asks for, where its section allows it. Empty follows the section. */
+  preferredDesign?: ItemCardDesign | null
 }
+
+/**
+ * The designs one item may choose for itself (ITEM_CARD_DESIGNS in
+ * neuroncx-cms src/fields/cardDesign.ts). Directory and pill describe a
+ * whole list, so only a section can use them.
+ */
+export const ITEM_CARD_DESIGNS = ['grid', 'logoCard', 'feature', 'story'] as const
+
+export type ItemCardDesign = (typeof ITEM_CARD_DESIGNS)[number]
+
+export const isItemCardDesign = (name: unknown): name is ItemCardDesign =>
+  typeof name === 'string' && (ITEM_CARD_DESIGNS as readonly string[]).includes(name)
 
 /** Cards per row on wide screens. */
 export type CardColumns = 2 | 3 | 4

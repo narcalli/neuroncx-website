@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { fromIntegration } from '@/components/cards/adapters/integration'
+import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign, type SavedCardDesign } from '@/components/cards/defaults'
-import { CardDesign, type CardDesignOptions } from '@/components/cards/registry'
-import { initialOf, type CardDesignProps, type CardItem } from '@/components/cards/types'
+import { initialOf, type CardItem } from '@/components/cards/types'
 import type {
   Integration,
   IntegrationCategory,
@@ -53,15 +53,8 @@ const groupByCategory = (docs: Integration[], card: (d: Integration) => CardItem
 export const IntegrationsBlock = async (props: Props) => {
   const { label, heading, intro, items, footnote, populateBy, cardDesign } = props
 
-  const settings = mergeCardDesign(cardDesign)
-  const { design, linkLabel } = settings
-  const layout: Omit<CardDesignProps, 'items'> & CardDesignOptions = {
-    // No fixed number per row: the design's own (the grid fits the width).
-    columns: settings.columns ?? undefined,
-    lastRow: settings.lastRow,
-    look: design === 'feature' ? settings.look : undefined,
-    showAllLink: settings.showAllLink,
-  }
+  let settings = mergeCardDesign(cardDesign)
+  const { linkLabel } = settings
   // Every design shows a link only on cards whose integration has its own page.
   const toCard = (d: Integration): CardItem => ({ ...fromIntegration(d), linkLabel })
 
@@ -89,6 +82,8 @@ export const IntegrationsBlock = async (props: Props) => {
       },
     )
     groups = [{ key: 'all', name: null, order: 0, items: list }]
+    // The typed list has no item designs.
+    settings = { ...settings, allowItemDesigns: false }
   }
   groups = groups.filter((g) => g.items.length)
   if (!groups.length) return null
@@ -125,12 +120,10 @@ export const IntegrationsBlock = async (props: Props) => {
         {groups.map((group, i) => (
           <div className="group" key={group.key}>
             {group.name ? <h3 className="group-name">{group.name}</h3> : null}
-            <CardDesign
-              design={design}
+            <CardSection
               items={group.items}
-              {...layout}
               // One "All integrations" card, after the last group.
-              showAllLink={layout.showAllLink && i === groups.length - 1}
+              settings={{ ...settings, showAllLink: settings.showAllLink && i === groups.length - 1 }}
             />
           </div>
         ))}

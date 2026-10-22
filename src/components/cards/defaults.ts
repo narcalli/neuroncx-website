@@ -10,7 +10,8 @@ import type { CardColumns, CardLastRow } from './types'
  *
  * columns is null: no fixed number per row, so each design uses its own (the
  * grid fits as many as the width allows, feature and story cards 3, logo
- * cards 4).
+ * cards 4). allowItemDesigns is on: an item that chose its own design gets
+ * it (see CardSection).
  */
 export const CARD_DESIGN_DEFAULTS = {
   design: 'grid',
@@ -18,6 +19,7 @@ export const CARD_DESIGN_DEFAULTS = {
   lastRow: 'leave',
   groupByCategory: false,
   showAllLink: true,
+  allowItemDesigns: true,
 } as const
 
 /**
@@ -46,6 +48,7 @@ export type SavedCardDesign = {
     accentLine?: boolean | null
   } | null
   showAllLink?: boolean | null
+  allowItemDesigns?: boolean | null
 }
 
 /** Every setting filled in. */
@@ -57,6 +60,7 @@ export type CardDesignSettings = {
   linkLabel: string | null
   look: { cardColor: CardColor; border: CardBorder; borderColor: CardBorderColor; accentLine: boolean }
   showAllLink: boolean
+  allowItemDesigns: boolean
 }
 
 const oneOf = <T extends string>(value: unknown, allowed: readonly T[], fallback: T): T =>
@@ -84,5 +88,6 @@ export const mergeCardDesign = (saved?: SavedCardDesign | null): CardDesignSetti
       accentLine: look.accentLine ?? CARD_LOOK_DEFAULTS.accentLine,
     },
     showAllLink: s.showAllLink ?? CARD_DESIGN_DEFAULTS.showAllLink,
+    allowItemDesigns: s.allowItemDesigns ?? CARD_DESIGN_DEFAULTS.allowItemDesigns,
   }
 }
