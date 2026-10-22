@@ -37,6 +37,10 @@ const patternFor = (value: string) => {
 }
 
 const nextConfig: NextConfig = {
+  // Files ending in .dev.tsx are pages only while developing (for example the
+  // card designs preview at /dev/cards), so a production build never
+  // includes them.
+  pageExtensions: isDev ? ['dev.tsx', 'tsx', 'ts', 'jsx', 'js'] : ['tsx', 'ts', 'jsx', 'js'],
   sassOptions: {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },

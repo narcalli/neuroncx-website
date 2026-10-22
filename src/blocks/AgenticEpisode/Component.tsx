@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { animate, useInView } from 'motion/react'
+import { animate, inView } from 'motion/react'
 
 import type { AgenticEpisodeBlock as AgenticEpisodeProps } from '@/payload-types'
 
@@ -18,7 +18,6 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
   const list: Point[] = (points || []).filter((p) => p && p.label)
   const paras = (intro || []).filter((p) => p && p.text)
   const wrapRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(wrapRef, { once: true, amount: 0.45 })
   const [progress, setProgress] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const count = list.length
@@ -35,10 +34,19 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
     animate(0, 1, { duration: 4.4, ease: 'linear', onUpdate: (v) => setProgress(v) })
   }
 
+  // Plays once, the first time the card is mostly in view. The observer
+  // stops watching after that first call.
   useEffect(() => {
-    if (inView) play()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView])
+    const card = wrapRef.current
+    if (!card) return
+    return inView(
+      card,
+      () => {
+        play()
+      },
+      { amount: 0.45 },
+    )
+  }, [])
 
   if (!count) return null
 

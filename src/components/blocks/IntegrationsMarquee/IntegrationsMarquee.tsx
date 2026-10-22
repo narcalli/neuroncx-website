@@ -1,6 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
 
+import { Pill as CardPill } from '@/components/cards/Pill'
 import { loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { pickMedia } from '@/utilities/media'
 
@@ -31,25 +31,16 @@ function Pill({
   repeat?: boolean
 }) {
   const image = resolveLogoImage(logo.logo, logo.name)
-  const initial = logo.name.trim().charAt(0).toUpperCase()
 
+  // The pill itself is shared with the pill card design (components/cards/Pill).
   return (
-    <div
-      className={styles.pill}
-      aria-hidden={duplicate || repeat || undefined}
-      data-repeat={repeat ? 'true' : undefined}
-    >
-      {image ? (
-        <span className={styles.icon}>
-          <Image src={image.src} alt="" fill sizes="36px" unoptimized={image.unoptimized} />
-        </span>
-      ) : (
-        <span className={styles.monogram} aria-hidden="true">
-          {initial}
-        </span>
-      )}
-      <span className={styles.name}>{logo.name}</span>
-    </div>
+    <CardPill
+      name={logo.name}
+      initial={logo.name.trim().charAt(0).toUpperCase()}
+      logo={image ? { src: image.src, unoptimized: image.unoptimized } : null}
+      duplicate={duplicate}
+      repeat={repeat}
+    />
   )
 }
 

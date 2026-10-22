@@ -129,6 +129,29 @@
   height: 20px;
 }
 
+/* A logo in place of the icon tile: the same 40px tile, white with the card's
+   hairline, the logo fitted inside. */
+.logo {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+}
+
+.logo img {
+  max-width: 28px;
+  max-height: 28px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .number {
   padding: 0 10px;
   background: linear-gradient(135deg, var(--accent-from), var(--accent-to));

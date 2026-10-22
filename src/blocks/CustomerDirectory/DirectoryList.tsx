@@ -17,13 +17,26 @@ type Props = {
   showFilters: boolean
   layout: 'list' | 'grid'
   emptyStateText: string
+  /** Cards per row on wide screens in the grid layout; 3 when not set. */
+  columns?: 2 | 3 | 4
+  /** The accessible name of the filter pills. */
+  filterLabel?: string
 }
 
 /**
  * Filter pills and the list or grid of customers. Filtering happens here, on
- * the rows already fetched, so clicking a pill never reloads the page.
+ * the rows already fetched, so clicking a pill never reloads the page. Its
+ * styles are directoryListCss (styles.ts). Also the directory card design
+ * (components/cards), where the filters are categories.
  */
-export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, emptyStateText }) => {
+export const DirectoryList: React.FC<Props> = ({
+  rows,
+  showFilters,
+  layout,
+  emptyStateText,
+  columns,
+  filterLabel = 'Filter by sector',
+}) => {
   const [active, setActive] = useState<string>('all')
 
   // Distinct sectors across the rows, in the order they first appear.
@@ -36,7 +49,7 @@ export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, empt
   return (
     <>
       {showFilters && sectors.length > 0 ? (
-        <div className="ncx-dir__pills" role="group" aria-label="Filter by sector">
+        <div className="ncx-dir__pills" role="group" aria-label={filterLabel}>
           <button
             type="button"
             className={active === 'all' ? 'is-active' : undefined}
@@ -62,7 +75,10 @@ export const DirectoryList: React.FC<Props> = ({ rows, showFilters, layout, empt
       {visible.length === 0 ? (
         <p className="ncx-dir__empty">{emptyStateText}</p>
       ) : layout === 'grid' ? (
-        <ul className="ncx-dir__cards">
+        <ul
+          className="ncx-dir__cards"
+          style={columns ? ({ '--dir-cols': columns } as React.CSSProperties) : undefined}
+        >
           {visible.map((r) => (
             <li key={r.id} className="ncx-dir__card">
               <Name row={r} />

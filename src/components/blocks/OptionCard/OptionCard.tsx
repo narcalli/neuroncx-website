@@ -55,6 +55,8 @@ export type OptionCardProps = {
   body?: string | null
   /** A BlockIcon name. */
   icon?: string | null
+  /** A logo, shown in place of the icon tile when given. */
+  logo?: { src: string; alt: string } | null
   image?: PickedMedia | null
   imagePosition?: CardImagePosition | null
   imageSizes?: string
@@ -65,11 +67,25 @@ export type OptionCardProps = {
   style?: React.CSSProperties
 }
 
-function Badges({ icon, number }: { icon?: string | null; number: string | null }) {
-  if (!icon && !number) return null
+function Badges({
+  icon,
+  logo,
+  number,
+}: {
+  icon?: string | null
+  logo?: { src: string; alt: string } | null
+  number: string | null
+}) {
+  if (!icon && !logo && !number) return null
   return (
     <div className={styles.badges}>
-      {icon ? (
+      {logo ? (
+        <span className={styles.logo}>
+          {/* Logos are small and come in any format, so they are not resized. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logo.src} alt={logo.alt} loading="lazy" />
+        </span>
+      ) : icon ? (
         <span className={styles.icon} aria-hidden="true">
           <BlockIcon name={icon} fallback={icon} stroke="#fff" />
         </span>
@@ -129,6 +145,7 @@ export const OptionCard: React.FC<OptionCardProps> = ({
   largeTitle,
   body,
   icon,
+  logo,
   image,
   imagePosition,
   imageSizes,
@@ -153,7 +170,7 @@ export const OptionCard: React.FC<OptionCardProps> = ({
   const content = (
     <>
       {picture('top')}
-      <Badges icon={icon} number={number} />
+      <Badges icon={icon} logo={logo} number={number} />
       {options.showEyebrow !== false && options.tag ? <span className={styles.tag}>{options.tag}</span> : null}
       <h3 className={largeTitle ? styles.titleLarge : styles.titleRegular}>{title}</h3>
       {picture('middle')}

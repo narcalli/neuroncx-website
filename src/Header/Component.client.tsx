@@ -152,11 +152,11 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
   const drawerRef = useRef<HTMLDivElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
   const closeRef = useRef<HTMLButtonElement | null>(null)
-  // Read by the effects below once the drawer has closed: whether focus goes
-  // back to the menu button, and whether the page goes back to where it was
-  // scrolled.
+  // Set by closeDrawer, then read and cleared by the effects below once the
+  // drawer has closed: whether focus goes back to the menu button, and
+  // whether the page goes back to where it was scrolled.
   const restoreFocus = useRef(false)
-  const restoreScroll = useRef(true)
+  const restoreScroll = useRef(false)
 
   /**
    * Closes the drawer. A plain close (its close button, the menu button,
@@ -288,11 +288,17 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
   }, [pathname])
 
   // Any navigation closes whatever was open, the drawer included, so it is
-  // never left open over a new page.
-  useEffect(() => {
+  // never left open over a new page. Reset while rendering the new path
+  // (React's pattern for state that follows a changing value), so no extra
+  // render follows. The refs stay cleared, so neither focus nor scroll is
+  // restored: the new page owns both.
+  const [shownPath, setShownPath] = useState(pathname)
+  if (shownPath !== pathname) {
+    setShownPath(pathname)
     setOpen(null)
-    closeDrawer({ focus: false, scroll: false })
-  }, [pathname, closeDrawer])
+    setDrawerOpen(false)
+    setSection(null)
+  }
 
   // Opening moves focus to the drawer's close button; closing returns it to
   // the menu button.
@@ -329,6 +335,7 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
     return () => {
       Object.assign(body.style, was)
       if (restoreScroll.current) {
+        restoreScroll.current = false
         window.scrollTo({ top: y, left: 0, behavior: 'instant' as ScrollBehavior })
       }
     }
