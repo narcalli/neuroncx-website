@@ -21,7 +21,7 @@ export type CardItem = {
   /** Set only when the item has its own page. */
   href?: string | null
   linkLabel?: string | null
-  /** The design the item asks for, where its section allows it. Empty follows the section. */
+  /** The design the item asks for (its own, else its group's, such as an integration's category), where its section allows it. Empty follows the section. */
   preferredDesign?: ItemCardDesign | null
 }
 
