@@ -55,7 +55,9 @@ export const StatHeroBlock: React.FC<Props> = ({
         }
         @media(prefers-reduced-motion:reduce){.ncx-stathero::before{animation:none}}
         .ncx-stathero .inner{position:relative;z-index:1;
-          padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
+          padding-block:calc(64px + clamp(44px,6vw,76px)) 0;
+          /* Breadcrumbs sit 28px under the fixed header. */
+          --crumb-top:calc(28px - clamp(44px,6vw,76px))}
         .ncx-stathero .pill{display:inline-flex;align-items:center;gap:9px;
           font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-muted);
           border:1px solid var(--ncx-rule);background:var(--ncx-white);

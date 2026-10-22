@@ -196,7 +196,8 @@ export default async function CustomerPage({ params }: Args) {
           100%{transform:translate3d(-4%,5%,0) scale(1.06) rotate(-3deg)}
         }
         @media(prefers-reduced-motion:reduce){.ncx-cust__hero::before{animation:none}}
-        .ncx-cust__hero .inner{position:relative;z-index:1;padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
+        .ncx-cust__hero .inner{position:relative;z-index:1;padding-block:calc(64px + clamp(44px,6vw,76px)) 0;
+          --crumb-top:calc(28px - clamp(44px,6vw,76px))}
         .ncx-cust__grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr);gap:56px;align-items:start}
         .ncx-cust__grid.is-single{grid-template-columns:minmax(0,1fr)}
         .ncx-cust .sectors{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}

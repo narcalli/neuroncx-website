@@ -72,7 +72,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <RenderHero {...hero} leading={crumbs} />
       {heroDisabled && !startsFlush && crumbs ? (
-        <div className="ncx-container pt-8">{crumbs}</div>
+        <div className="ncx-container pt-7">{crumbs}</div>
       ) : null}
       <RenderBlocks blocks={layout} leading={startsFlush ? crumbs : undefined} />
     </article>

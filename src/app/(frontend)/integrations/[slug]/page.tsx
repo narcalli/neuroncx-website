@@ -231,7 +231,8 @@ export default async function IntegrationPage({ params }: Args) {
         /* Hero: text only, one column, on a flat light band. The top padding
            clears the fixed site header. */
         .ncx-iitem__hero{background:var(--ncx-cloud);padding:0 0 clamp(56px,7vw,88px)}
-        .ncx-iitem__hero .inner{padding-block:calc(64px + clamp(44px,6vw,76px)) 0}
+        .ncx-iitem__hero .inner{padding-block:calc(64px + clamp(44px,6vw,76px)) 0;
+          --crumb-top:calc(28px - clamp(44px,6vw,76px))}
         .ncx-iitem__intro{max-width:820px}
         .ncx-iitem .tags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
         .ncx-iitem .tags li{font-size:12px;font-weight:500;color:var(--ncx-ink);background:var(--ncx-white);

@@ -32,6 +32,8 @@ type Props = {
   overlayStrength?: 'light' | 'medium' | 'strong' | null
   animation?: 'off' | 'subtle' | 'lively' | null
   height?: 'tall' | 'medium' | null
+  /** Shown at the top of the hero, 28px under the fixed header (the page's breadcrumbs). */
+  leading?: React.ReactNode
 }
 
 const FOCAL: Record<string, string> = {
@@ -152,6 +154,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
   overlayStrength,
   animation,
   height,
+  leading,
 }) => {
   if (!headline) return null
 
@@ -184,6 +187,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
       data-height={height === 'medium' ? 'medium' : 'tall'}
       data-overlay={overlayStrength || 'strong'}
       data-placement={placement}
+      data-lead={leading ? '' : undefined}
     >
       <style>{`
         .ncx-hfb{position:relative;overflow:hidden;isolation:isolate;background:var(--ncx-navy);
@@ -241,6 +245,15 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         @keyframes ncx-hfb-pan-tight{from{transform:scale(1.01)}to{transform:scale(1.05)}}
 
         .ncx-hfb .content{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end}
+
+        /* Breadcrumbs: their own layer at the top, 28px under the fixed
+           header. The text keeps clear of them (header 64 + 28 + trail 20 +
+           44 = 156px); it still sits at the bottom whenever it fits, and
+           only starts lower when it does not. */
+        .ncx-hfb .lead{position:absolute;top:64px;left:0;right:0;z-index:3;--crumb-top:28px;pointer-events:none}
+        .ncx-hfb .lead .ncx-container{padding-bottom:0}
+        .ncx-hfb .lead nav{pointer-events:auto}
+        .ncx-hfb[data-lead] .content{padding-top:156px;align-items:safe flex-end}
         .ncx-hfb .ncx-container{width:100%;padding-bottom:56px}
         .ncx-hfb .inner{max-width:640px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
         .ncx-hfb[data-placement="right"] .inner{max-width:44%}
@@ -306,6 +319,9 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         @media(max-width:767px){
           .ncx-hfb,.ncx-hfb[data-height="medium"]{height:auto;min-height:520px}
           .ncx-hfb .ncx-container{padding-bottom:40px}
+          /* In the flow on phones, so a long text makes the hero taller
+             instead of running under the breadcrumbs. */
+          .ncx-hfb[data-lead] .content{position:relative;inset:auto;min-height:520px}
           .ncx-hfb .inner{max-width:none}
           .ncx-hfb h1{font-size:clamp(28px,8vw,38px);max-width:none}
           .ncx-hfb .subhead{font-size:16px}
@@ -375,6 +391,12 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
       </div>
 
       <div className="overlay" />
+
+      {leading ? (
+        <div className="lead">
+          <div className="ncx-container">{leading}</div>
+        </div>
+      ) : null}
 
       <Animator className="content">
         <div className="ncx-container">
