@@ -6,6 +6,7 @@ import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { FAQBlock } from '@/blocks/FAQ/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { IntegrationsMarqueeBlock } from '@/components/blocks/IntegrationsMarquee/IntegrationsMarquee'
+import type { SavedCardDesign } from '@/components/cards/defaults'
 import { CMS_TAG, getMany } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { pickMedia, type MediaValue } from '@/utilities/media'
@@ -43,21 +44,43 @@ export const loadMaster = async (
 const idsOf = (list?: (string | { id: string })[] | null) =>
   (list || []).map((x) => (typeof x === 'object' ? x.id : x)).filter(Boolean) as string[]
 
-type Section = { key: string; category: IntegrationCategory; label: string | null; heading: string | null; intro: string | null }
+type Section = {
+  key: string
+  category: IntegrationCategory
+  label: string | null
+  heading: string | null
+  intro: string | null
+  /** Merged over the defaults by the Integrations block. */
+  cardDesign: SavedCardDesign | null
+}
 
 /**
  * The integration sections. With rows in the master's "Integration sections"
  * list: those categories, in that order, each with the text typed in its row.
  * Without: every category (or the ones the master's filter picks), in
  * category order, with the category's own name, hub heading and hub intro.
+ *
+ * Card settings: a row's own card design when its "Use the page's design"
+ * is off, otherwise the master's card design (and, where that is missing,
+ * the defaults, which the Integrations block fills in).
  */
 const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): Section[] => {
   const byId = new Map(categories.map((c) => [c.id, c]))
+  const pageDesign = m.cardDesign || null
   const rows = (m.integrationSections || []).flatMap((row): Section[] => {
     const id = typeof row.category === 'object' ? row.category?.id : row.category
     const category = id ? byId.get(id) : undefined
     return category
-      ? [{ key: row.id || category.id, category, label: row.eyebrow || null, heading: row.heading || null, intro: row.intro || null }]
+      ? [
+          {
+            key: row.id || category.id,
+            category,
+            label: row.eyebrow || null,
+            heading: row.heading || null,
+            intro: row.intro || null,
+            cardDesign: row.usePageDesign === false ? row.cardDesign || null : pageDesign,
+          },
+        ]
       : []
   })
   if (rows.length) return rows
@@ -69,6 +92,7 @@ const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): S
     label: c.name,
     heading: c.hubHeading || null,
     intro: c.description || null,
+    cardDesign: pageDesign,
   }))
 }
 
@@ -242,6 +266,7 @@ export const IntegrationsLandingBlock: React.FC<
           label={s.label}
           heading={s.heading}
           intro={s.intro}
+          cardDesign={s.cardDesign}
           limit={24}
         />
       ))}
