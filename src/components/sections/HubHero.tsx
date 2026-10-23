@@ -89,7 +89,7 @@ export const HubHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.React
               <div className="ncx-hubhero__chat" role="group" aria-label="Example conversation">
                 {chat.map((m, i) => {
                   const entry = m.entry && typeof m.entry === 'object' ? m.entry.value : null
-                  const who = m.sender === 'entry' && isPublicEntry(entry, draft) ? entry.name : null
+                  const who = m.sender === 'business' && isPublicEntry(entry, draft) ? entry.name : null
                   return (
                     <p className={`ncx-hubhero__msg is-${m.sender}`} key={m.id || i}>
                       {who ? <span className="who">{who}</span> : null}
@@ -131,7 +131,7 @@ export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?:
     ...new Set(
       chat.flatMap((m) => {
         const entry = m.entry && typeof m.entry === 'object' ? m.entry.value : null
-        return m.sender === 'entry' && isPublicEntry(entry, draft) ? [entry.name] : []
+        return m.sender === 'business' && isPublicEntry(entry, draft) ? [entry.name] : []
       }),
     ),
   ]

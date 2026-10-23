@@ -25,6 +25,8 @@ type Props = {
   mediaAlt?: string | null
   videoPoster?: MediaValue
   animation?: 'on' | 'off' | null
+  /** Shown at the top of the hero, under the fixed header (a page's breadcrumbs). Not a CMS field. */
+  leading?: React.ReactNode
 }
 
 /** Resolves a CTA group into a real address, or null when there is nothing to link to. */
@@ -131,6 +133,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   mediaAlt,
   videoPoster,
   animation,
+  leading,
 }) => {
   if (!headline) return null
 
@@ -148,7 +151,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   const ratio = ratioOf(mediaValue, videoPoster)
 
   return (
-    <section className="ncx-hrp" data-anim={anim}>
+    <section className="ncx-hrp" data-anim={anim} data-lead={leading ? '' : undefined}>
       <style>{`
         .ncx-hrp{position:relative;overflow:hidden;isolation:isolate;
           background:var(--wash);color:var(--ncx-body);
@@ -208,6 +211,9 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         @keyframes ncx-hrp-breathe{from{transform:scale(1)}to{transform:scale(1.04)}}
 
         .ncx-hrp .content{position:relative;z-index:2;width:100%;padding:72px 0}
+        /* The leading slot (breadcrumbs) sits 28px under the fixed header, as on the full-background hero. */
+        .ncx-hrp .lead{position:absolute;top:64px;left:0;right:0;z-index:3;--crumb-top:28px;pointer-events:none}
+        .ncx-hrp .lead nav,.ncx-hrp .lead a{pointer-events:auto}
         .ncx-hrp .ncx-container{width:100%}
         .ncx-hrp .copy{max-width:min(520px,44%)}
         .ncx-hrp .eyebrow{margin:0 0 16px;font-family:var(--font-display),Arial,sans-serif;font-size:14px;
@@ -256,6 +262,8 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         @media(max-width:900px){
           .ncx-hrp{flex-direction:column;align-items:stretch;min-height:0}
           .ncx-hrp .content{order:1;padding:48px 0 8px}
+          /* Room for the leading row (a 44px back link) above the copy. */
+          .ncx-hrp[data-lead] .content{padding-top:80px}
           .ncx-hrp .copy{max-width:none}
           .ncx-hrp .bg{position:relative;order:2;inset:auto;left:auto;top:auto;bottom:auto;right:auto;
             width:100%;height:min(78vw,420px);z-index:0}
@@ -272,6 +280,12 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="glow" />
+
+      {leading ? (
+        <div className="lead">
+          <div className="ncx-container">{leading}</div>
+        </div>
+      ) : null}
 
       <div
         className="bg"
