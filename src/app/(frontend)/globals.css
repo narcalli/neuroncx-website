@@ -243,7 +243,7 @@
 }
 
 /* Header surfaces: the wash behind the page top, the four drifting gradient
-   blobs, the frosted nav fill and the scrim behind an open mega panel.
+   blobs and the frosted nav fill.
    Full colour values rather than channel triplets — these are composited in
    gradients and backdrop-filter layers, where a triplet would not resolve. */
 :root {
@@ -252,7 +252,6 @@
   --g2: rgba(19, 107, 116, 0.34);
   --g3: rgba(198, 40, 40, 0.13);
   --g4: rgba(78, 112, 186, 0.26);
-  --scrim: rgba(246, 247, 250, 0.15);
 }
 
 /* The one page container. 1180px up to about 1570px wide, then it grows with

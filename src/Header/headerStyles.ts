@@ -6,8 +6,8 @@
  *    .btn) that would collide with the per-block styles already on these pages.
  *  - Its palette tokens are namespaced `--hdr-*` for the same reason: a global
  *    `--line` or `--ink` would leak into blocks that read those names without
- *    declaring them. The seven shared tokens (--nav-glass, --scrim, --wash,
- *    --g1..--g4) stay global and live in globals.css.
+ *    declaring them. The six shared tokens (--nav-glass, --wash, --g1..--g4)
+ *    stay global and live in globals.css.
  *
  * Everything else — sizes, radii, timings, easing, breakpoints — is the
  * reference's own values.
@@ -177,21 +177,20 @@ export const headerCss = `
   border:1px dashed var(--hdr-crimson);color:var(--hdr-crimson);border-radius:999px;flex:none;
 }
 
-/* ---------- scrim behind an open menu ---------- */
-/* Light touch: behind a 292px panel a heavy blur reads as a modal. */
+/* ---------- layer behind an open menu ---------- */
+/* Invisible: the page stays sharp while a menu is open. The layer is only
+   there so a mouse moving onto the page, or a tap on it, closes the menu
+   without pressing whatever sits underneath. */
 .ncx-scrim{
-  position:fixed;inset:0;z-index:40;background:var(--scrim);
-  backdrop-filter:blur(4px) saturate(.92);-webkit-backdrop-filter:blur(4px) saturate(.92);
-  opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease;
+  position:fixed;inset:0;z-index:40;background:transparent;
+  visibility:hidden;
 }
-body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
+body.ncx-menu-open .ncx-scrim{visibility:visible}
 
 .ncx-nav :focus-visible,
 .ncx-topbar :focus-visible{outline:2px solid var(--hdr-teal);outline-offset:3px;border-radius:4px}
 .ncx-nav.on-dark :focus-visible{outline-color:#fff}
 
-/* Without backdrop-filter the glass would be a 72% wash and the scrim barely
-   visible, so both fall back to solid instead of a heavier tint. */
 /* Without backdrop-filter there is no veil to speak of, so the bar takes a
    solid background instead and the flip still decides which one. */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -201,7 +200,6 @@ body.ncx-menu-open .ncx-scrim{opacity:1;visibility:visible}
     border-bottom:1px solid var(--hdr-line);
   }
   .ncx-nav.on-dark::before{background:#0A0E18;border-bottom-color:rgba(255,255,255,.14)}
-  .ncx-scrim{background:rgba(23,28,46,.22)}
 }
 
 @media (max-width:1100px){
