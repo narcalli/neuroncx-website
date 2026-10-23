@@ -11,21 +11,26 @@ type Card = CardOptionFields & {
   id?: string | null
 }
 
+/** One card of the block, as a content collection's adapter builds it (cards/adapters). */
+export type ProductSuite2Card = Card
+
 type Props = {
   eyebrow?: string | null
   heading?: string | null
   intro?: string | null
   cards?: Card[] | null
+  /** The heading's id, for a section other parts of the page link to. */
+  headingId?: string
 }
 
-export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, cards }) => {
+export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, cards, headingId }) => {
   const items = (cards || []).filter((c) => c && c.title)
   if (!items.length) return null
 
   const numbers = cardNumbers(items)
 
   return (
-    <section className="ncx-suite2">
+    <section className="ncx-suite2" aria-labelledby={heading && headingId ? headingId : undefined}>
       <style>{`
         .ncx-suite2{
           padding-block:56px;
@@ -47,7 +52,7 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
 
       <div className="inner ncx-container">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        {heading ? <h2>{heading}</h2> : null}
+        {heading ? <h2 id={headingId}>{heading}</h2> : null}
         {intro ? <p className="intro">{intro}</p> : null}
 
         <div className={`grid ${cardTokens}`}>

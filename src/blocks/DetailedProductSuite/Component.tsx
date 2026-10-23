@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { BlockIcon } from '@/components/BlockIcon'
+import { CardFlag } from '@/components/cards/Flag'
 
 type Highlight = { icon?: string | null; label?: string | null; id?: string | null }
 
@@ -15,8 +16,13 @@ type Card = {
   accentColor?: 'crimson' | 'navy' | null
   highlights?: Highlight[] | null
   cta?: Cta
+  /** A status pill after the title, such as Pilot. Set by content collections, not the block. */
+  flag?: string | null
   id?: string | null
 }
+
+/** One card of the block, as a content collection's adapter builds it (cards/adapters). */
+export type DetailedProductSuiteCard = Card
 
 type Props = {
   eyebrow?: string | null
@@ -25,6 +31,8 @@ type Props = {
   columns?: '2' | '1' | null
   cards?: Card[] | null
   background?: string | null
+  /** The heading's id, for a section other parts of the page link to. */
+  headingId?: string
 }
 
 const ArrowIcon = () => (
@@ -58,6 +66,7 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
   columns,
   cards,
   background,
+  headingId,
 }) => {
   const items = (cards || []).filter((c) => c && c.title)
   if (!items.length) return null
@@ -153,7 +162,7 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
       {hasHeader ? (
         <header className="head">
           {headEyebrow ? <p className="eyebrow">{headEyebrow}</p> : null}
-          {headTitle ? <h2>{headTitle}</h2> : null}
+          {headTitle ? <h2 id={headingId}>{headTitle}</h2> : null}
           {headDescription ? <p className="intro">{headDescription}</p> : null}
         </header>
       ) : null}
@@ -175,7 +184,10 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
               ) : null}
 
               {card.eyebrow ? <span className="eyebrow">{card.eyebrow}</span> : null}
-              <h3>{card.title}</h3>
+              <h3>
+                {card.title}
+                <CardFlag text={card.flag} />
+              </h3>
               {card.tagline ? <p className="tagline">{card.tagline}</p> : null}
               {card.description ? <p className="desc">{card.description}</p> : null}
 

@@ -1,7 +1,12 @@
 import React from 'react'
 
+import { DetailedProductSuiteBlock } from '@/blocks/DetailedProductSuite/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
-import { fromMicroApp, toSuiteProduct } from '@/components/cards/adapters/microApp'
+import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
+import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
+import { fromMicroApp, toBentoCard, toDetailedCard, toSuite2Card, toSuiteProduct } from '@/components/cards/adapters/microApp'
+import { bentoSizes } from '@/components/cards/bentoPattern'
+import { sectionDesignOf } from '@/components/cards/sectionDesign'
 import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign } from '@/components/cards/defaults'
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
@@ -24,9 +29,10 @@ const listOf = (v: unknown): List | null => (v && typeof v === 'object' ? (v as 
  * grouping. Card design falls back from the entry, to its grouping, to the
  * row (the section), to grid. Hubs have no page-wide design yet.
  *
- * Product suite is a design for the whole section: when the row or the
- * grouping chooses it, the section is the Product suite block, with the same
- * eyebrow, heading and intro, and one large card per entry.
+ * Section designs draw the whole section with one of the site's blocks, with
+ * the same eyebrow, heading and intro and one card per entry: Product suite
+ * (pills or steps), Product suite 2, Detailed product suite and Bento grid.
+ * The row's own design wins; with none, the grouping's section design does.
  */
 export const HubGroupings = async ({
   hub,
@@ -72,16 +78,65 @@ export const HubGroupings = async ({
         .filter((s) => s.entries.length)
         .map(({ group, row, entries }) => {
           const id = `group-${group.slug || group.id}`
-          if (row.cardDesign === 'suite' || group.cardDesign === 'suite') {
+          const eyebrow = row.eyebrow || group.name
+          const heading = row.heading || group.painLine || group.name
+          const intro = row.intro || group.summary
+          const design = sectionDesignOf(row, group)
+          if (design === 'suite' || design === 'suiteSteps') {
+            const style = design === 'suiteSteps' ? 'steps' : 'pills'
             return (
               <ProductSuiteBlock
                 key={group.id}
                 headingId={id}
-                label={row.eyebrow || group.name}
-                heading={row.heading || group.painLine || group.name}
-                intro={row.intro || group.summary}
-                products={entries.map((e) => toSuiteProduct(e, draft))}
+                label={eyebrow}
+                heading={heading}
+                intro={intro}
+                products={entries.map((e) => toSuiteProduct(e, draft, style))}
               />
+            )
+          }
+          if (design === 'suite2') {
+            return (
+              <ProductSuite2Block
+                key={group.id}
+                headingId={id}
+                eyebrow={eyebrow}
+                heading={heading}
+                intro={intro}
+                cards={entries.map((e) => toSuite2Card(e, draft))}
+              />
+            )
+          }
+          if (design === 'detailedSuite') {
+            return (
+              <DetailedProductSuiteBlock
+                key={group.id}
+                headingId={id}
+                eyebrow={eyebrow}
+                title={heading}
+                description={intro}
+                columns="2"
+                cards={entries.map((e) => toDetailedCard(e, draft))}
+              />
+            )
+          }
+          if (design === 'bento') {
+            const sizes = bentoSizes(entries.length, row.bentoPattern)
+            return (
+              <section key={group.id} style={{ paddingBlock: 56 }}>
+                <BentoGrid
+                  blockType="bentoGrid"
+                  headingId={id}
+                  gap="medium"
+                  rowHeight={260}
+                  dense
+                  framed={false}
+                  eyebrow={eyebrow}
+                  title={heading}
+                  description={intro}
+                  cards={entries.map((e, i) => toBentoCard(e, sizes[i], draft))}
+                />
+              </section>
             )
           }
           const settings = mergeCardDesign({ design: row.cardDesign || 'grid', allowItemDesigns: true })

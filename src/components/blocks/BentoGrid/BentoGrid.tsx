@@ -57,6 +57,7 @@ export const BentoGrid: React.FC<BentoGridBlockProps> = ({
   cards,
   width,
   background,
+  headingId,
 }) => {
   const items = (cards || []).filter((c) => c && c.title)
   if (!items.length) return null
@@ -86,7 +87,11 @@ export const BentoGrid: React.FC<BentoGridBlockProps> = ({
         {hasHeader ? (
           <header className={onDark ? `${styles.header} ${styles.onDark}` : styles.header}>
             {headEyebrow ? <p className={styles.eyebrow}>{headEyebrow}</p> : null}
-            {headTitle ? <h2 className={styles.title}>{headTitle}</h2> : null}
+            {headTitle ? (
+              <h2 className={styles.title} id={headingId}>
+                {headTitle}
+              </h2>
+            ) : null}
             {headDescription ? <p className={styles.description}>{headDescription}</p> : null}
           </header>
         ) : null}

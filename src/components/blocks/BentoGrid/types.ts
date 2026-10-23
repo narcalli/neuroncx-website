@@ -55,6 +55,8 @@ export interface BentoGridBlockProps {
   cards: BentoGridCard[]
   /** The block's Appearance "Background" option, applied by the page wrapper. */
   background?: 'default' | 'white' | 'cloud' | 'navy' | 'crimson' | null
+  /** The heading's id, for a section other parts of the page link to. Not a CMS field. */
+  headingId?: string
   /** The block's Appearance "Content width" option, applied by the page wrapper. */
   width?: 'default' | 'narrow' | 'wide' | 'full' | null
 }
