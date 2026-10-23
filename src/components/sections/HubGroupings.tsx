@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { fromMicroApp } from '@/components/cards/adapters/microApp'
+import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
+import { fromMicroApp, toSuiteProduct } from '@/components/cards/adapters/microApp'
 import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign } from '@/components/cards/defaults'
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
@@ -22,6 +23,10 @@ const listOf = (v: unknown): List | null => (v && typeof v === 'object' ? (v as 
  * Cards: the row's hand-picked entries, else every public entry in the
  * grouping. Card design falls back from the entry, to its grouping, to the
  * row (the section), to grid. Hubs have no page-wide design yet.
+ *
+ * Product suite is a design for the whole section: when the row or the
+ * grouping chooses it, the section is the Product suite block, with the same
+ * eyebrow, heading and intro, and one large card per entry.
  */
 export const HubGroupings = async ({
   hub,
@@ -66,8 +71,20 @@ export const HubGroupings = async ({
       {sections
         .filter((s) => s.entries.length)
         .map(({ group, row, entries }) => {
-          const settings = mergeCardDesign({ design: row.cardDesign || 'grid', allowItemDesigns: true })
           const id = `group-${group.slug || group.id}`
+          if (row.cardDesign === 'suite' || group.cardDesign === 'suite') {
+            return (
+              <ProductSuiteBlock
+                key={group.id}
+                headingId={id}
+                label={row.eyebrow || group.name}
+                heading={row.heading || group.painLine || group.name}
+                intro={row.intro || group.summary}
+                products={entries.map((e) => toSuiteProduct(e, draft))}
+              />
+            )
+          }
+          const settings = mergeCardDesign({ design: row.cardDesign || 'grid', allowItemDesigns: true })
           return (
             <section className="ncx-sec" aria-labelledby={id} key={group.id}>
               <div className="ncx-container">

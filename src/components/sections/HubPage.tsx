@@ -13,12 +13,12 @@ import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
 import { HubGroupings } from './HubGroupings'
-import { HubHero } from './HubHero'
+import { HubConversationHero, HubHero } from './HubHero'
 import { RenderSections, type SectionContext } from './RenderSections'
 
 /**
  * A content collection's hub page from its hub record (foundation.md section
- * 7.1): hero with breadcrumbs, one section per grouping, the hub layout, FAQ
+ * 7.1): hero (with breadcrumbs, or the conversation design without), one section per grouping, the hub layout, FAQ
  * with FAQPage data, and the closing panel, the page's only navy section.
  */
 export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; draft: boolean }> = ({
@@ -45,11 +45,15 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
   return (
     <article>
       {draft ? <LivePreviewListener /> : null}
-      <HubHero
-        hub={hub}
-        draft={draft}
-        crumbs={<Breadcrumbs items={buildTrail({ page: { title: label, slug: CONTENT_COLLECTIONS[collection].route.slice(1) } })} />}
-      />
+      {hub.heroDesign === 'conversation' ? (
+        <HubConversationHero hub={hub} draft={draft} />
+      ) : (
+        <HubHero
+          hub={hub}
+          draft={draft}
+          crumbs={<Breadcrumbs items={buildTrail({ page: { title: label, slug: CONTENT_COLLECTIONS[collection].route.slice(1) } })} />}
+        />
+      )}
       <HubGroupings hub={hub} collection={collection} draft={draft} />
       <RenderSections blocks={hub.layout ?? []} ctx={ctx} />
       {faqs.length ? (

@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 
 import { BlockIcon } from '@/components/BlockIcon'
+import { CardFlag } from '@/components/cards/Flag'
 import { getPayloadURL, getServerSideURL } from '@/utilities/getURL'
 
 type MediaSize = { url?: string | null }
@@ -26,14 +27,21 @@ type Product = {
   tint?: 'none' | 'violet' | 'cyan' | 'rose' | 'grey' | null
   teamControls?: string | null
   note?: string | null
+  /** A status pill after the name, such as Pilot. Set by content collections, not the block. */
+  flag?: string | null
   id?: string | null
 }
+
+/** One card of the block, as a content collection's adapter builds it (cards/adapters). */
+export type ProductSuiteProduct = Product
 
 type Props = {
   label?: string | null
   heading?: string | null
   intro?: string | null
   products?: Product[] | null
+  /** The heading's id, for a section other parts of the page link to. */
+  headingId?: string
 }
 
 const TINTS = ['violet', 'cyan', 'rose', 'grey']
@@ -91,7 +99,7 @@ const pickImage = (image: Product['image'], want: 'card' | 'wide' | 'tall'): Pic
   return { src, alt: image.alt || '', unoptimized }
 }
 
-export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, products }) => {
+export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, products, headingId }) => {
   const items = products || []
   if (!items.length) return null
 
@@ -100,7 +108,7 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
   const stepsBefore = items.map((_, i) => items.slice(0, i).filter((x) => x.cardStyle === 'steps').length)
 
   return (
-    <section className="ncx-suite ncx-container">
+    <section className="ncx-suite ncx-container" aria-labelledby={heading && headingId ? headingId : undefined}>
       <style>{`
         .ncx-suite{
           /* Products are told apart by weight, not by hue: four surfaces drawn
@@ -203,7 +211,7 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
       `}</style>
 
       {label ? <p className="label">{label}</p> : null}
-      {heading ? <h2>{heading}</h2> : null}
+      {heading ? <h2 id={headingId}>{heading}</h2> : null}
       {intro ? <p className="intro">{intro}</p> : null}
 
       <div className="grid">
@@ -224,7 +232,10 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
                 key={key}
               >
                 <div className="text">
-                  <h3>{p.name}</h3>
+                  <h3>
+                  {p.name}
+                  <CardFlag text={p.flag} />
+                </h3>
                   {p.summary ? <p className="summary">{p.summary}</p> : null}
 
                   {points.length ? (
@@ -302,7 +313,10 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
                 </div>
               ) : null}
               <div className="body">
-                <h3>{p.name}</h3>
+                <h3>
+                  {p.name}
+                  <CardFlag text={p.flag} />
+                </h3>
                 {points.length ? (
                   <ul className="pills">
                     {points.map((pt, j) => (

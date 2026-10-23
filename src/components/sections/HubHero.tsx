@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
 import type { Hub } from '@/payload-types'
 import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
 import { isPublicEntry } from '@/utilities/content'
@@ -110,5 +111,48 @@ export const HubHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.React
         </div>
       </div>
     </header>
+  )
+}
+
+/**
+ * The hub's hero in the conversation design (heroDesign): the Conversation
+ * hero block, filled from the same hero fields. Customer messages are the
+ * customer's side, entry and team messages the business's, and the entries
+ * that reply are listed under the chat, once each, in order. No picture and
+ * no breadcrumbs: the design has neither.
+ */
+export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean }> = ({ hub, draft = false }) => {
+  const chat = (hub.heroChat ?? []).filter((m) => m?.text)
+  const repliers = [
+    ...new Set(
+      chat.flatMap((m) => {
+        const entry = m.entry && typeof m.entry === 'object' ? m.entry.value : null
+        return m.sender === 'entry' && isPublicEntry(entry, draft) ? [entry.name] : []
+      }),
+    ),
+  ]
+  // One message per line, as the block reads it; a line break inside a message would split it.
+  const line = (text: string) => text.replace(/\s*\n\s*/g, ' ')
+  const conversation = [
+    ...chat.map((m) => `${m.sender === 'customer' ? 'them' : 'us'}: ${line(m.text)}`),
+    ...repliers.map((name) => `tag: ${name}`),
+  ].join('\n')
+  const button = (b: Hub['heroCta']) => (b?.label ? { label: b.label, href: hrefOf(b as LinkValue) } : null)
+  const primary = button(hub.heroCta)
+  const secondary = button(hub.heroSecondaryCta)
+
+  return (
+    <ConversationHeroBlock
+      eyebrow={hub.eyebrow}
+      headline={hub.h1}
+      subhead={hub.subheading}
+      primaryButtonLabel={primary?.href ? primary.label : null}
+      primaryButtonLink={primary?.href ?? null}
+      secondaryButtonLabel={secondary?.href ? secondary.label : null}
+      secondaryButtonLink={secondary?.href ?? null}
+      chips={hub.heroChips}
+      conversationLabel={hub.heroChatCaption}
+      conversation={conversation}
+    />
   )
 }
