@@ -18,7 +18,7 @@ import { RenderSections, type SectionContext } from './RenderSections'
 
 /**
  * A content collection's hub page from its hub record (foundation.md section
- * 7.1): hero (with breadcrumbs, or the conversation design without), one section per grouping, the hub layout, FAQ
+ * 7.1): hero with breadcrumbs (standard or conversation design), one section per grouping, the hub layout, FAQ
  * with FAQPage data, and the closing panel, the page's only navy section.
  */
 export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; draft: boolean }> = ({
@@ -41,18 +41,17 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
   const ctx: SectionContext = { collection, hub, tokens, closing, draft }
   const faqs = (hub.faqs ?? []).filter((f) => f?.question && f.answer)
   const label = CONTENT_COLLECTIONS[collection].hubLabel
+  const crumbs = (
+    <Breadcrumbs items={buildTrail({ page: { title: label, slug: CONTENT_COLLECTIONS[collection].route.slice(1) } })} />
+  )
 
   return (
     <article>
       {draft ? <LivePreviewListener /> : null}
       {hub.heroDesign === 'conversation' ? (
-        <HubConversationHero hub={hub} draft={draft} />
+        <HubConversationHero hub={hub} draft={draft} crumbs={crumbs} />
       ) : (
-        <HubHero
-          hub={hub}
-          draft={draft}
-          crumbs={<Breadcrumbs items={buildTrail({ page: { title: label, slug: CONTENT_COLLECTIONS[collection].route.slice(1) } })} />}
-        />
+        <HubHero hub={hub} draft={draft} crumbs={crumbs} />
       )}
       <HubGroupings hub={hub} collection={collection} draft={draft} />
       <RenderSections blocks={hub.layout ?? []} ctx={ctx} />

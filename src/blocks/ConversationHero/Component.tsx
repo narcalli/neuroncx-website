@@ -22,6 +22,8 @@ type Props = {
   conversation?: string | null
   workflowSteps?: { label?: string | null; icon?: string | null; id?: string | null }[] | null
   stats?: { value?: string | null; label?: string | null; id?: string | null }[] | null
+  /** A breadcrumb trail above the hero's content, such as a hub page's. Not a CMS field. */
+  crumbs?: React.ReactNode
 }
 
 type Line = { kind: 'them' | 'us' | 'tag'; text: string }
@@ -59,6 +61,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
   conversation,
   workflowSteps,
   stats,
+  crumbs,
 }) => {
   const lines = parse(conversation)
   const messages = lines.filter((l) => l.kind !== 'tag')
@@ -207,7 +210,12 @@ export const ConversationHeroBlock: React.FC<Props> = ({
       
       
 
-      <div className="inner ncx-container">
+      <div
+        className="inner ncx-container"
+        // The breadcrumb trail sits 28px under the fixed header (--crumb-top).
+        style={crumbs ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties) : undefined}
+      >
+        {crumbs}
         <div className="grid">
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}

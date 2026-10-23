@@ -118,10 +118,14 @@ export const HubHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.React
  * The hub's hero in the conversation design (heroDesign): the Conversation
  * hero block, filled from the same hero fields. Customer messages are the
  * customer's side, entry and team messages the business's, and the entries
- * that reply are listed under the chat, once each, in order. No picture and
- * no breadcrumbs: the design has neither.
+ * that reply are listed under the chat, once each, in order, and the
+ * breadcrumb trail sits above it. No picture: the design has none.
  */
-export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean }> = ({ hub, draft = false }) => {
+export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.ReactNode }> = ({
+  hub,
+  draft = false,
+  crumbs,
+}) => {
   const chat = (hub.heroChat ?? []).filter((m) => m?.text)
   const repliers = [
     ...new Set(
@@ -153,6 +157,7 @@ export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean }> = ({ h
       chips={hub.heroChips}
       conversationLabel={hub.heroChatCaption}
       conversation={conversation}
+      crumbs={crumbs}
     />
   )
 }
