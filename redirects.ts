@@ -14,5 +14,12 @@ export const redirects: NextConfig['redirects'] = async () => {
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
   }
 
-  return [internetExplorerRedirect]
+  // The bot swarm hub was previewed here before it took over /bot-swarm.
+  const botSwarmPreview = {
+    source: '/bot-swarm-preview',
+    destination: '/bot-swarm',
+    permanent: true,
+  }
+
+  return [internetExplorerRedirect, botSwarmPreview]
 }

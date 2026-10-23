@@ -11,7 +11,11 @@ import { pickMedia, type MediaValue } from '@/utilities/media'
  * subheading, chips and buttons, with the chat (each reply labelled with the
  * entry that sends it) or a picture beside them.
  */
-export const HubHero: React.FC<{ hub: Hub; draft?: boolean }> = ({ hub, draft = false }) => {
+export const HubHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.ReactNode }> = ({
+  hub,
+  draft = false,
+  crumbs,
+}) => {
   const chat = (hub.heroChat ?? []).filter((m) => m?.text)
   const media = chat.length ? null : pickMedia(hub.heroMedia as MediaValue)
   const buttons = [hub.heroCta, hub.heroSecondaryCta]
@@ -51,7 +55,12 @@ export const HubHero: React.FC<{ hub: Hub; draft?: boolean }> = ({ hub, draft = 
         .ncx-hubhero__media img{display:block;width:100%;height:auto;border-radius:var(--ncx-r-panel)}
         @media(max-width:960px){.ncx-hubhero__cols.has-side{grid-template-columns:minmax(0,1fr)}}
       `}</style>
-      <div className="ncx-container">
+      {/* The breadcrumb trail sits 28px under the fixed header (--crumb-top). */}
+      <div
+        className="ncx-container"
+        style={{ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties}
+      >
+        {crumbs}
         <div className={`ncx-hubhero__cols${chat.length || media ? ' has-side' : ''}`}>
           <div>
             {hub.eyebrow ? <p className="eyebrow">{hub.eyebrow}</p> : null}

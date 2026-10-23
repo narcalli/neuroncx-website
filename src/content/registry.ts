@@ -31,7 +31,7 @@ export const CONTENT_COLLECTIONS: Record<ContentCollectionSlug, ContentCollectio
     groupField: 'family',
     listType: 'agentFamily',
     headings: { related: 'Other agents in {family}' },
-    hubAtRoute: false,
+    hubAtRoute: true,
   },
 }
 
