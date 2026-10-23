@@ -25,6 +25,11 @@ module.exports = {
         disallow: '/admin/*',
       },
     ],
-    additionalSitemaps: [`${SITE_URL}/pages-sitemap.xml`, `${SITE_URL}/posts-sitemap.xml`],
+    additionalSitemaps: [
+      `${SITE_URL}/pages-sitemap.xml`,
+      `${SITE_URL}/posts-sitemap.xml`,
+      // Content collection entry pages and hubs (src/app/(frontend)/content-sitemap.xml).
+      `${SITE_URL}/content-sitemap.xml`,
+    ],
   },
 }
