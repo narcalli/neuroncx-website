@@ -63,8 +63,6 @@ export const HubGroupings = async ({
 
   return (
     <>
-      <style>{`.ncx-sec__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
-        color:var(--ncx-crimson-ink);margin:0 0 12px}`}</style>
       {sections
         .filter((s) => s.entries.length)
         .map(({ group, row, entries }) => {

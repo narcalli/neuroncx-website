@@ -8,11 +8,14 @@ import React from 'react'
 export const SectionShell: React.FC<{
   id: string
   heading: string
+  /** The small line above the heading. */
+  eyebrow?: string | null
   intro?: string | null
   children: React.ReactNode
-}> = ({ id, heading, intro, children }) => (
+}> = ({ id, heading, eyebrow, intro, children }) => (
   <section className="ncx-sec" aria-labelledby={id}>
     <div className="ncx-container">
+      {eyebrow ? <p className="ncx-sec__eyebrow">{eyebrow}</p> : null}
       <h2 id={id}>{heading}</h2>
       {intro ? <p className="ncx-sec__intro">{intro}</p> : null}
       {children}
@@ -27,6 +30,8 @@ export const SectionStyles: React.FC = () => (
     .ncx-sec h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
       font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 32px;
       color:var(--ncx-ink);text-wrap:balance;max-width:28ch}
+    .ncx-sec__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
+      color:var(--ncx-crimson-ink);margin:0 0 12px}
     .ncx-sec__intro{margin:-16px 0 32px;max-width:64ch;font-size:18px;line-height:1.6;color:var(--ncx-muted)}
     .ncx-sec__lead{margin:0 0 24px;max-width:68ch;font-size:18px;line-height:1.6;color:var(--ncx-ink)}
     .ncx-sec__lead b{font-weight:600}

@@ -16,6 +16,7 @@ import type {
   HubWorksWithSection,
   HubIndustriesSection,
 } from '@/payload-types'
+import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
 import { entryHref, getEntries, isPublicEntry } from '@/utilities/content'
 
 import { SectionShell } from './SectionShell'
@@ -44,7 +45,17 @@ export const HubSteps: React.FC<Base & { block: HubStepsSection }> = ({ heading,
   const steps = STEP_KEYS.map((k) => block[k])
     .filter((s): s is { title: string; line?: string | null } => Boolean(s?.title))
     .map((s) => ({ title: s.title, description: s.line || '' }))
-  return steps.length ? <HowItWorksBlock heading={heading} steps={steps} /> : null
+  const cta = block.cta?.label ? { label: block.cta.label, href: hrefOf(block.cta as LinkValue) } : null
+  return steps.length ? (
+    <HowItWorksBlock
+      label={block.eyebrow}
+      heading={heading}
+      intro={block.intro}
+      steps={steps}
+      ctaLabel={cta?.href ? cta.label : null}
+      ctaLink={cta?.href ?? null}
+    />
+  ) : null
 }
 
 /** A link to an entry in any content collection, or to a page. */
@@ -67,7 +78,7 @@ export const HubLayers: React.FC<Base & { block: HubLayersSection; draft?: boole
   const layers = (block.layers ?? []).filter((l) => l?.title)
   if (!layers.length) return null
   return (
-    <SectionShell id={id} heading={heading}>
+    <SectionShell id={id} heading={heading} eyebrow={block.eyebrow} intro={block.intro}>
       <ol className="ncx-sec__grid">
         {layers.map((l, i) => {
           const href = layerHref(l.link, draft)
@@ -113,7 +124,9 @@ export const HubWorksWith = async ({
   return (
     <IntegrationsBlock
       blockType="integrations"
+      label={block.eyebrow}
       heading={heading}
+      intro={block.intro}
       populateBy="selection"
       selectedDocs={ids.filter(Boolean)}
       cardDesign={{ design: 'logoCard' }}
@@ -131,14 +144,16 @@ export const HubIndustries: React.FC<Base & { block: HubIndustriesSection }> = (
       description: r.problem,
       outcome: r.outcome,
     }))
-  return cases.length ? <UseCasesBlock label={null} heading={heading} cases={cases} /> : null
+  return cases.length ? (
+    <UseCasesBlock label={block.eyebrow} heading={heading} intro={block.intro} cases={cases} />
+  ) : null
 }
 
 export const HubTrust: React.FC<Base & { block: HubTrustSection }> = ({ id, heading, block }) => {
   const cards = (block.cards ?? []).filter((c) => c?.title)
   if (!cards.length) return null
   return (
-    <SectionShell id={id} heading={heading}>
+    <SectionShell id={id} heading={heading} eyebrow={block.eyebrow} intro={block.intro}>
       <ul className="ncx-sec__grid">
         {cards.map((c, i) => (
           <li className="ncx-sec__card" key={c.id || i}>
@@ -159,9 +174,15 @@ export const HubTrust: React.FC<Base & { block: HubTrustSection }> = ({ id, head
 export const HubArticles: React.FC<Base & { block: HubArticlesSection }> = ({ id, heading, block }) => (
   <section aria-labelledby={id} className="ncx-sec" style={{ paddingBottom: 0 }}>
     <div className="ncx-container">
+      {block.eyebrow ? <p className="ncx-sec__eyebrow">{block.eyebrow}</p> : null}
       <h2 id={id} style={{ marginBottom: 0 }}>
         {heading}
       </h2>
+      {block.intro ? (
+        <p className="ncx-sec__intro" style={{ margin: '14px 0 0' }}>
+          {block.intro}
+        </p>
+      ) : null}
     </div>
     <ArchiveBlock
       populateBy={block.populateBy === 'selection' ? 'selection' : 'collection'}
