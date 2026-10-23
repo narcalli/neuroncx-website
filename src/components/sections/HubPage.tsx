@@ -8,7 +8,7 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { CONTENT_COLLECTIONS, fillHeading, SECTION_HEADINGS, type ContentCollectionSlug } from '@/content/registry'
 import type { Hub } from '@/payload-types'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
-import { isLocalHost, siteOrigin } from '@/utilities/content'
+import { isLocalHost, showsClosing, siteOrigin } from '@/utilities/content'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
@@ -19,7 +19,8 @@ import { RenderSections, type SectionContext } from './RenderSections'
 /**
  * A content collection's hub page from its hub record (foundation.md section
  * 7.1): hero with breadcrumbs (standard or conversation design), one section per grouping, the hub layout, FAQ
- * with FAQPage data, and the closing panel, the page's only navy section.
+ * with FAQPage data, and the closing panel, the page's only navy section,
+ * unless the hub's Show the closing panel is off.
  */
 export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; draft: boolean }> = ({
   hub,
@@ -28,7 +29,7 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
 }) => {
   const tokens = { name: hub.name }
   const close = hub.closing
-  const closing = (
+  const closing = showsClosing(hub) ? (
     <ClosingCtaBlock
       heading={fillHeading(close?.heading || SECTION_HEADINGS.closing, tokens)}
       subhead={close?.subheading || null}
@@ -37,7 +38,7 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
       secondaryLabel={close?.secondaryCta?.label || null}
       secondaryLink={close?.secondaryCta?.label ? hrefOf(close.secondaryCta as LinkValue) : null}
     />
-  )
+  ) : null
   const ctx: SectionContext = { collection, hub, tokens, closing, draft }
   const faqs = (hub.faqs ?? []).filter((f) => f?.question && f.answer)
   const label = CONTENT_COLLECTIONS[collection].hubLabel

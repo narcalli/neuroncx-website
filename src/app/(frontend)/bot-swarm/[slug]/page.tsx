@@ -19,6 +19,7 @@ import {
   isDraft,
   isLocalHost,
   publicEntries,
+  showsClosing,
   siteOrigin,
 } from '@/utilities/content'
 import { pickMedia, type MediaValue } from '@/utilities/media'
@@ -43,7 +44,7 @@ const { route, hubLabel } = CONTENT_COLLECTIONS[COLLECTION]
  * the breadcrumb and Pilot bar on top; then the sections of the effective
  * layout (the hub's default while the agent uses the page defaults, else its
  * own); then the hub's closing panel, the page's only navy section, unless
- * the layout places it.
+ * the layout places it or the agent's Show the closing panel is off.
  */
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
@@ -123,7 +124,8 @@ export default async function AgentPage({ params }: Args) {
   )
 
   const secondary = hub?.closing?.secondaryCta
-  const closing = (
+  const closingOn = showsClosing(d)
+  const closing = closingOn ? (
     <ClosingCtaBlock
       heading={fillHeading(hub?.closing?.heading || SECTION_HEADINGS.closing, tokens)}
       subhead={hub?.closing?.subheading || null}
@@ -132,7 +134,7 @@ export default async function AgentPage({ params }: Args) {
       secondaryLabel={secondary?.label || null}
       secondaryLink={secondary?.label ? hrefOf(secondary as LinkValue) : null}
     />
-  )
+  ) : null
   // The hero no longer shows what the customer sees, so the panel always may.
   const ctx: SectionContext = { collection: COLLECTION, hub, entry: d, tokens, customerSeesInHero: false, closing, draft }
   const closingInLayout = layout.some((b) => sectionKeyOf(b.blockType) === 'closing')
@@ -141,6 +143,7 @@ export default async function AgentPage({ params }: Args) {
     <article className="ncx-agent">
       {draft ? <LivePreviewListener /> : null}
       <style>{`
+        /* Without the closing panel the footer follows the last section, which keeps its own bottom padding. */
         .ncx-agent{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
       `}</style>
 

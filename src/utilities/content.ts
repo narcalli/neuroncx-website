@@ -54,6 +54,13 @@ export const getEntries = async (
     { tags: contentTags(collection), draft },
   )
 
+/**
+ * Whether a page ends with the closing panel: off only when its showClosing
+ * switch is off. Pages saved before the switch existed show it.
+ */
+export const showsClosing = (doc: { showClosing?: boolean | null } | null | undefined): boolean =>
+  doc?.showClosing !== false
+
 /** The entry with its own page at this slug, or null. */
 export const getEntryPage = async (
   collection: ContentCollectionSlug,

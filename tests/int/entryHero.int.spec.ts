@@ -11,10 +11,11 @@ import {
   type HeroInput,
 } from '@/components/sections/entryHeroAdapters'
 import type { MicroApp } from '@/payload-types'
+import { showsClosing } from '@/utilities/content'
 
 /**
  * An entry's own page hero: what each design's adapter hands the existing
- * hero block.
+ * hero block, and whether the page ends with the closing panel.
  */
 
 const agent = (extra: Partial<MicroApp> = {}) =>
@@ -161,3 +162,11 @@ describe('stats', () => {
   })
 })
 
+describe('closing panel', () => {
+  it('is hidden only when the switch is off; older pages show it', () => {
+    expect(showsClosing({ showClosing: false })).toBe(false)
+    expect(showsClosing({ showClosing: true })).toBe(true)
+    expect(showsClosing({})).toBe(true)
+    expect(showsClosing(undefined)).toBe(true)
+  })
+})
