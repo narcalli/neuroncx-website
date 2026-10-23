@@ -34,7 +34,7 @@ export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
             <CaseCard
               item={{
                 id: it.id,
-                label: it.title,
+                label: it.flag ? `${it.title} (${it.flag})` : it.title,
                 title: it.tagline || it.text || it.title,
                 // Logos are small; skip resizing so any logo format shows as it is.
                 logo: it.logo ? { src: it.logo.src, unoptimized: true } : null,

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { CardFlag } from '../Flag'
 import { placementCss, placementVars } from '../layout'
 import type { CardDesignProps } from '../types'
 
@@ -69,7 +70,10 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
                 )}
               </div>
               <div>
-                <p className="ncx-cgrid__name">{it.title}</p>
+                <p className="ncx-cgrid__name">
+                  {it.title}
+                  <CardFlag text={it.flag} />
+                </p>
                 {it.text ? <p className="ncx-cgrid__text">{it.text}</p> : null}
               </div>
             </>

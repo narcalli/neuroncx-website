@@ -21,6 +21,11 @@ export type CardItem = {
   /** Set only when the item has its own page. */
   href?: string | null
   linkLabel?: string | null
+  /**
+   * A status pill drawn after the title by every item design, such as Pilot,
+   * or Planned in a draft preview. Empty for most items.
+   */
+  flag?: string | null
   /** The design the item asks for (its own, else its group's, such as an integration's category), where its section allows it. Empty follows the section. */
   preferredDesign?: ItemCardDesign | null
 }

@@ -7,6 +7,7 @@ import { IBM_Plex_Mono, Inter, Poppins } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
+import { DraftBanner } from '@/components/DraftBanner'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -80,6 +81,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Header />
         {children}
         <Footer />
+        {/* Every page, while draft mode is on: a preview is never mistaken for the live site. */}
+        {isEnabled ? <DraftBanner /> : null}
       </body>
     </html>
   )

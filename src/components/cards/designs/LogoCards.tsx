@@ -27,6 +27,7 @@ export const CardLogoCards: React.FC<CardDesignProps & { showAllLink?: boolean }
         text: it.tagline || it.text || null,
         href: it.href || null,
         logoSrc: it.logo?.src || null,
+        flag: it.flag || null,
       }))}
       columns={columns}
       showAllLink={showAllLink}

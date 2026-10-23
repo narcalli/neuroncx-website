@@ -38,8 +38,9 @@ export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, lo
             border: look?.border || 'none',
             borderColor: look?.borderColor || null,
             accentLine: look?.accentLine || false,
-            showEyebrow: Boolean(it.badge),
-            tag: it.badge || null,
+            // The status rides on the eyebrow: Book and get paid · Pilot.
+            showEyebrow: Boolean(it.badge || it.flag),
+            tag: [it.badge, it.flag].filter(Boolean).join(' · ') || null,
             showPoints: Boolean(it.chips?.length),
             points: (it.chips || []).map((text) => ({ text })),
             listStyle: 'pills',

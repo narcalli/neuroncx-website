@@ -85,16 +85,32 @@ const nextConfig: NextConfig = {
   // stale copy while fetching a fresh one for up to 5 minutes. Published edits
   // appear within about a minute without a deployment.
   // Excludes /admin and /api, which must never be cached.
+  //
+  // Draft preview is never cached either: not /next/* (preview and exit
+  // preview set or clear the draft cookie, and a cached redirect loses its
+  // Set-Cookie, so Chrome's client hint restart left preview silently off),
+  // and not any page requested with the draft cookie, so a CDN can never
+  // store a draft render and show it to visitors.
   async headers() {
     return [
       {
-        source: '/((?!admin|api|_next/static|_next/image).*)',
+        source: '/((?!admin|api|next/|_next/static|_next/image).*)',
+        missing: [{ type: 'cookie', key: '__prerender_bypass' }],
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
           },
         ],
+      },
+      {
+        source: '/((?!_next/static|_next/image).*)',
+        has: [{ type: 'cookie', key: '__prerender_bypass' }],
+        headers: [{ key: 'Cache-Control', value: 'private, no-store, must-revalidate' }],
+      },
+      {
+        source: '/next/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store, must-revalidate' }],
       },
       {
         source: '/admin/:path*',

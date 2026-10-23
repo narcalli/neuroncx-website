@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { CardFlag } from '@/components/cards/Flag'
+
 /** One related integration, as plain values from the page. */
 export type RelatedCard = {
   id: string
@@ -10,6 +12,8 @@ export type RelatedCard = {
   /** The integration's own page, when it has one. */
   href: string | null
   logoSrc: string | null
+  /** A status pill after the name, such as Pilot. */
+  flag?: string | null
 }
 
 const GridIcon = () => (
@@ -28,16 +32,20 @@ const GridIcon = () => (
   </svg>
 )
 
-const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null }> = ({
+const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null; flag?: string | null }> = ({
   icon,
   name,
   text,
+  flag,
 }) => (
   <>
     <span className="ncx-irel__tile" aria-hidden="true">
       {icon}
     </span>
-    <span className="ncx-irel__name">{name}</span>
+    <span className="ncx-irel__name">
+      {name}
+      <CardFlag text={flag} />
+    </span>
     {text ? <span className="ncx-irel__text">{text}</span> : null}
   </>
 )
@@ -116,11 +124,11 @@ export const RelatedCards: React.FC<{
           <li key={c.id} style={{ '--i': i % (columns || 4) } as React.CSSProperties}>
             {c.href ? (
               <Link className="ncx-irel__card" href={c.href}>
-                <Body icon={icon} name={c.name} text={c.text} />
+                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} />
               </Link>
             ) : (
               <div className="ncx-irel__card">
-                <Body icon={icon} name={c.name} text={c.text} />
+                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} />
               </div>
             )}
           </li>
