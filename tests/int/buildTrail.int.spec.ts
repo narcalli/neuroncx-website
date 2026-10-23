@@ -109,3 +109,28 @@ describe('buildTrail: collapse', () => {
     ])
   })
 })
+
+describe('buildTrail: content entry', () => {
+  it('is Home / hub / grouping / entry, with the grouping unlinked', () => {
+    expect(
+      buildTrail({
+        entry: {
+          name: 'Payment services',
+          hub: { label: 'Bot swarm', href: '/bot-swarm' },
+          group: 'Book and get paid',
+        },
+      }),
+    ).toEqual([
+      HOME,
+      { label: 'Bot swarm', href: '/bot-swarm' },
+      { label: 'Book and get paid' },
+      { label: 'Payment services' },
+    ])
+  })
+
+  it('leaves the grouping out when there is none', () => {
+    expect(
+      buildTrail({ entry: { name: 'Qualify', hub: { label: 'Bot swarm', href: '/bot-swarm' } } }),
+    ).toEqual([HOME, { label: 'Bot swarm', href: '/bot-swarm' }, { label: 'Qualify' }])
+  })
+})

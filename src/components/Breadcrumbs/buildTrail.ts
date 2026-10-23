@@ -27,6 +27,10 @@ export type TrailInput =
       }
     }
   | { customer: Pick<Customer, 'name'> }
+  | {
+      /** An entry in a content collection: its hub, its grouping (no page, so no link) and its name. */
+      entry: { name: string; hub: { label: string; href: string }; group?: string | null }
+    }
 
 /** Parents walked above a page, at most. A parent set to a label counts as one. */
 export const MAX_PARENTS = 3
@@ -74,6 +78,7 @@ const cap = (trail: Crumb[]): Crumb[] =>
  *   title. A parent set to a label has no link. Home's own trail is just Home.
  * - Integration: Home / Integrations / its category (no page, so no link) / the integration.
  * - Customer: Home / Customers / the customer.
+ * - Content entry: Home / its hub / its grouping (no page, so no link) / the entry.
  */
 export const buildTrail = (input: TrailInput): Crumb[] => {
   if ('page' in input) {
@@ -89,6 +94,15 @@ export const buildTrail = (input: TrailInput): Crumb[] => {
       { label: 'Integrations', href: '/integrations' },
       ...(category ? [{ label: category }] : []),
       { label: integration.name },
+    ])
+  }
+  if ('entry' in input) {
+    const { entry } = input
+    return cap([
+      HOME,
+      entry.hub,
+      ...(entry.group ? [{ label: entry.group }] : []),
+      { label: entry.name },
     ])
   }
   return cap([HOME, { label: 'Customers', href: '/customers' }, { label: input.customer.name }])
