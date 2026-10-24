@@ -147,7 +147,7 @@ export const IntegrationsLandingBlock: React.FC<
           padding:7px 15px;border-radius:999px;margin:0 0 24px}
         .ncx-ihub .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
         .ncx-ihub h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(36px,4.6vw,56px);
-          line-height:1.06;letter-spacing:-.035em;margin:0;max-width:20ch;text-wrap:balance;color:var(--ncx-ink)}
+          line-height:1.06;letter-spacing:-.035em;margin:0;max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--ncx-ink)}
         .ncx-ihub .sub{margin:24px 0 0;max-width:56ch;font-size:19px;line-height:1.65;color:var(--ncx-muted)}
         .ncx-ihub .cta{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
         .ncx-ihub .btn{font-family:var(--font-display),Arial,sans-serif;font-size:15px;font-weight:500;padding:13px 24px;
@@ -170,7 +170,7 @@ export const IntegrationsLandingBlock: React.FC<
 
         .ncx-ihub__section{padding-block:72px}
         .ncx-ihub__section h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 36px;color:var(--ncx-ink);max-width:24ch}
+          font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 36px;color:var(--ncx-ink);max-width:var(--ncx-heading-max)}
         .ncx-ihub__five{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
         .ncx-ihub__five li{background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-card);padding:22px 20px}
         .ncx-ihub__five .n{font-family:var(--font-display),Arial,sans-serif;font-size:13px;color:var(--ncx-crimson-ink);margin:0 0 10px}

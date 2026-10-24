@@ -278,6 +278,22 @@
   }
 }
 
+/* Heading width. Every block's h1 and h2 reads this instead of a cap of its
+   own: they had 14 to 30 characters, so a long heading broke in half with
+   the rest of the row empty. A heading now runs the full width of its
+   column (the container, or its grid cell), and balance splits one that
+   still needs two lines into even lines. A hero heading beside media placed
+   on top of the row keeps its share of it: min(var(--ncx-heading-max), 47%).
+   Body copy keeps its reading width (below). */
+:root {
+  --ncx-heading-max: 100%;
+}
+
+h1,
+h2 {
+  text-wrap: balance;
+}
+
 /* Reading width for running text. Rich text spans whatever column it sits in,
    so long-form pages (terms, privacy, articles) ran past 140 characters a
    line. Paragraphs, lists and quotes now stop at about 66 characters on

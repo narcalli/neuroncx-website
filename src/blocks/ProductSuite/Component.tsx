@@ -119,7 +119,7 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
         .ncx-suite .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
         .ncx-suite h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,40px);letter-spacing:-.03em;margin:0;max-width:800px}
+          font-size:clamp(28px,3.4vw,40px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-suite .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:18px;line-height:1.6}
         .ncx-suite .grid{margin-top:44px;display:grid;grid-auto-flow:dense;
           grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}

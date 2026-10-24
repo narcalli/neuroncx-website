@@ -38,7 +38,7 @@ export const ProblemStatementBlock: React.FC<Props> = ({
           letter-spacing:.04em;color:var(--ncx-crimson-ink);margin:0 0 14px}
         .ncx-prob h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.7rem,3vw,2.4rem);line-height:1.12;letter-spacing:-.02em;
-          margin:0;max-width:20ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         .ncx-prob .intro{color:var(--ncx-muted);margin:16px 0 0;font-size:1.02rem;line-height:1.6;max-width:52ch}
         .ncx-prob .list{display:flex;flex-direction:column;gap:14px;margin-top:26px}
         .ncx-prob .item{display:flex;gap:14px;align-items:flex-start;background:var(--ncx-white);

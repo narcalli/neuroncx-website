@@ -49,7 +49,7 @@ export const AgenticCartsDemoBlock: React.FC<AgenticCartsDemoProps> = ({
     <section className="ncx-carts">
       <style>{`
         .ncx-carts{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-carts h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-ink)}
+        .ncx-carts h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:var(--ncx-heading-max);margin:0;color:var(--ncx-ink)}
         .ncx-carts .sec-sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-carts .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;margin-top:38px;padding:4px;border-radius:12px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule);max-width:520px}
         .ncx-carts .seg-pill{position:absolute;left:4px;top:4px;bottom:4px;width:calc(50% - 4px);border-radius:9px;background:var(--ncx-white);box-shadow:0 0 0 1px var(--ncx-rule);transition:transform .45s cubic-bezier(.2,.8,.2,1)}

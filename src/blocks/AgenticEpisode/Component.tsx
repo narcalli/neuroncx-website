@@ -59,7 +59,7 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
     <section className="ncx-epi">
       <style>{`
         .ncx-epi{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-epi h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-ink)}
+        .ncx-epi h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:var(--ncx-heading-max);margin:0;color:var(--ncx-ink)}
         .ncx-epi .para{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-epi .card{margin-top:46px;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:16px;padding:24px 24px 22px}
         .ncx-epi .head{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.8rem;font-weight:500;margin-bottom:14px}

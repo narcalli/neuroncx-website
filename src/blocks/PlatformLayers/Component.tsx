@@ -53,7 +53,7 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
           letter-spacing:.04em;color:var(--ncx-crimson-on-navy);margin:0 0 14px}
         .ncx-layers h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.1;letter-spacing:-.02em;
-          margin:0;max-width:18ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         .ncx-layers .intro{color:var(--ncx-on-navy-soft);margin:18px 0 0;font-size:1.02rem}
 
         .ncx-layers .scroller{position:relative;margin-top:44px}

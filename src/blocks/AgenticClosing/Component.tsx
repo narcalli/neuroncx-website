@@ -38,7 +38,7 @@ export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ct
         .ncx-closing{padding:84px 0;text-align:center;background:var(--ncx-cloud);background-size:240% 240%;
           animation:ncxBgMove 14s ease-in-out infinite alternate}
         @keyframes ncxBgMove{from{background-position:0% 40%}to{background-position:100% 60%}}
-        .ncx-closing h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.2rem);max-width:20ch;margin:0 auto;color:var(--ncx-ink)}
+        .ncx-closing h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3.6vw,2.2rem);max-width:var(--ncx-heading-max);margin:0 auto;color:var(--ncx-ink)}
         .ncx-closing .btn{display:inline-block;margin-top:30px;background:var(--ncx-crimson);color:var(--ncx-on-navy);font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           font-size:1rem;text-decoration:none;padding:15px 30px;border-radius:8px}
         .ncx-closing .btn:hover{background:var(--ncx-crimson-hover)}

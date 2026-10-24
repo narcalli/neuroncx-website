@@ -222,7 +222,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
           background:var(--ncx-crimson);box-shadow:0 0 0 4px var(--ncx-crimson-tint)}
         .ncx-hrp h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           letter-spacing:-.025em;line-height:1.05;font-size:clamp(40px,5vw,67px);
-          margin:0 0 20px;max-width:14ch;text-wrap:balance}
+          margin:0 0 20px;max-width:var(--ncx-heading-max);text-wrap:balance}
         .ncx-hrp .word{display:inline-block;white-space:pre}
         .ncx-hrp .subhead{color:var(--ncx-muted);font-size:clamp(16px,1.3vw,18px);line-height:1.65;
           margin:0 0 30px;max-width:48ch}

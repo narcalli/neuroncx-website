@@ -49,10 +49,10 @@ export const CaseStudyGridBlock: React.FC<CaseStudyGridProps> = async ({
           ${caseArtVars}
           padding:88px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-cs__wrap{display:flex;flex-direction:column;gap:40px}
-        .ncx-cs__head{display:flex;flex-direction:column;gap:12px;max-width:60ch}
+        .ncx-cs__head{display:flex;flex-direction:column;gap:12px}
         .ncx-cs__eyebrow{font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0}
         .ncx-cs__heading{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.6rem,3vw,2rem);color:var(--ncx-ink);margin:0}
-        .ncx-cs__intro{font-size:15px;line-height:1.6;color:var(--ncx-muted);margin:0}
+        .ncx-cs__intro{font-size:15px;line-height:1.6;color:var(--ncx-muted);margin:0;max-width:60ch}
         .ncx-cs__grid{display:grid;grid-template-columns:1fr;gap:32px}
         @media(min-width:860px){.ncx-cs__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 ${caseCardCss}`}</style>

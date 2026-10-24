@@ -37,7 +37,7 @@ export const ClosingCtaBlock: React.FC<Props> = ({
         .ncx-closing .body{position:relative;z-index:2}
         .ncx-closing h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.1;letter-spacing:-.02em;
-          margin:0 auto;max-width:22ch}
+          margin:0 auto;max-width:var(--ncx-heading-max)}
         .ncx-closing .sub{margin:20px auto 0;color:var(--ncx-on-navy-soft);font-size:1.04rem;
           line-height:1.6;max-width:56ch}
         .ncx-closing .cta{margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}

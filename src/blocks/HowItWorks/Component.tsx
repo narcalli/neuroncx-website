@@ -25,7 +25,7 @@ export const HowItWorksBlock: React.FC<Props> = ({
         .ncx-how .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-how h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,36px);letter-spacing:-.025em;margin:0;max-width:22ch}
+          font-size:clamp(28px,3.4vw,36px);letter-spacing:-.025em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-how .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:17px}
         .ncx-how .steps{margin-top:48px;display:grid;
           grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px}

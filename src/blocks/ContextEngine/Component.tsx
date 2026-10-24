@@ -54,7 +54,7 @@ export const ContextEngineBlock: React.FC<Props> = ({
           letter-spacing:.04em;color:var(--ncx-crimson);margin:0 0 14px}
         .ncx-ctx h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1.1;letter-spacing:-.02em;
-          margin:0;max-width:16ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         .ncx-ctx .intro{color:var(--ncx-muted);margin:18px 0 0;font-size:1.02rem;line-height:1.6;max-width:52ch}
         .ncx-ctx .points{margin:28px 0 0;padding:0;list-style:none;display:flex;
           flex-direction:column;gap:18px}

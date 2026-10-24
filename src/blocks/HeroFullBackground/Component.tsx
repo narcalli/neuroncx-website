@@ -261,7 +261,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
           color:var(--ncx-crimson-on-navy);margin:0 0 14px}
         .ncx-hfb h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(32px,5.2vw,56px);line-height:1.08;letter-spacing:-.02em;margin:0;
-          max-width:14ch;text-wrap:balance}
+          max-width:var(--ncx-heading-max);text-wrap:balance}
         .ncx-hfb .word{display:inline-block;white-space:pre}
         .ncx-hfb .subhead{margin:20px 0 0;font-size:18px;line-height:1.6;max-width:56ch;color:var(--ncx-on-navy-soft)}
         .ncx-hfb .cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:14px}

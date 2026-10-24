@@ -38,7 +38,7 @@ export const TrustPanelBlock: React.FC<Props> = ({
           letter-spacing:.04em;color:var(--ncx-crimson-on-navy);margin:0 0 14px}
         .ncx-trust h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.1;letter-spacing:-.02em;
-          margin:0;max-width:14ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         .ncx-trust .intro{color:var(--ncx-on-navy-soft);margin:18px 0 0;font-size:1.02rem;
           line-height:1.6;max-width:50ch}
         .ncx-trust .btn{display:inline-flex;align-items:center;gap:9px;margin-top:30px;

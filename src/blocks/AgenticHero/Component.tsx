@@ -92,7 +92,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         @media(prefers-reduced-motion:reduce){.ncx-hero::before{animation:none}}
         .ncx-hero .wrap{position:relative;z-index:1}
         .ncx-hero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,4.1rem);
-          line-height:1.1;max-width:16ch;letter-spacing:-.02em;margin:0}
+          line-height:1.1;max-width:var(--ncx-heading-max);letter-spacing:-.02em;margin:0}
         .ncx-hero .w{display:inline-block}
         .ncx-hero .acc{position:relative}
         .ncx-hero .acc::after{content:"";position:absolute;left:0;right:0;bottom:.02em;height:.09em;border-radius:4px;
@@ -114,7 +114,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         .ncx-hero .net{position:absolute;right:0;top:50%;transform:translateY(-50%);
           width:min(640px,56%);height:auto;z-index:-1;pointer-events:none}
         @media (min-width:861px){
-          .ncx-hero h1{max-width:min(16ch,47%)}
+          .ncx-hero h1{max-width:min(var(--ncx-heading-max),47%)}
           .ncx-hero .hero-p{max-width:min(54ch,47%)}
         }
         .ncx-hero .ln{stroke-dasharray:3 9;animation:ncxFlow 1.4s linear infinite}

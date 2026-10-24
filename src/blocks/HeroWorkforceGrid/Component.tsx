@@ -130,7 +130,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           background:var(--crimson);box-shadow:0 0 0 4px rgba(198,40,40,.25)}
         .ncx-hwg h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;letter-spacing:-.025em;
           line-height:1.06;font-size:clamp(38px,4.2vw,58px);margin:0 0 20px;
-          max-width:11ch;text-wrap:balance;color:var(--h-text)}
+          max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--h-text)}
         .ncx-hwg .word{display:inline-block;white-space:pre}
         .ncx-hwg .subhead{color:var(--h-sub);font-size:clamp(16px,1.3vw,18px);line-height:1.65;
           margin:0 0 30px;max-width:44ch}

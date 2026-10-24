@@ -29,7 +29,7 @@ export const SectionStyles: React.FC = () => (
     .ncx-sec{padding-block:72px;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
     .ncx-sec h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
       font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 32px;
-      color:var(--ncx-ink);text-wrap:balance;max-width:28ch}
+      color:var(--ncx-ink);text-wrap:balance;max-width:var(--ncx-heading-max)}
     .ncx-sec__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
       color:var(--ncx-crimson-ink);margin:0 0 12px}
     .ncx-sec__intro{margin:-16px 0 32px;max-width:64ch;font-size:18px;line-height:1.6;color:var(--ncx-muted)}

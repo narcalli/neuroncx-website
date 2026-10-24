@@ -82,7 +82,7 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact .label{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
         .ncx-contact h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:18ch}
+          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-contact .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:46ch;font-size:18px;line-height:1.6}
         /* Was a violet-to-cyan gradient rim showing through a 1px pad. Both
            hues are gone, and inside a highlight the inner surface is

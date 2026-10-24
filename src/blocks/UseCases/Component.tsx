@@ -27,7 +27,7 @@ export const UseCasesBlock: React.FC<Props> = ({ label, heading, intro, cases })
         .ncx-usecases .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-usecases h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:22ch}
+          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-usecases .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
         .ncx-usecases .grid{margin-top:44px;display:grid;
           grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}

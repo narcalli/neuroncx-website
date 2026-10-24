@@ -69,7 +69,7 @@ export const PlatformLayersTwoBlock: React.FC<PlatformLayersTwoProps> = ({
 
         .ncx-ss .ncx-ss__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 14px}
         .ncx-ss.is-navy .ncx-ss__eyebrow{color:var(--ncx-crimson-on-navy)}
-        .ncx-ss h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.15;letter-spacing:-.02em;margin:0;max-width:20ch;color:inherit}
+        .ncx-ss h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.15;letter-spacing:-.02em;margin:0;max-width:var(--ncx-heading-max);color:inherit}
         .ncx-ss__intro{margin:18px 0 0;font-size:1.05rem;line-height:1.65;color:var(--ncx-muted)}
         .ncx-ss.is-navy .ncx-ss__intro{color:var(--ncx-on-navy);opacity:.78}
 

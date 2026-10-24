@@ -48,10 +48,10 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
         @media(min-width:640px){.ncx-pia{padding:80px 0}}
         @media(min-width:1024px){.ncx-pia{padding:96px 0}}
 
-        .ncx-pia__head{max-width:60ch;margin:0 auto 48px;text-align:center}
+        .ncx-pia__head{margin:0 auto 48px;text-align:center}
         .ncx-pia .ncx-pia__eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-pia h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.15;letter-spacing:-.02em;margin:0;color:var(--ncx-ink)}
-        .ncx-pia__intro{margin:16px 0 0;font-size:1.05rem;line-height:1.65;color:var(--ncx-muted)}
+        .ncx-pia__intro{margin:16px auto 0;max-width:60ch;font-size:1.05rem;line-height:1.65;color:var(--ncx-muted)}
 
         .ncx-pia__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:32px}
         .ncx-pia__card{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:24px;box-shadow:0 18px 40px -28px rgba(26,32,53,.35);overflow:visible}

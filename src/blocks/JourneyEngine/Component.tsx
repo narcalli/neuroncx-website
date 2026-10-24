@@ -80,7 +80,7 @@ export const JourneyEngineBlock: React.FC<Props> = ({
           letter-spacing:.04em;color:var(--ncx-crimson);margin:0 0 14px}
         .ncx-journey h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.1;letter-spacing:-.02em;
-          margin:0;max-width:18ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         .ncx-journey .intro{color:var(--ncx-muted);margin:16px 0 0;font-size:1.02rem;line-height:1.6;
           max-width:58ch}
 

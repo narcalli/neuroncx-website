@@ -65,7 +65,7 @@ export const StatHeroBlock: React.FC<Props> = ({
         .ncx-stathero .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
         .ncx-stathero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(36px,4.6vw,56px);line-height:1.06;letter-spacing:-.035em;
-          margin:0 auto;max-width:20ch;text-wrap:balance;color:var(--ncx-ink)}
+          margin:0 auto;max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--ncx-ink)}
         .ncx-stathero .sub{margin:24px auto 0;max-width:60ch;font-size:19px;line-height:1.65;color:var(--ncx-muted)}
         .ncx-stathero .cta{margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
         .ncx-stathero .btn{font-family:var(--font-display),Arial,sans-serif;font-size:15px;

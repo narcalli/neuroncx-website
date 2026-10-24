@@ -20,7 +20,7 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         .ncx-orbit{
           --orbit-core-hi:#3B4A8C; /* lit stop of the core sphere gradient */
           padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-orbit h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0;color:var(--ncx-ink)}
+        .ncx-orbit h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:var(--ncx-heading-max);margin:0;color:var(--ncx-ink)}
         .ncx-orbit .sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-orbit .rel{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;margin-top:40px}
         .ncx-orbit ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--ncx-rule)}

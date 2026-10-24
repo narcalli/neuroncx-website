@@ -21,7 +21,7 @@ export const BenefitsBlock: React.FC<Props> = ({ label, heading, items }) => {
         .ncx-benefits .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-benefits h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
-          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:24ch}
+          font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-benefits .grid{margin-top:44px;display:grid;
           grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:36px 48px}
         .ncx-benefits h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;

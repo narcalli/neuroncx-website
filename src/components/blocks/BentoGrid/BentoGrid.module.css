@@ -61,7 +61,7 @@
   font-size: clamp(26px, 3.2vw, 38px);
   letter-spacing: -0.02em;
   line-height: 1.15;
-  max-width: 26ch;
+  max-width:var(--ncx-heading-max);
   color: var(--header-title);
 }
 

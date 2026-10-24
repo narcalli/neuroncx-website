@@ -116,7 +116,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         /* The size comes from the editor's "Heading size" field. */
         .ncx-chero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:var(--chero-h);line-height:1.06;letter-spacing:-.02em;
-          margin:0;max-width:16ch}
+          margin:0;max-width:var(--ncx-heading-max)}
         /* On phones a large size would run off the screen, so it stops at 36px. */
         @media(max-width:699px){.ncx-chero h1{font-size:min(var(--chero-h),36px)}}
         .ncx-chero .sub{margin:22px 0 0;font-size:1.06rem;line-height:1.6;

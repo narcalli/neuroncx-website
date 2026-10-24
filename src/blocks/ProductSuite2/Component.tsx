@@ -38,7 +38,7 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
         .ncx-suite2 .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
           margin:0 0 12px;color:var(--ncx-crimson)}
         .ncx-suite2 h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
-          font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin:0;max-width:26ch}
+          font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-suite2 .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
 
         .ncx-suite2 .grid{margin-top:40px;display:grid;

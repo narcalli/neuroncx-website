@@ -92,7 +92,7 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
       <style>{`
         .ncx-flow{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-flow h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);
-          max-width:24ch;letter-spacing:-.01em;margin:0;color:var(--ncx-ink)}
+          max-width:var(--ncx-heading-max);letter-spacing:-.01em;margin:0;color:var(--ncx-ink)}
         .ncx-flow .sec-sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-flow .lab-box{margin-top:44px;border-radius:18px;padding:22px;background:var(--ncx-cloud);border:1px solid var(--ncx-rule)}
         .ncx-flow .lab-q{margin:0 0 14px;color:var(--ncx-muted);font-size:.92rem}

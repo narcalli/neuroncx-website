@@ -39,7 +39,7 @@ export const HowItWorks2Block: React.FC<Props> = ({ eyebrow, heading, intro, ste
         .ncx-how2 .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           color:var(--ncx-crimson-ink);margin:0 0 12px}
         .ncx-how2 h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;color:var(--ncx-ink);
-          font-size:clamp(28px,3.4vw,36px);letter-spacing:-.025em;margin:0;max-width:22ch}
+          font-size:clamp(28px,3.4vw,36px);letter-spacing:-.025em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-how2 .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:17px;line-height:1.6}
 
         .ncx-how2 ol{list-style:none;margin:48px 0 0;padding:0;display:grid;

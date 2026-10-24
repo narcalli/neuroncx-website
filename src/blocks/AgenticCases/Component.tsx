@@ -62,7 +62,7 @@ export const AgenticCasesBlock: React.FC<AgenticCasesProps> = ({ heading, cases,
     <section className="ncx-cases">
       <style>{`
         .ncx-cases{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-cases h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:24ch;margin:0 0 40px;color:var(--ncx-ink)}
+        .ncx-cases h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);max-width:var(--ncx-heading-max);margin:0 0 40px;color:var(--ncx-ink)}
         .ncx-cases .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
         .ncx-cases .case{position:relative;padding:24px 22px;border-radius:14px;background:var(--ncx-white);border:1px solid var(--ncx-rule);transform-style:preserve-3d}
         .ncx-cases .case:hover{box-shadow:0 26px 44px -30px var(--ncx-rule)}
