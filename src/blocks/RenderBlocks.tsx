@@ -27,6 +27,7 @@ import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { HowItWorksBlock } from '@/blocks/HowItWorks/Component'
+import { HowItWorks2Block } from '@/blocks/HowItWorks2/Component'
 import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { StatHeroBlock } from '@/blocks/StatHero/Component'
 import { BenefitsBlock } from '@/blocks/Benefits/Component'
@@ -78,6 +79,7 @@ const blockComponents = {
   heroRightPlacement: HeroRightPlacementBlock,
   heroWorkforceGrid: HeroWorkforceGridBlock,
   howItWorks: HowItWorksBlock,
+  howItWorks2: HowItWorks2Block,
   integrations: IntegrationsBlock,
   integrationsLanding: IntegrationsLandingBlock,
   integrationsMarquee: IntegrationsMarqueeBlock,
