@@ -6,13 +6,11 @@ import { animate } from 'motion/react'
 import type { AgenticFlowDemoBlock as AgenticFlowDemoProps } from '@/payload-types'
 
 type DemoEvent = NonNullable<AgenticFlowDemoProps['events']>[number]
-type Step = NonNullable<AgenticFlowDemoProps['steps']>[number]
 
 const HANDLERS = ['agent', 'human'] as const
 
-export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, intro, events, steps, footnote }) => {
+export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, intro, events, footnote }) => {
   const list: DemoEvent[] = (events || []).filter((e) => e && e.label)
-  const stepList: Step[] = (steps || []).filter((s) => s && s.title)
 
   const stageRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
@@ -122,14 +120,9 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
         .ncx-flow .hch span{border-radius:999px;padding:5px 11px;font-size:.8rem;border:1px solid var(--ncx-rule);color:var(--ncx-muted);transition:background .3s,color .3s}
         .ncx-flow .hch span.on{background:var(--ncx-crimson);color:var(--ncx-on-navy);border-color:var(--ncx-crimson)}
         .ncx-flow .note{margin:18px 0 0;font-size:.82rem;color:var(--ncx-muted)}
-        .ncx-flow .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px}
-        .ncx-flow .step{padding:22px 22px 24px;border-radius:14px;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-top:3px solid var(--ncx-rule)}
-        .ncx-flow .step h3{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1.1rem;color:var(--ncx-crimson-ink);margin:0 0 8px}
-        .ncx-flow .step p{font-size:.97rem;margin:0}
         @media (max-width:720px){
           .ncx-flow{padding:60px 0}
           .ncx-flow .stage{grid-template-columns:1fr;gap:30px}
-          .ncx-flow .steps{grid-template-columns:1fr}
         }
       `}</style>
 
@@ -192,17 +185,6 @@ export const AgenticFlowDemoBlock: React.FC<AgenticFlowDemoProps> = ({ heading, 
 
           {footnote ? <p className="note">{footnote}</p> : null}
         </div>
-
-        {stepList.length ? (
-          <div className="steps">
-            {stepList.map((s, i) => (
-              <div className="step" key={i}>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
     </section>
   )
