@@ -21,5 +21,12 @@ export async function Header() {
   // — CMS_URL is not exposed to the browser.
   const logo = pickMedia(headerData.logo)
 
-  return <HeaderClient data={headerData} logoSrc={logo?.src || null} />
+  // The same for each mega menu's featured card image.
+  const featuredImages: Record<string, { src: string; alt: string }> = {}
+  for (const item of headerData.navItems || []) {
+    const image = item.featured?.enabled ? pickMedia(item.featured.image, 'small') : null
+    if (item.id && image && !image.isVideo) featuredImages[item.id] = { src: image.src, alt: image.alt }
+  }
+
+  return <HeaderClient data={headerData} logoSrc={logo?.src || null} featuredImages={featuredImages} />
 }

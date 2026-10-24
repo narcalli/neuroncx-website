@@ -25,6 +25,10 @@ export const headerCss = `
   --hdr-crimson-hover:#A81F1F;
   --hdr-teal:#136B74;
   --hdr-teal-tint:#E4F1F1;
+  /* Mega menu: the New badge, the featured card, a row under the pointer. */
+  --hdr-crimson-tint:#FBEAEA;
+  --hdr-crimson-wash:#FCF5F4;
+  --hdr-hover:#F4F6FA;
   --hdr-shadow:0 1px 2px rgba(20,26,45,.05), 0 8px 24px -12px rgba(20,26,45,.14);
   --hdr-max:1160px;
   --hdr-pad:clamp(10px,1.4vw,18px);
@@ -146,35 +150,79 @@ export const headerCss = `
 }
 .ncx-btn-pill:hover{background:var(--hdr-crimson-hover)}
 
-/* ---------- dropdown panel ---------- */
-/* The left offset is written by the component on open: the panel is centred
-   under its trigger and clamped inside the header, which CSS cannot do alone. */
-.ncx-menu{
+/* ---------- mega menu panel ----------
+   As wide as its content. The component caps it at the page container's
+   content width (max-width) and writes its left offset (place() in
+   Component.client.tsx): under its trigger, moved left only as far as the
+   container's right edge requires. CSS cannot measure either. */
+.ncx-nav__frame{position:absolute;left:0;right:0;top:0;height:0;visibility:hidden;pointer-events:none}
+.ncx-mega{
   position:absolute;left:0;top:calc(100% + 8px);
-  width:min(292px,calc(100vw - 24px));padding:7px;
-  background:var(--hdr-surface);border:1px solid var(--hdr-line);border-radius:15px;
+  display:flex;align-items:stretch;
+  width:max-content;max-width:calc(100vw - 48px);padding:10px;
+  background:var(--hdr-surface);border:1px solid var(--hdr-line);border-radius:16px;
   box-shadow:0 2px 4px rgba(20,26,45,.04), 0 22px 54px -22px rgba(20,26,45,.26);
-  opacity:0;visibility:hidden;transform:translateY(-8px);
-  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
+  color:var(--hdr-ink);font-family:var(--font-body),Arial,sans-serif;
+  opacity:0;visibility:hidden;transform:translateY(-4px);
+  transition:opacity .15s ease,transform .15s ease,visibility .15s;
 }
-.ncx-navitem.is-open .ncx-menu{opacity:1;visibility:visible;transform:none}
-.ncx-menu a{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:10px 12px;border-radius:9px;font-size:14.5px;line-height:1.35;
-  text-decoration:none;color:var(--hdr-ink);transition:background .14s,color .14s;
-}
-.ncx-menu a:hover{background:var(--hdr-teal-tint);color:var(--hdr-teal)}
-.ncx-menu h5{
+.ncx-navitem.is-open .ncx-mega{opacity:1;visibility:visible;transform:none}
+/* Each group a column as wide as its content; a hairline between columns.
+   When the panel hits its cap, the widest group wraps first: none goes
+   narrower than its longest word. */
+.ncx-mega__group{flex:0 1 auto;min-width:min-content}
+.ncx-mega__group + .ncx-mega__group{margin-left:10px;padding-left:10px;border-left:1px solid var(--hdr-line-soft)}
+.ncx-mega__eyebrow{
+  margin:6px 12px 4px;
   font-family:var(--font-label),'IBM Plex Mono',monospace;
-  font-size:10px;font-weight:500;letter-spacing:.12em;
+  font-size:10px;font-weight:500;line-height:14px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--hdr-ink-faint);
-  margin:10px 0 2px;padding:10px 12px 0;border-top:1px solid var(--hdr-line-soft);
 }
-.ncx-menu h5:first-child{margin-top:0;padding-top:2px;border-top:0}
-.ncx-badge-new{
+.ncx-mega__list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto;gap:2px}
+/* 4 or more items: two columns, each as wide as its widest item, filled row by row. */
+.ncx-mega__list.is-grid{grid-template-columns:repeat(2,auto);column-gap:4px}
+.ncx-mega__list > li{display:flex}
+/* Icon slot and text. The slot is as tall as the label's line and the rows
+   align to the top, so a label sits on the same line whether a description
+   follows it or not, and every label in a column starts at the same x. */
+.ncx-mega__item{
+  flex:1;display:grid;grid-template-columns:20px 1fr;column-gap:12px;align-items:start;
+  max-width:320px;padding:10px 12px;border-radius:10px;
+  color:var(--hdr-ink);text-decoration:none;transition:background .14s;
+}
+.ncx-mega__item:not(:has(.ncx-mega__icon)){grid-template-columns:1fr}
+.ncx-mega__item:hover{background:var(--hdr-hover)}
+.ncx-mega__icon{display:flex;align-items:center;justify-content:center;width:20px;height:20px;color:var(--hdr-crimson)}
+.ncx-mega__icon svg{width:18px;height:18px;display:block}
+.ncx-mega__text{display:flex;flex-direction:column;gap:2px}
+.ncx-mega__label{display:flex;align-items:center;flex-wrap:wrap;column-gap:8px;font-size:14px;font-weight:500;line-height:20px}
+.ncx-mega__desc{font-size:13px;line-height:18px;color:var(--hdr-ink-soft)}
+.ncx-pill{
   font-family:var(--font-label),'IBM Plex Mono',monospace;
-  font-size:9.5px;letter-spacing:.1em;padding:2px 7px;
-  border:1px dashed var(--hdr-crimson);color:var(--hdr-crimson);border-radius:999px;flex:none;
+  font-size:9.5px;font-weight:500;line-height:1;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 7px;border-radius:999px;flex:none;
+}
+.ncx-pill--new{background:var(--hdr-crimson-tint);color:var(--hdr-crimson)}
+.ncx-pill--beta{background:var(--hdr-teal-tint);color:var(--hdr-teal)}
+/* The featured card: always the last column, a fixed 240px, lightly tinted. */
+.ncx-mega__feature{
+  flex:none;width:240px;margin-left:10px;
+  display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:12px;
+  background:var(--hdr-crimson-wash);color:var(--hdr-ink);text-decoration:none;
+  transition:background .14s;
+}
+a.ncx-mega__feature:hover{background:var(--hdr-crimson-tint)}
+.ncx-mega__feature img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:8px;margin-bottom:6px}
+.ncx-mega__feature-eyebrow{
+  font-family:var(--font-label),'IBM Plex Mono',monospace;
+  font-size:10px;font-weight:500;line-height:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--hdr-crimson);
+}
+.ncx-mega__feature-title{font-family:var(--font-display),Arial,sans-serif;font-size:15px;font-weight:600;line-height:1.35;letter-spacing:-.01em}
+.ncx-mega__feature-cta{margin-top:auto;padding-top:6px;font-size:13px;font-weight:500;color:var(--hdr-crimson)}
+/* Reduced motion: the panel appears in place, no slide (the rule at the end
+   of this sheet also drops the fade). */
+@media (prefers-reduced-motion:reduce){
+  .ncx-mega{transform:none}
 }
 
 /* ---------- layer behind an open menu ---------- */

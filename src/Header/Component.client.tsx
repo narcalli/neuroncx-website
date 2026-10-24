@@ -9,54 +9,9 @@ import type { Header } from '@/payload-types'
 import { AnnouncementBar } from './AnnouncementBar'
 import { headerCss } from './headerStyles'
 
-type NavItem = NonNullable<Header['navItems']>[number]
-type MenuItem = NonNullable<NavItem['items']>[number]
-
-type Link = { label: string; href: string; badge?: string | null; groupHeading?: string | null; newTab?: boolean | null; id?: string | null }
-
-/**
- * The links for one dropdown.
- *
- * Normally that is the item's own list. A deployment whose data has not been
- * migrated yet still carries the old columns-of-links shape, so those are
- * folded into the same flat list here — first link of each column takes that
- * column's heading — and the menu works either way.
- */
-const linksFor = (item: NavItem): Link[] => {
-  const own = (item.items || []).filter((l: MenuItem) => l?.label && l?.href) as Link[]
-  if (own.length) return own
-
-  const out: Link[] = []
-  ;(item.columns || []).forEach((col) => {
-    let headingPending = true
-    ;(col.links || []).forEach((l) => {
-      if (!l?.label || !l?.href) return
-      out.push({
-        label: l.label,
-        href: l.href,
-        groupHeading: headingPending ? col.heading || null : null,
-        newTab: /^https?:\/\//.test(l.href),
-        id: l.id,
-      })
-      headingPending = false
-    })
-  })
-  return out
-}
-
-/**
- * An item's links, and whether it opens a dropdown. A row that predates the
- * type field reads back as "link", because that is the field's default, so
- * the field alone cannot decide: a row is a plain link when it was explicitly
- * set to one *and* has somewhere to go; otherwise its links win. Shared by the
- * bar and the drawer, so both always agree.
- */
-const entryFor = (item: NavItem): { links: Link[]; isDropdown: boolean } => {
-  const links = linksFor(item)
-  return { links, isDropdown: links.length > 0 && !(item.type === 'link' && item.href) }
-}
-
-const isExternal = (href?: string | null) => /^https?:\/\//.test(String(href || ''))
+import { Anchor } from './Anchor'
+import { Badge, MegaPanel, type FeaturedImage } from './MegaMenu'
+import { menuKind, panelLeft } from './megaMenuLayout'
 
 /** Perceived brightness of a computed colour, or null when it is transparent. */
 const luminanceOf = (colour: string): number | null => {
@@ -99,43 +54,22 @@ const backdropAt = (x: number, y: number): { section: number | null; nearest: nu
   return { section: null, nearest }
 }
 
-/** Internal addresses go through next/link, absolute ones stay plain anchors. */
-const Anchor: React.FC<{
-  href?: string | null
-  newTab?: boolean | null
-  className?: string
-  children: React.ReactNode
-}> = ({ href, newTab, className, children }) => {
-  const target = href || '/'
-  if (isExternal(target) || newTab) {
-    return (
-      <a
-        className={className}
-        href={target}
-        {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : { rel: 'noopener' })}
-      >
-        {children}
-      </a>
-    )
-  }
-  return (
-    <Link className={className} href={target}>
-      {children}
-    </Link>
-  )
-}
-
 const Chevron = () => (
   <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
     <path d="M1 3.2 5 7 9 3.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 )
 
-export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> = ({
-  data,
-  logoSrc,
-}) => {
+export const HeaderClient: React.FC<{
+  data: Header
+  logoSrc?: string | null
+  /** Each mega menu's featured image by menu item id, made absolute on the server. */
+  featuredImages?: Record<string, FeaturedImage>
+}> = ({ data, logoSrc, featuredImages }) => {
   const navRef = useRef<HTMLElement | null>(null)
+  // An empty, invisible .ncx-container inside the bar: the page container's
+  // edges, measured from the site's own CSS rather than copied from it.
+  const frameRef = useRef<HTMLDivElement | null>(null)
   const closeTimer = useRef<number | null>(null)
   const panels = useRef(new Map<number, HTMLDivElement | null>())
   const triggers = useRef(new Map<number, HTMLButtonElement | null>())
@@ -172,22 +106,33 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
     setSection(null)
   }, [])
 
-  // The panel is centred under its trigger, then clamped inside the header so
-  // a right-hand menu cannot hang off the edge. Measured, because the width of
-  // the trigger and of the header are both unknown until they are laid out.
+  // Sizes and places a mega menu panel. Its width is its content's
+  // (max-content in CSS), capped here at the page container's content width.
+  // Its left edge starts under its trigger and moves left only as far as it
+  // must to keep its right edge inside the container, never past the
+  // container's left edge (panelLeft in megaMenuLayout.ts). Measured, because the
+  // panel's width depends on its text, and the container's on the window.
   const place = useCallback((index: number) => {
     const nav = navRef.current
+    const frame = frameRef.current
     const panel = panels.current.get(index)
     const trigger = triggers.current.get(index)
-    if (!nav || !panel || !trigger) return
-    const navBox = nav.getBoundingClientRect()
-    const trigBox = trigger.getBoundingClientRect()
-    const w = panel.offsetWidth
-    const pad = 8
-    const centred = trigBox.left + trigBox.width / 2 - navBox.left - w / 2
-    const max = navBox.width - w - pad
-    const left = Math.max(pad, Math.min(centred, max > pad ? max : pad))
-    panel.style.left = `${Math.round(left)}px`
+    if (!nav || !frame || !panel || !trigger) return
+    const box = frame.getBoundingClientRect()
+    const pad = window.getComputedStyle(frame)
+    const containerLeft = box.left + parseFloat(pad.paddingLeft)
+    const containerRight = box.right - parseFloat(pad.paddingRight)
+    // The cap first, so the width read next is the one that will show.
+    panel.style.maxWidth = `${Math.floor(containerRight - containerLeft)}px`
+    const left = panelLeft({
+      triggerLeft: trigger.getBoundingClientRect().left,
+      panelWidth: panel.offsetWidth,
+      containerLeft,
+      containerRight,
+    })
+    // The panel is positioned inside the bar, so viewport pixels become the
+    // bar's own.
+    panel.style.left = `${Math.round(left - nav.getBoundingClientRect().left)}px`
   }, [])
 
   // Before paint, so the panel never shows in the wrong place for a frame.
@@ -195,11 +140,19 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
     if (open !== null) place(open)
   }, [open, place])
 
+  // Again whenever the window resizes, or the open panel does (a web font
+  // arriving late changes its width).
   useEffect(() => {
     if (open === null) return
     const onResize = () => place(open)
     window.addEventListener('resize', onResize, { passive: true })
-    return () => window.removeEventListener('resize', onResize)
+    const panel = panels.current.get(open)
+    const watch = panel && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onResize) : null
+    if (panel) watch?.observe(panel)
+    return () => {
+      window.removeEventListener('resize', onResize)
+      watch?.disconnect()
+    }
   }, [open, place])
 
   const items = (data.navItems || []).filter((i) => i?.label)
@@ -476,6 +429,7 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
       />
 
       <header className="ncx-nav" ref={navRef}>
+        <div className="ncx-container ncx-nav__frame" ref={frameRef} aria-hidden="true" />
         <div className="ncx-nav__in">
           {mark}
 
@@ -489,12 +443,12 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
             }}
           >
             {items.map((item, i) => {
-              const { links, isDropdown } = entryFor(item)
+              const entry = menuKind(item)
 
-              if (!isDropdown) {
-                if (!item.href) return null
+              if (entry.kind === 'none') return null
+              if (entry.kind === 'link') {
                 return (
-                  <Anchor key={item.id || i} className="ncx-navlink" href={item.href}>
+                  <Anchor key={item.id || i} className="ncx-navlink" href={entry.href} newTab={entry.newTab}>
                     {item.label}
                   </Anchor>
                 )
@@ -552,25 +506,15 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
                     <Chevron />
                   </button>
 
-                  <div
-                    className="ncx-menu"
+                  <MegaPanel
                     id={panelId}
                     ref={(el) => {
                       panels.current.set(i, el)
                     }}
-                  >
-                    {links.map((l, li) => (
-                      <React.Fragment key={l.id || li}>
-                        {/* A heading opens a group; the CSS drops the rule and
-                            the top margin when it is the first child. */}
-                        {l.groupHeading ? <h5>{l.groupHeading}</h5> : null}
-                        <Anchor href={l.href} newTab={l.newTab}>
-                          <span>{l.label}</span>
-                          {l.badge ? <span className="ncx-badge-new">{l.badge}</span> : null}
-                        </Anchor>
-                      </React.Fragment>
-                    ))}
-                  </div>
+                    groups={entry.groups}
+                    featured={item.featured}
+                    image={item.id ? featuredImages?.[item.id] : null}
+                  />
                 </div>
               )
             })}
@@ -649,13 +593,13 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
         <nav className="ncx-drawer__body" aria-label="Menu">
           <ul className="ncx-drawer__list">
             {items.map((item, i) => {
-              const { links, isDropdown } = entryFor(item)
+              const entry = menuKind(item)
 
-              if (!isDropdown) {
-                if (!item.href) return null
+              if (entry.kind === 'none') return null
+              if (entry.kind === 'link') {
                 return (
                   <li className="ncx-drawer__item" key={item.id || i}>
-                    <Anchor className="ncx-drawer__row" href={item.href}>
+                    <Anchor className="ncx-drawer__row" href={entry.href} newTab={entry.newTab}>
                       {item.label}
                     </Anchor>
                   </li>
@@ -677,17 +621,21 @@ export const HeaderClient: React.FC<{ data: Header; logoSrc?: string | null }> =
                     <Chevron />
                   </button>
                   <ul className="ncx-drawer__sub" id={sectionId} hidden={section !== i}>
-                    {links.map((l, li) => (
-                      <React.Fragment key={l.id || li}>
-                        {l.groupHeading ? (
-                          <li className="ncx-drawer__eyebrow">{l.groupHeading}</li>
+                    {/* The mega menu's groups one after another, each under
+                        its label when there is more than one group. */}
+                    {entry.groups.map((g) => (
+                      <React.Fragment key={g.id}>
+                        {entry.groups.length > 1 && g.label ? (
+                          <li className="ncx-drawer__eyebrow">{g.label}</li>
                         ) : null}
-                        <li>
-                          <Anchor className="ncx-drawer__link" href={l.href} newTab={l.newTab}>
-                            <span>{l.label}</span>
-                            {l.badge ? <span className="ncx-badge-new">{l.badge}</span> : null}
-                          </Anchor>
-                        </li>
+                        {g.items.map((l) => (
+                          <li key={l.id}>
+                            <Anchor className="ncx-drawer__link" href={l.href} newTab={l.newTab}>
+                              <span>{l.label}</span>
+                              <Badge badge={l.badge} />
+                            </Anchor>
+                          </li>
+                        ))}
                       </React.Fragment>
                     ))}
                   </ul>
