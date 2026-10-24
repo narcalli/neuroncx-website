@@ -163,10 +163,10 @@ describe('stats', () => {
 })
 
 describe('closing panel', () => {
-  it('is hidden only when the switch is off; older pages show it', () => {
-    expect(showsClosing({ showClosing: false })).toBe(false)
+  it('is shown only when the switch is on; a page with no setting has none', () => {
     expect(showsClosing({ showClosing: true })).toBe(true)
-    expect(showsClosing({})).toBe(true)
-    expect(showsClosing(undefined)).toBe(true)
+    expect(showsClosing({ showClosing: false })).toBe(false)
+    expect(showsClosing({})).toBe(false)
+    expect(showsClosing(undefined)).toBe(false)
   })
 })

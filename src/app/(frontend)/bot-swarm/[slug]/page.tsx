@@ -43,8 +43,8 @@ const { route, hubLabel } = CONTENT_COLLECTIONS[COLLECTION]
  * Hero in the agent's hero design (components/sections/EntryHero.tsx), with
  * the breadcrumb and Pilot bar on top; then the sections of the effective
  * layout (the hub's default while the agent uses the page defaults, else its
- * own); then the hub's closing panel, the page's only navy section, unless
- * the layout places it or the agent's Show the closing panel is off.
+ * own); then, only when the agent's Show the closing panel is on, the hub's
+ * closing panel, the page's only navy section, unless the layout places it.
  */
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {

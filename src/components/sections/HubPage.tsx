@@ -20,7 +20,7 @@ import { RenderSections, type SectionContext } from './RenderSections'
  * A content collection's hub page from its hub record (foundation.md section
  * 7.1): hero with breadcrumbs (standard or conversation design), one section per grouping, the hub layout, FAQ
  * with FAQPage data, and the closing panel, the page's only navy section,
- * unless the hub's Show the closing panel is off.
+ * only when the hub's Show the closing panel is on (off by default).
  */
 export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; draft: boolean }> = ({
   hub,

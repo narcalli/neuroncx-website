@@ -55,11 +55,11 @@ export const getEntries = async (
   )
 
 /**
- * Whether a page ends with the closing panel: off only when its showClosing
- * switch is off. Pages saved before the switch existed show it.
+ * Whether a page ends with the closing panel: only when its showClosing
+ * switch is on. Off by default, page by page; no site-wide switch.
  */
 export const showsClosing = (doc: { showClosing?: boolean | null } | null | undefined): boolean =>
-  doc?.showClosing !== false
+  doc?.showClosing === true
 
 /** The entry with its own page at this slug, or null. */
 export const getEntryPage = async (
