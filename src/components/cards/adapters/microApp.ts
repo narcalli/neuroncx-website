@@ -39,6 +39,18 @@ export const fromMicroApp = (doc: MicroApp, draft = false): CardItem => {
   }
 }
 
+/**
+ * A bot swarm agent as a card in its family's section on the hub: the
+ * summary as the card's text (the tagline only when there is no summary),
+ * and no family pill, since the section's eyebrow already names the family.
+ */
+export const familyCard = (doc: MicroApp, draft = false): CardItem => ({
+  ...fromMicroApp(doc, draft),
+  tagline: null,
+  text: doc.summary || doc.tagline || null,
+  badge: null,
+})
+
 /** A status pill after the name: Pilot, or Planned in a draft preview. */
 const flagOf = (doc: MicroApp): string | null =>
   doc.status === 'pilot' ? 'Pilot' : doc.status === 'planned' ? 'Planned' : null

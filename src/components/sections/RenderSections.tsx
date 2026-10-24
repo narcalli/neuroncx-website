@@ -38,6 +38,8 @@ export type SectionContext = {
   customerSeesInHero?: boolean
   /** The closing panel, drawn where the layout puts a closing section. */
   closing: React.ReactNode
+  /** A hub's grouping sections, drawn where its layout puts the Grouping sections block. */
+  groupings?: React.ReactNode
   /** A draft preview: drafts and Planned entries are shown too. */
   draft?: boolean
 }
@@ -76,6 +78,8 @@ const renderSection = (key: string, block: Block, index: number, ctx: SectionCon
   switch (key) {
     case 'closing':
       return ctx.closing
+    case 'hubGroupings':
+      return ctx.groupings ?? null
     case 'hubIntro':
       return <HubIntro id={id} heading={heading} block={b} />
     case 'hubSteps':
@@ -156,8 +160,9 @@ export const RenderSections: React.FC<{ blocks: readonly unknown[]; ctx: Section
       }
       const content = renderSection(key, block, index, ctx)
       if (!content) return null
-      // The closing panel draws its own navy card; it takes no band around it.
-      if (key === 'closing') return <React.Fragment key={reactKey}>{content}</React.Fragment>
+      // The closing panel draws its own navy card, and the grouping sections
+      // their own sections; neither takes a band around it.
+      if (key === 'closing' || key === 'hubGroupings') return <React.Fragment key={reactKey}>{content}</React.Fragment>
       return (
         <BlockWrapper
           key={reactKey}

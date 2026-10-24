@@ -13,6 +13,7 @@ import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
 import { HubGroupings } from './HubGroupings'
+import { groupingsPlaced } from './hubGroupingsPlacement'
 import { HubConversationHero, HubHero } from './HubHero'
 import { RenderSections, type SectionContext } from './RenderSections'
 
@@ -39,7 +40,11 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
       secondaryLink={close?.secondaryCta?.label ? hrefOf(close.secondaryCta as LinkValue) : null}
     />
   ) : null
-  const ctx: SectionContext = { collection, hub, tokens, closing, draft }
+  // The grouping sections go where the layout's Grouping sections block is,
+  // else right after the hero (hubGroupingsPlacement). Drawn once either way.
+  const groupings = <HubGroupings hub={hub} collection={collection} draft={draft} />
+  const placed = groupingsPlaced(hub.layout)
+  const ctx: SectionContext = { collection, hub, tokens, closing, draft, groupings: placed ? groupings : null }
   const faqs = (hub.faqs ?? []).filter((f) => f?.question && f.answer)
   const label = CONTENT_COLLECTIONS[collection].hubLabel
   const crumbs = (
@@ -54,7 +59,7 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
       ) : (
         <HubHero hub={hub} draft={draft} crumbs={crumbs} />
       )}
-      <HubGroupings hub={hub} collection={collection} draft={draft} />
+      {placed ? null : groupings}
       <RenderSections blocks={hub.layout ?? []} ctx={ctx} />
       {faqs.length ? (
         <FAQBlock

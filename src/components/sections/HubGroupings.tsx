@@ -4,9 +4,10 @@ import { DetailedProductSuiteBlock } from '@/blocks/DetailedProductSuite/Compone
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
 import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
-import { fromMicroApp, toBentoCard, toDetailedCard, toSuite2Card, toSuiteProduct } from '@/components/cards/adapters/microApp'
+import { familyCard, toBentoCard, toDetailedCard, toSuite2Card, toSuiteProduct } from '@/components/cards/adapters/microApp'
 import { bentoSizes } from '@/components/cards/bentoPattern'
 import { sectionDesignOf, showKeyPointsOf } from '@/components/cards/sectionDesign'
+import { groupingCopy } from './hubGroupingsPlacement'
 import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign } from '@/components/cards/defaults'
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
@@ -78,9 +79,7 @@ export const HubGroupings = async ({
         .filter((s) => s.entries.length)
         .map(({ group, row, entries }) => {
           const id = `group-${group.slug || group.id}`
-          const eyebrow = row.eyebrow || group.name
-          const heading = row.heading || group.painLine || group.name
-          const intro = row.intro || group.summary
+          const { eyebrow, heading, intro } = groupingCopy(row, group)
           const design = sectionDesignOf(row, group)
           if (design === 'suite' || design === 'suiteSteps') {
             const style = design === 'suiteSteps' ? 'steps' : 'pills'
@@ -147,14 +146,14 @@ export const HubGroupings = async ({
           return (
             <section className="ncx-sec" aria-labelledby={id} key={group.id}>
               <div className="ncx-container">
-                <p className="ncx-sec__eyebrow">{row.eyebrow || group.name}</p>
-                <h2 id={id}>{row.heading || group.painLine || group.name}</h2>
-                {row.intro || group.summary ? (
+                <p className="ncx-sec__eyebrow">{eyebrow}</p>
+                <h2 id={id}>{heading}</h2>
+                {intro ? (
                   <p className="ncx-sec__intro" style={{ marginTop: 0 }}>
-                    {row.intro || group.summary}
+                    {intro}
                   </p>
                 ) : null}
-                <CardSection items={entries.map((e) => fromMicroApp(e, draft))} settings={settings} />
+                <CardSection items={entries.map((e) => familyCard(e, draft))} settings={settings} />
               </div>
             </section>
           )
