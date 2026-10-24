@@ -39,7 +39,7 @@ const Item: React.FC<{ item: MenuEntry; withIcon: boolean }> = ({ item, withIcon
  */
 export const MegaPanel = React.forwardRef<
   HTMLDivElement,
-  { id: string; groups: MenuGroup[]; featured: NavItem['featured']; image?: FeaturedImage | null }
+  { id: string; groups: MenuGroup[]; featured: NavItem['featured'] | null; image?: FeaturedImage | null }
 >(function MegaPanel({ id, groups, featured, image }, ref) {
   const layout = panelLayout(groups, featured)
   const card = layout.featured

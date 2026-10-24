@@ -139,7 +139,7 @@ export const GRID_MIN_ITEMS = 4
  * - the featured card shows when it is switched on, has a title, and the
  *   menu has 5 or more items in total.
  */
-export const panelLayout = (groups: MenuGroup[], featured: NavItem['featured']) => {
+export const panelLayout = (groups: MenuGroup[], featured: NavItem['featured'] | null) => {
   const total = groups.reduce((n, g) => n + g.items.length, 0)
   const showLabels = groups.length > 1
   return {
@@ -153,7 +153,7 @@ export const panelLayout = (groups: MenuGroup[], featured: NavItem['featured']) 
   }
 }
 
-const featuredOf = (featured: NavItem['featured'], total: number): Featured | null => {
+const featuredOf = (featured: NavItem['featured'] | null, total: number): Featured | null => {
   if (!featured?.enabled || total < FEATURED_MIN_ITEMS || !featured.title?.trim()) return null
   const to = target(featured.link as LinkValue)
   return {

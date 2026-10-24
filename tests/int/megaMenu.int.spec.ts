@@ -143,7 +143,7 @@ describe('where a panel sits', () => {
 })
 
 describe('the panel', () => {
-  const html = (groups: MenuGroup[], featured: NavItem['featured'] = null) =>
+  const html = (groups: MenuGroup[], featured: NavItem['featured'] | null = null) =>
     renderToStaticMarkup(React.createElement(MegaPanel, { id: 'p', groups, featured }))
 
   it('renders rows as links with an icon slot, the badge beside the label, the description under it', () => {
