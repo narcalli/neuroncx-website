@@ -12,11 +12,14 @@ import type { CardDesignProps } from '../types'
  * `showAllLink` adds the "All integrations" end card, which only makes sense
  * for integrations, so it is off here unless asked for. Separate cards with
  * gaps, so a short last row simply ends early; `lastRow` does not apply.
+ * With `showKeyPoints`, the text is shown in full (no 3-line cut) and each
+ * card lists its item's key points under it.
  */
 export const CardLogoCards: React.FC<CardDesignProps & { showAllLink?: boolean }> = ({
   items,
   columns,
   showAllLink = false,
+  showKeyPoints = false,
 }) => {
   if (!items.length) return null
   return (
@@ -28,9 +31,11 @@ export const CardLogoCards: React.FC<CardDesignProps & { showAllLink?: boolean }
         href: it.href || null,
         logoSrc: it.logo?.src || null,
         flag: it.flag || null,
+        keyPoints: showKeyPoints ? it.keyPoints : null,
       }))}
       columns={columns}
       showAllLink={showAllLink}
+      fullText={showKeyPoints}
     />
   )
 }

@@ -6,7 +6,7 @@ import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
 import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
 import { fromMicroApp, toBentoCard, toDetailedCard, toSuite2Card, toSuiteProduct } from '@/components/cards/adapters/microApp'
 import { bentoSizes } from '@/components/cards/bentoPattern'
-import { sectionDesignOf } from '@/components/cards/sectionDesign'
+import { sectionDesignOf, showKeyPointsOf } from '@/components/cards/sectionDesign'
 import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign } from '@/components/cards/defaults'
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
@@ -139,7 +139,11 @@ export const HubGroupings = async ({
               </section>
             )
           }
-          const settings = mergeCardDesign({ design: row.cardDesign || 'grid', allowItemDesigns: true })
+          const settings = mergeCardDesign({
+            design: row.cardDesign || 'grid',
+            allowItemDesigns: true,
+            showKeyPoints: showKeyPointsOf(row, group),
+          })
           return (
             <section className="ncx-sec" aria-labelledby={id} key={group.id}>
               <div className="ncx-container">

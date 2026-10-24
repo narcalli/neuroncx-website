@@ -30,6 +30,7 @@ export const fromMicroApp = (doc: MicroApp, draft = false): CardItem => {
     badge: family?.name || null,
     flag: doc.status === 'pilot' ? 'Pilot' : doc.status === 'planned' ? 'Planned' : null,
     href: entryHref('microApps', doc, draft),
+    keyPoints: (doc.keyPoints ?? []).map((k) => k?.line).filter((line): line is string => Boolean(line)),
     preferredDesign: isItemCardDesign(doc.cardDesign)
       ? doc.cardDesign
       : isItemCardDesign(family?.cardDesign)

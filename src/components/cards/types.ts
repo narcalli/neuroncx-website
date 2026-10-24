@@ -28,6 +28,13 @@ export type CardItem = {
   flag?: string | null
   /** The design the item asks for (its own, else its group's, such as an integration's category), where its section allows it. Empty follows the section. */
   preferredDesign?: ItemCardDesign | null
+  /**
+   * The entry's key points, in order. Listed under the description (the
+   * first 3) by the feature, logo card and story designs when the section's
+   * "Show key points" is on. Empty for entries without them, such as
+   * integrations.
+   */
+  keyPoints?: string[] | null
 }
 
 /**
@@ -58,6 +65,8 @@ export type CardLayoutProps = {
   columns?: CardColumns
   lastRow?: CardLastRow
   look?: CardLook
+  /** List each item's key points under its description. Read by feature, logo card and story. */
+  showKeyPoints?: boolean
 }
 
 export type CardDesignProps = { items: CardItem[] } & CardLayoutProps

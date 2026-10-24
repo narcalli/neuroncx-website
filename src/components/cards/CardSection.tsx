@@ -23,12 +23,14 @@ export const CardSection: React.FC<{ items: CardItem[]; settings: CardDesignSett
   items,
   settings,
 }) => {
-  const { design, columns, lastRow, look, allowItemDesigns } = settings
-  // The look only means something to the feature card, as before.
+  const { design, columns, lastRow, look, allowItemDesigns, showKeyPoints } = settings
+  // The look only means something to the feature card, as before. Key points
+  // go to every design; the ones without room for them ignore it.
   const layoutFor = (d: CardDesignName, cols: CardColumns | undefined) => ({
     columns: cols,
     lastRow,
     look: d === 'feature' ? look : undefined,
+    showKeyPoints,
   })
 
   const groups: Group[] = []

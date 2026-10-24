@@ -2,6 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import { KeyPointList } from '@/components/cards/KeyPoints'
+
 import { TiltAnchor } from './TiltAnchor'
 
 /**
@@ -31,6 +33,8 @@ export type CaseCardItem = {
   } | null
   /** Only when the card has its own page. */
   href?: string | null
+  /** Key points listed under the title, above the link (the story design's "Show key points"). */
+  keyPoints?: string[] | null
 }
 
 // The three placeholder gradients from the approved mockup, used as written.
@@ -75,12 +79,13 @@ export const CaseCard = ({
   const inner = (
     <>
       {frame}
-      <span className="ncx-cs__body">
+      <div className="ncx-cs__body">
         {/* The placeholder art already shows the name; a logo card needs it in text. */}
         {logo ? <span className="ncx-cs__client">{item.label}</span> : null}
         <span className="ncx-cs__title">{item.title}</span>
+        <KeyPointList points={item.keyPoints} gapAbove={8} />
         {href ? <span className="ncx-cs__more">{linkLabel}</span> : null}
-      </span>
+      </div>
     </>
   )
 
@@ -115,6 +120,9 @@ export const caseCardCss = `        .ncx-cs__tilt{height:100%}
         .ncx-cs__title{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:18px;line-height:1.4;color:var(--ncx-ink);transition:color .2s ease}
         .ncx-cs__card:hover .ncx-cs__title{color:var(--ncx-link)}
         .ncx-cs__more{font-weight:500;font-size:14px;color:var(--ncx-link)}
+        /* With key points, the body fills the card and the link line sits at its foot. */
+        .ncx-cs__body:has(.ncx-keypts){flex:1}
+        .ncx-cs__body:has(.ncx-keypts) .ncx-cs__more{margin-top:auto;padding-top:6px}
         .ncx-cs__client{font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ncx-muted)}
         .ncx-cs__card--static:hover .ncx-cs__img{transform:none}
         .ncx-cs__card--static:hover .ncx-cs__title{color:var(--ncx-ink)}

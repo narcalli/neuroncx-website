@@ -10,12 +10,14 @@ import type { CardDesignProps } from '../types'
  * title as a small label, the tagline or text as the headline, and a link
  * line when the item has its own page. With `tilt` (on by default) a linked
  * card tilts towards the pointer. Cards with gaps, so `lastRow` does not
- * apply.
+ * apply. With `showKeyPoints`, each card lists its item's key points under
+ * the headline, above the link line.
  */
 export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
   items,
   columns = 3,
   tilt = true,
+  showKeyPoints = false,
 }) => {
   if (!items.length) return null
   return (
@@ -39,6 +41,7 @@ export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
                 // Logos are small; skip resizing so any logo format shows as it is.
                 logo: it.logo ? { src: it.logo.src, unoptimized: true } : null,
                 href: it.href || null,
+                keyPoints: showKeyPoints ? it.keyPoints : null,
               }}
               index={i}
               tilt={tilt}

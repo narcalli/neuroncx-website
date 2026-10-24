@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { CardFlag } from '@/components/cards/Flag'
+import { KeyPointList } from '@/components/cards/KeyPoints'
 
 /** One related integration, as plain values from the page. */
 export type RelatedCard = {
@@ -14,6 +15,8 @@ export type RelatedCard = {
   logoSrc: string | null
   /** A status pill after the name, such as Pilot. */
   flag?: string | null
+  /** Key points listed under the text (the logo card design's "Show key points"). */
+  keyPoints?: string[] | null
 }
 
 const GridIcon = () => (
@@ -32,12 +35,14 @@ const GridIcon = () => (
   </svg>
 )
 
-const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null; flag?: string | null }> = ({
-  icon,
-  name,
-  text,
-  flag,
-}) => (
+const Body: React.FC<{
+  icon: React.ReactNode
+  name: string
+  text: string | null
+  flag?: string | null
+  keyPoints?: string[] | null
+  fullText?: boolean
+}> = ({ icon, name, text, flag, keyPoints, fullText }) => (
   <>
     <span className="ncx-irel__tile" aria-hidden="true">
       {icon}
@@ -46,7 +51,8 @@ const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null;
       {name}
       <CardFlag text={flag} />
     </span>
-    {text ? <span className="ncx-irel__text">{text}</span> : null}
+    {text ? <span className={fullText ? 'ncx-irel__text is-full' : 'ncx-irel__text'}>{text}</span> : null}
+    <KeyPointList points={keyPoints} gapAbove={12} />
   </>
 )
 
@@ -58,13 +64,15 @@ const Body: React.FC<{ icon: React.ReactNode; name: string; text: string | null;
  *
  * Also the logo card design (components/cards), which can leave out the end
  * card (`showAllLink`) and set the cards per row on wide screens (`columns`,
- * 4 by default).
+ * 4 by default). With `fullText` (the design's "Show key points" on) the
+ * text is not cut at 3 lines, and each card lists its key points under it.
  */
 export const RelatedCards: React.FC<{
   cards: RelatedCard[]
   showAllLink?: boolean
   columns?: 2 | 3 | 4
-}> = ({ cards, showAllLink = true, columns }) => (
+  fullText?: boolean
+}> = ({ cards, showAllLink = true, columns, fullText = false }) => (
   <>
     <style>{`
       .ncx-irel{list-style:none;margin:0;padding:0;display:grid;gap:16px;grid-template-columns:repeat(var(--irel-cols,4),minmax(0,1fr))}
@@ -81,6 +89,7 @@ export const RelatedCards: React.FC<{
         line-height:1.3;color:var(--ncx-ink)}
       .ncx-irel__text{font-size:15px;line-height:1.55;color:var(--ncx-muted);
         display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+      .ncx-irel__text.is-full{display:block;-webkit-line-clamp:unset;line-clamp:none;overflow:visible}
 
       /* Linked cards only: lift, and the tile turns solid crimson. */
       a.ncx-irel__card:hover{box-shadow:var(--ncx-lift);border-color:var(--ncx-rule-strong);transform:translateY(-4px)}
@@ -124,11 +133,11 @@ export const RelatedCards: React.FC<{
           <li key={c.id} style={{ '--i': i % (columns || 4) } as React.CSSProperties}>
             {c.href ? (
               <Link className="ncx-irel__card" href={c.href}>
-                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} />
+                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
               </Link>
             ) : (
               <div className="ncx-irel__card">
-                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} />
+                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
               </div>
             )}
           </li>

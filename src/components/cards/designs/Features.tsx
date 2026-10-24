@@ -12,9 +12,10 @@ import type { CardDesignProps } from '../types'
  * card shows a link only when its item has its own page.
  *
  * `look` sets the colour, border and accent line for every card; white with
- * a shadow by default. Cards with gaps, so `lastRow` does not apply.
+ * a shadow by default. Cards with gaps, so `lastRow` does not apply. With
+ * `showKeyPoints`, each card lists its item's key points under the body.
  */
-export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, look }) => {
+export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, look, showKeyPoints = false }) => {
   if (!items.length) return null
   return (
     <>
@@ -56,6 +57,7 @@ export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, lo
                 // Decorative: the title right below names the item.
                 logo={it.logo ? { src: it.logo.src, alt: '' } : null}
                 link={it.href ? { label: it.linkLabel || 'Learn more', url: it.href } : null}
+                keyPoints={showKeyPoints ? it.keyPoints : null}
                 defaultColor="white"
               />
             </li>

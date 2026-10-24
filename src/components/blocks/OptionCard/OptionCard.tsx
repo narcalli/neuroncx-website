@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 
 import { BlockIcon } from '@/components/BlockIcon'
+import { KeyPointList } from '@/components/cards/KeyPoints'
 import type { PickedMedia } from '@/utilities/media'
 
 import styles from './OptionCard.module.css'
@@ -61,6 +62,8 @@ export type OptionCardProps = {
   imagePosition?: CardImagePosition | null
   imageSizes?: string
   link?: CardLinkData | null
+  /** Key points listed under the body (the card designs' "Show key points"). None by default. */
+  keyPoints?: string[] | null
   /** The colour used when the card has none saved. */
   defaultColor?: CardColor
   className?: string
@@ -150,6 +153,7 @@ export const OptionCard: React.FC<OptionCardProps> = ({
   imagePosition,
   imageSizes,
   link,
+  keyPoints,
   defaultColor = 'grey',
   className,
   style,
@@ -175,6 +179,7 @@ export const OptionCard: React.FC<OptionCardProps> = ({
       <h3 className={largeTitle ? styles.titleLarge : styles.titleRegular}>{title}</h3>
       {picture('middle')}
       {body ? <p className={styles.body}>{body}</p> : null}
+      <KeyPointList points={keyPoints} gapAbove={12} />
       {options.showPoints ? <Points points={options.points} bullets={options.listStyle === 'bullets'} /> : null}
       {picture('bottom')}
       {options.accentLine ? <div className={styles.accentLine} aria-hidden="true" /> : null}
