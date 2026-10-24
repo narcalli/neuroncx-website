@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import { AgentFeatures } from '@/blocks/AgenticFlowDemo/AgentFeatures'
+import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
 import { featureFamilies, toFeatureAgent } from '@/blocks/AgenticFlowDemo/featureData'
 import type { MicroApp } from '@/payload-types'
 
@@ -79,6 +80,7 @@ describe('the panel', () => {
       families: featureFamilies([], lists, agents),
       pickFamilyLabel: 'Pick a family',
       pickAgentLabel: 'Agents',
+      design: resolveDesign({ mode: 'agentFeatures' }),
     }),
   )
 
@@ -99,11 +101,11 @@ describe('the panel', () => {
 
   it('draws the three cards: what it does, features, saves to your systems (teal)', () => {
     const a2 = html.slice(html.indexOf('id="ncx-agent-a2"'), html.indexOf('id="ncx-agent-a3"'))
-    expect(a2).toMatch(/<div class="node on"><span class="tag">What it does<\/span><b>Payment services<\/b><small>Does the job.<\/small><div class="hch"><span>Works on WhatsApp<\/span><\/div>/)
+    expect(a2).toMatch(/<div class="node on" style="[^"]*"><span class="tag">What it does<\/span><b>Payment services<\/b><small>Does the job.<\/small><div class="hch"><span>Works on WhatsApp<\/span><\/div>/)
     expect(a2).toMatch(/<span class="tag">Features<\/span>[^]*class="ncx-keypts"[^]*<span>One<\/span>[^]*<span>Three<\/span><\/li><\/ul>/)
     expect(a2).not.toContain('<span>Four</span>')
     expect(a2).toContain('<span class="on">Virtual agent</span><span class="on">Human team</span>')
-    expect(a2).toMatch(/<div class="node ok on"><span class="tag">Saves to your systems<\/span><small>The booking on the record.<\/small><small class="you-set"><strong>You set:<\/strong> Services and slots.<\/small>/)
+    expect(a2).toMatch(/<div class="node ok on" style="[^"]*"><span class="tag">Saves to your systems<\/span><small>The booking on the record.<\/small><small class="you-set"><strong>You set:<\/strong> Services and slots.<\/small>/)
     // No hand-over: no Human team tag.
     const a1 = html.slice(html.indexOf('id="ncx-agent-a1"'), html.indexOf('id="ncx-agent-a2"'))
     expect(a1).toContain('<span class="on">Virtual agent</span></div>')
@@ -118,7 +120,7 @@ describe('the panel', () => {
   it('draws nothing without a family to show', () => {
     expect(
       renderToStaticMarkup(
-        React.createElement(AgentFeatures, { heading: 'H', families: [], pickFamilyLabel: 'P', pickAgentLabel: 'A' }),
+        React.createElement(AgentFeatures, { heading: 'H', families: [], pickFamilyLabel: 'P', pickAgentLabel: 'A', design: resolveDesign({ mode: 'agentFeatures' }) }),
       ),
     ).toBe('')
   })

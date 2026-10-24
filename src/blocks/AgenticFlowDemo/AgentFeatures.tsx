@@ -4,7 +4,9 @@ import React, { useState } from 'react'
 
 import { KeyPointList } from '@/components/cards/KeyPoints'
 
+import { accentVars, designClasses, designVars, type Design } from './design'
 import type { FeatureFamily } from './featureData'
+import { StageLine } from './StageLine'
 import { featuresCss, flowCss } from './styles'
 
 /**
@@ -12,7 +14,8 @@ import { featuresCss, flowCss } from './styles'
  * its features and what it saves. Every agent's panel is in the HTML, so
  * search engines read them all; only the selected one shows. The first
  * family is selected on load, and the first agent whenever the family
- * changes.
+ * changes. The Design tab (design.ts) sets the eyebrows, tags, colours,
+ * line, buttons and panel; with nothing set it draws as it always has.
  */
 export const AgentFeatures: React.FC<{
   heading: string
@@ -20,14 +23,15 @@ export const AgentFeatures: React.FC<{
   families: FeatureFamily[]
   pickFamilyLabel: string
   pickAgentLabel: string
-}> = ({ heading, intro, families, pickFamilyLabel, pickAgentLabel }) => {
+  design: Design
+}> = ({ heading, intro, families, pickFamilyLabel, pickAgentLabel, design: d }) => {
   const [familyAt, setFamilyAt] = useState(0)
   const [agentAt, setAgentAt] = useState(0)
 
   if (!families.length) return null
 
   return (
-    <section className="ncx-flow ncx-flow--features">
+    <section className={`ncx-flow ncx-flow--features ${designClasses(d)}`} style={designVars(d)}>
       <style>{flowCss}</style>
       <style>{featuresCss}</style>
 
@@ -83,8 +87,11 @@ export const AgentFeatures: React.FC<{
                 aria-label={a.name}
                 hidden={!(fi === familyAt && ai === agentAt)}
               >
-                <div className="node on">
-                  <span className="tag">What it does</span>
+                {d.lineStyle === 'animated' && fi === familyAt && ai === agentAt ? (
+                  <StageLine lineStyle="animated" playKey={a.id} />
+                ) : null}
+                <div className="node on" style={accentVars(d.accents[0])}>
+                  <span className="tag">{d.stageLabels[0]}</span>
                   <b>{a.name}</b>
                   {a.summary ? <small>{a.summary}</small> : null}
                   {a.channels.length ? (
@@ -96,17 +103,17 @@ export const AgentFeatures: React.FC<{
                   ) : null}
                 </div>
 
-                <div className="node on">
-                  <span className="tag">Features</span>
+                <div className="node on" style={accentVars(d.accents[1])}>
+                  <span className="tag">{d.stageLabels[1]}</span>
                   <KeyPointList points={a.keyPoints} gapAbove={7} />
                   <div className="hch hch--handlers">
-                    <span className="on">Virtual agent</span>
-                    {a.humanTeam ? <span className="on">Human team</span> : null}
+                    <span className="on">{d.handlerLabels.agent}</span>
+                    {a.humanTeam ? <span className="on">{d.handlerLabels.human}</span> : null}
                   </div>
                 </div>
 
-                <div className="node ok on">
-                  <span className="tag">Saves to your systems</span>
+                <div className="node ok on" style={accentVars(d.accents[2])}>
+                  <span className="tag">{d.stageLabels[2]}</span>
                   {a.records ? <small>{a.records}</small> : null}
                   {a.teamControls ? (
                     <small className="you-set">

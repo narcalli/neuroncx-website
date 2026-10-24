@@ -1,95 +1,70 @@
 'use client'
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { animate } from 'motion/react'
+import Link from 'next/link'
+import React, { useEffect, useRef, useState } from 'react'
 
 import type { AgenticFlowDemoBlock as AgenticFlowDemoProps } from '@/payload-types'
 
+import { accentVars, designClasses, designVars, nextEvent, type Design } from './design'
+import { StageLine } from './StageLine'
 import { flowCss } from './styles'
 
 type DemoEvent = NonNullable<AgenticFlowDemoProps['events']>[number]
 
 const HANDLERS = ['agent', 'human'] as const
 
-/** Flow mode: an event travels through trigger, route and resolve. */
-export const FlowDemo: React.FC<AgenticFlowDemoProps> = ({ heading, intro, events, footnote }) => {
+/** An event's link under the resolve card, resolved on the server. */
+export type EventLink = { label: string; href: string; newTab: boolean }
+
+const isExternal = (href: string) => /^https?:\/\//.test(href)
+
+/**
+ * Flow mode: an event travels through trigger, route and resolve. The Design
+ * tab (design.ts) sets the labels, colours, line, buttons and panel; with
+ * nothing set it draws as it always has. Autoplay moves to the next event on
+ * a timer until a visitor clicks a button, and never runs for visitors who
+ * ask for reduced motion.
+ */
+export const FlowDemo: React.FC<
+  Pick<AgenticFlowDemoProps, 'heading' | 'intro' | 'events' | 'footnote'> & {
+    design: Design
+    /** By event id. */
+    links?: Record<string, EventLink>
+  }
+> = ({ heading, intro, events, footnote, design: d, links = {} }) => {
   const list: DemoEvent[] = (events || []).filter((e) => e && e.label)
 
-  const stageRef = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
-  const pathRef = useRef<SVGPathElement>(null)
-  const dotRef = useRef<SVGCircleElement>(null)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(d.startIndex < list.length ? d.startIndex : 0)
+  const [plays, setPlays] = useState(0)
   const [progress, setProgress] = useState(1)
-  const progressRef = useRef(1)
-  const lenRef = useRef(1)
+  // Set once a visitor clicks: autoplay stops for good.
+  const [touched, setTouched] = useState(false)
+  const timer = useRef<number | null>(null)
 
   const ev: DemoEvent | undefined = list[active] ?? list[0]
-  const routeOn = progress >= 0.5
-  const resolveOn = progress >= 0.995
-
-  // Draws the three-stage path between the node centres, measured from the DOM.
-  const layout = () => {
-    const stage = stageRef.current
-    const path = pathRef.current
-    const svg = svgRef.current
-    if (!stage || !path || !svg) return
-    const sr = stage.getBoundingClientRect()
-    if (!sr.width) return
-    const centres = ['.n-trig', '.n-route', '.n-res'].map((sel) => {
-      const el = stage.querySelector(sel) as HTMLElement | null
-      if (!el) return { x: 0, y: 0 }
-      const r = el.getBoundingClientRect()
-      return { x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2 }
-    })
-    svg.setAttribute('viewBox', `0 0 ${sr.width} ${sr.height}`)
-    const d = `M${centres[0].x} ${centres[0].y} L${centres[1].x} ${centres[1].y} L${centres[2].x} ${centres[2].y}`
-    path.setAttribute('d', d)
-    lenRef.current = path.getTotalLength() || 1
-    path.style.strokeDasharray = `${lenRef.current} ${lenRef.current}`
-    paint(progressRef.current)
-  }
-
-  // Moves the travelling dot and the trail to a point 0..1 along the path.
-  const paint = (p: number) => {
-    progressRef.current = p
-    setProgress(p)
-    const path = pathRef.current
-    const dot = dotRef.current
-    if (!path || !dot) return
-    const len = lenRef.current
-    path.style.strokeDashoffset = String(len - len * p)
-    const pt = path.getPointAtLength(len * p)
-    dot.setAttribute('cx', String(pt.x))
-    dot.setAttribute('cy', String(pt.y))
-  }
-
-  const play = (instant = false) => {
-    if (instant || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      paint(1)
-      return
-    }
-    paint(0)
-    animate(0, 1, { duration: 2.6, ease: 'easeInOut', onUpdate: (v) => paint(v) })
-  }
-
-  useLayoutEffect(() => {
-    layout()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active])
+  const p = d.lineStyle === 'animated' ? progress : 1
+  const routeOn = p >= 0.5
+  const resolveOn = p >= 0.995
 
   useEffect(() => {
-    const onResize = () => layout()
-    window.addEventListener('resize', onResize)
-    play(true)
-    return () => window.removeEventListener('resize', onResize)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!d.autoplay || touched || list.length < 2) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    timer.current = window.setInterval(() => {
+      setActive((i) => nextEvent(i, list.length))
+      setPlays((n) => n + 1)
+    }, d.autoplay * 1000)
+    return () => {
+      if (timer.current) window.clearInterval(timer.current)
+    }
+  }, [d.autoplay, touched, list.length])
 
   if (!list.length) return null
 
+  const link = ev?.id ? links[ev.id] : undefined
+  const [first, second, third] = d.stageLabels
+
   return (
-    <section className="ncx-flow">
+    <section className={`ncx-flow ${designClasses(d)}`} style={designVars(d)}>
       <style>{flowCss}</style>
 
       <div className="wrap ncx-container">
@@ -97,8 +72,8 @@ export const FlowDemo: React.FC<AgenticFlowDemoProps> = ({ heading, intro, event
         {intro ? <p className="sec-sub">{intro}</p> : null}
 
         <div className="lab-box">
-          <p className="lab-q">Pick an event and watch it travel through.</p>
-          <div className="trig" role="group" aria-label="Pick an event">
+          {d.prompt ? <p className="lab-q">{d.prompt}</p> : null}
+          <div className="trig" role="group" aria-label={d.prompt || 'Pick an event'}>
             {list.map((e, i) => (
               <button
                 key={i}
@@ -106,8 +81,9 @@ export const FlowDemo: React.FC<AgenticFlowDemoProps> = ({ heading, intro, event
                 className="tb"
                 aria-pressed={i === active}
                 onClick={() => {
+                  setTouched(true)
                   setActive(i)
-                  play()
+                  setPlays((n) => n + 1)
                 }}
               >
                 {e.label}
@@ -115,41 +91,53 @@ export const FlowDemo: React.FC<AgenticFlowDemoProps> = ({ heading, intro, event
             ))}
           </div>
 
-          <div className="stage" ref={stageRef}>
-            <svg className="stage-svg" ref={svgRef} aria-hidden="true" focusable="false">
-              <path className="base" ref={pathRef} d="M0 0" />
-              <circle className="dot" ref={dotRef} r={6} cx={0} cy={0} />
-            </svg>
+          <div className="stage">
+            <StageLine lineStyle={d.lineStyle} playKey={plays} onProgress={setProgress} />
 
-            <div className={`node n-trig on`}>
-              <span className="tag">Trigger</span>
+            <div className={`node n-trig on`} style={accentVars(d.accents[0])}>
+              <span className="tag">{first}</span>
               <b>{ev?.triggerTitle}</b>
               <small>{ev?.triggerText}</small>
             </div>
 
-            <div className={`node n-route${routeOn ? ' on' : ''}`}>
-              <span className="tag">Route</span>
+            <div className={`node n-route${routeOn ? ' on' : ''}`} style={accentVars(d.accents[1])}>
+              <span className="tag">{second}</span>
               <div className="hch">
                 {HANDLERS.map((h) => (
-                  <span
-                    key={h}
-                    className={routeOn && (ev?.handlers || []).includes(h) ? 'on' : ''}
-                  >
-                    {h === 'agent' ? 'Virtual agent' : 'Human team'}
+                  <span key={h} className={routeOn && (ev?.handlers || []).includes(h) ? 'on' : ''}>
+                    {d.handlerLabels[h]}
                   </span>
                 ))}
               </div>
               <small>{ev?.routeText}</small>
             </div>
 
-            <div className={`node n-res ok${resolveOn ? ' on' : ''}`}>
-              <span className="tag">Resolve</span>
+            <div className={`node n-res ok${resolveOn ? ' on' : ''}`} style={accentVars(d.accents[2])}>
+              <span className="tag">{third}</span>
               <b>{ev?.resolveTitle}</b>
               <small>{ev?.resolveText}</small>
             </div>
           </div>
 
-          {footnote ? <p className="note">{footnote}</p> : null}
+          {link ? (
+            <div className="stage-foot">
+              {isExternal(link.href) || link.newTab ? (
+                <a
+                  className="ev-link"
+                  href={link.href}
+                  {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {link.label} &rarr;
+                </a>
+              ) : (
+                <Link className="ev-link" href={link.href}>
+                  {link.label} &rarr;
+                </Link>
+              )}
+            </div>
+          ) : null}
+
+          {d.showFootnote && footnote ? <p className="note">{footnote}</p> : null}
         </div>
       </div>
     </section>
