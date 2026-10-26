@@ -23,6 +23,7 @@ import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
 import { HeroStackBlock } from '@/blocks/HeroStack/Component'
 import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
+import { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
@@ -77,6 +78,7 @@ const blockComponents = {
   featureThread: FeatureThreadBlock,
   heroFullBackground: HeroFullBackgroundBlock,
   heroRightPlacement: HeroRightPlacementBlock,
+  heroCustom: HeroCustomBlock,
   heroWorkforceGrid: HeroWorkforceGridBlock,
   howItWorks: HowItWorksBlock,
   howItWorks2: HowItWorks2Block,
@@ -113,6 +115,7 @@ const noMargin = [
   'agenticHero',
   'heroFullBackground',
   'heroRightPlacement',
+  'heroCustom',
   'heroWorkforceGrid',
   'statHero',
   'closingCta',

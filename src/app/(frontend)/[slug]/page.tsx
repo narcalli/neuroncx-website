@@ -19,6 +19,7 @@ const flushFirstBlocks = [
   'conversationHero',
   'heroFullBackground',
   'heroRightPlacement',
+  'heroCustom',
   'heroWorkforceGrid',
   'statHero',
   'closingCta',
