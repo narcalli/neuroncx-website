@@ -24,6 +24,9 @@ import { HeroStackBlock } from '@/blocks/HeroStack/Component'
 import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
+import { ComparisonTableBlock } from '@/blocks/ComparisonTable/Component'
+import { AudienceTabsBlock } from '@/blocks/AudienceTabs/Component'
+import { RecordAnatomyBlock } from '@/blocks/RecordAnatomy/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
@@ -79,6 +82,9 @@ const blockComponents = {
   heroFullBackground: HeroFullBackgroundBlock,
   heroRightPlacement: HeroRightPlacementBlock,
   heroCustom: HeroCustomBlock,
+  comparisonTable: ComparisonTableBlock,
+  audienceTabs: AudienceTabsBlock,
+  recordAnatomy: RecordAnatomyBlock,
   heroWorkforceGrid: HeroWorkforceGridBlock,
   howItWorks: HowItWorksBlock,
   howItWorks2: HowItWorks2Block,
@@ -120,6 +126,9 @@ const noMargin = [
   'statHero',
   'closingCta',
   'useCases',
+  'comparisonTable',
+  'audienceTabs',
+  'recordAnatomy',
   'partnerStrip',
   'platformLayers',
   'platformLayersTwo',
