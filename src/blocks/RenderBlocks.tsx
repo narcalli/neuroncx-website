@@ -25,6 +25,8 @@ import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
 import { ComparisonTableBlock } from '@/blocks/ComparisonTable/Component'
+import { ClusterLinksBlock } from '@/blocks/ClusterLinks/Component'
+import { closingSlot } from '@/blocks/closingSlot'
 import { AudienceTabsBlock } from '@/blocks/AudienceTabs/Component'
 import { RecordAnatomyBlock } from '@/blocks/RecordAnatomy/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
@@ -83,6 +85,7 @@ const blockComponents = {
   heroRightPlacement: HeroRightPlacementBlock,
   heroCustom: HeroCustomBlock,
   comparisonTable: ComparisonTableBlock,
+  clusterLinks: ClusterLinksBlock,
   audienceTabs: AudienceTabsBlock,
   recordAnatomy: RecordAnatomyBlock,
   heroWorkforceGrid: HeroWorkforceGridBlock,
@@ -127,6 +130,7 @@ const noMargin = [
   'closingCta',
   'useCases',
   'comparisonTable',
+  'clusterLinks',
   'audienceTabs',
   'recordAnatomy',
   'partnerStrip',
@@ -138,34 +142,45 @@ const noMargin = [
   'integrationsLanding',
 ]
 
+// Blocks that need to know which page they sit on.
+const needsPage = new Set(['clusterLinks'])
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
   /** Given to the first block shown, to place at the top of its own padding (e.g. the page's breadcrumbs). */
   leading?: React.ReactNode
+  /** The page the blocks belong to, for blocks that list what sits under it. */
+  pageId?: string | null
+  /** Drawn just before the closing call to action, or at the end when there is none (closingSlot.ts). */
+  beforeClosing?: React.ReactNode
 }> = (props) => {
-  const { blocks, leading } = props
+  const { blocks, leading, pageId, beforeClosing } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
-  if (hasBlocks) {
-    // A hidden block never renders, so the first block shown takes leading.
-    const firstShown = blocks.findIndex((b) => b && !(b as any).hidden)
-    return (
-      <Fragment>
-        {blocks.map((block, index) => {
-          const { blockType } = block
+  if (!hasBlocks) return beforeClosing ? <Fragment>{beforeClosing}</Fragment> : null
 
-          if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+  // A hidden block never renders, so the first block shown takes leading.
+  const firstShown = blocks.findIndex((b) => b && !(b as any).hidden)
+  const slot = closingSlot(blocks as any)
+  return (
+    <Fragment>
+      {blocks.map((block, index) => {
+        const { blockType } = block
 
-            if (Block) {
-              // Appearance options chosen in the admin, applied by the wrapper.
-              const b = block as any
-              const lead = index === firstShown ? leading : undefined
+        if (blockType && blockType in blockComponents) {
+          // Block props come straight from the CMS, so their types are not checked here.
+        const Block = blockComponents[blockType] as React.ComponentType<any>
 
-              return (
+          if (Block) {
+            // Appearance options chosen in the admin, applied by the wrapper.
+            const b = block as any
+            const lead = index === firstShown ? leading : undefined
+
+            return (
+              <Fragment key={index}>
+                {index === slot ? beforeClosing : null}
                 <BlockWrapper
-                  key={index}
                   htmlId={b.htmlId}
                   background={b.background}
                   width={b.width}
@@ -175,17 +190,20 @@ export const RenderBlocks: React.FC<{
                   hidden={b.hidden}
                   flush={noMargin.includes(String(blockType))}
                 >
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer leading={lead} />
+                  <Block
+                    {...block}
+                    disableInnerContainer
+                    leading={lead}
+                    {...(needsPage.has(String(blockType)) ? { pageId } : {})}
+                  />
                 </BlockWrapper>
-              )
-            }
+              </Fragment>
+            )
           }
-          return null
-        })}
-      </Fragment>
-    )
-  }
-
-  return null
+        }
+        return index === slot ? <Fragment key={index}>{beforeClosing}</Fragment> : null
+      })}
+      {slot === blocks.length ? beforeClosing : null}
+    </Fragment>
+  )
 }

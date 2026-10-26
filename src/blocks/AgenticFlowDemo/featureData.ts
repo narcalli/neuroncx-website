@@ -52,14 +52,27 @@ const idOf = (v: unknown): string | null =>
   typeof v === 'string' ? v : v && typeof v === 'object' && 'id' in v ? String((v as { id: unknown }).id) : null
 
 /**
+ * The industries a block shows agents for: its chosen ones when "Show agents
+ * for" is Chosen industries, else none, which means every agent.
+ */
+export const chosenIndustries = (block: { agentsFor?: string | null; industries?: string[] | null }): string[] =>
+  block.agentsFor === 'industries' ? (block.industries ?? []).filter(Boolean) : []
+
+/** Whether an agent is used in at least one of the industries; any agent when none are chosen. */
+export const inIndustries = (doc: Pick<MicroApp, 'verticals'>, industries: readonly string[]): boolean =>
+  !industries.length || (doc.verticals ?? []).some((v) => industries.includes(v))
+
+/**
  * The families to show: the block's picks in their order, else every family
  * by order. Each gets its shown agents, in the order they arrive (order,
- * then name). A family with no agent to show is left out.
+ * then name), limited to the chosen industries when there are any. A family
+ * with no agent to show is left out.
  */
 export const featureFamilies = (
   picked: unknown[] | null | undefined,
   lists: Pick<List, 'id' | 'name'>[],
   agents: MicroApp[],
+  industries: readonly string[] = [],
 ): FeatureFamily[] => {
   const pickedIds = (picked ?? []).map(idOf).filter((id): id is string => Boolean(id))
   const families = pickedIds.length
@@ -69,7 +82,9 @@ export const featureFamilies = (
     .map((f) => ({
       id: f.id,
       name: f.name,
-      agents: agents.filter((a) => isShownAgent(a) && idOf(a.family) === f.id).map(toFeatureAgent),
+      agents: agents
+        .filter((a) => isShownAgent(a) && inIndustries(a, industries) && idOf(a.family) === f.id)
+        .map(toFeatureAgent),
     }))
     .filter((f) => f.agents.length)
 }

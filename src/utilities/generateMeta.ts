@@ -21,7 +21,8 @@ const mediaImageURL = (image?: Media | Config['db']['defaultIDType'] | null): st
 /**
  * Metadata for a CMS page or post. Each value comes from the page's own SEO
  * fields first, then the CMS Site Settings, then the site defaults
- * (siteDefaults.ts). `path` is the page's address on this site, for og:url.
+ * (siteDefaults.ts). `path` is the page's address on this site, for the
+ * canonical URL and og:url.
  */
 export const generateMeta = async (args: {
   doc: Partial<Page> | Partial<Post> | null
@@ -44,6 +45,9 @@ export const generateMeta = async (args: {
   return {
     title,
     description,
+    // The page's own full address, such as /higher-education/fees for a
+    // cluster page. Left out when the site's address is not set.
+    ...(url ? { alternates: { canonical: url } } : {}),
     openGraph: mergeOpenGraph({
       siteName,
       title,

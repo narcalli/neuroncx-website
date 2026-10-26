@@ -8,7 +8,7 @@ import { getEntries } from '@/utilities/content'
 import { AgentFeatures } from './AgentFeatures'
 import { resolveDesign } from './design'
 import { eventLinks } from './eventLinks'
-import { featureFamilies } from './featureData'
+import { chosenIndustries, featureFamilies } from './featureData'
 import { FlowDemo } from './FlowDemo'
 
 /**
@@ -50,11 +50,17 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
     getEntries('microApps', { depth: 0 }, draft) as Promise<MicroApp[]>,
   ])
 
+  // "Show agents for" Chosen industries: only agents used in one of them.
+  // With industries chosen and no agent to show, the block is not drawn.
+  const industries = chosenIndustries(props)
+  const families = featureFamilies(props.families, lists, agents, industries)
+  if (industries.length && !families.length) return null
+
   return (
     <AgentFeatures
       heading={props.heading}
       intro={props.intro}
-      families={featureFamilies(props.families, lists, agents)}
+      families={families}
       pickFamilyLabel={props.pickFamilyLabel || 'Pick a family'}
       pickAgentLabel={props.pickAgentLabel || 'Agents'}
       design={resolveDesign(props)}

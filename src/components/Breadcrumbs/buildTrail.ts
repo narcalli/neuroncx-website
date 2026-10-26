@@ -17,6 +17,10 @@ export type TrailPage = Pick<Page, 'title'> & {
     page?: string | TrailPage | null
     label?: string | null
   } | null
+  /** A cluster page's pillar page (neuroncx-cms Pages, nesting.ts). */
+  parent?: string | TrailPage | null
+  /** Stored by the CMS: the pillar, then this page, each with its label and path. */
+  breadcrumbs?: { label?: string | null; url?: string | null }[] | null
 }
 
 export type TrailInput =
@@ -42,6 +46,15 @@ const HOME: Crumb = { label: 'Home', href: '/' }
 
 const pageLabel = (p: TrailPage) => p.breadcrumbLabel?.trim() || p.title
 const pageHref = (p: TrailPage) => (p.slug ? `/${p.slug}` : undefined)
+
+// A cluster page's pillar, as a linked step: from the stored breadcrumbs,
+// else from the pillar record when it arrived whole.
+const pillarOf = (page: TrailPage): Crumb[] => {
+  const stored = page.breadcrumbs?.slice(0, -1).find((c) => c?.label?.trim())
+  if (stored) return [{ label: stored.label!.trim(), ...(stored.url ? { href: stored.url } : {}) }]
+  const p = page.parent
+  return p && typeof p === 'object' ? [{ label: pageLabel(p), href: pageHref(p) }] : []
+}
 
 // Parents, nearest last. Stops at a missing or unpopulated parent, at Home
 // (the trail starts there anyway) and at a page already in the trail.
@@ -76,6 +89,7 @@ const cap = (trail: Crumb[]): Crumb[] =>
  *
  * - Page: Home / its parents / the page, by breadcrumbLabel where set, else
  *   title. A parent set to a label has no link. Home's own trail is just Home.
+ * - Cluster page: Home / its pillar page / the page.
  * - Integration: Home / Integrations / its category (no page, so no link) / the integration.
  * - Customer: Home / Customers / the customer.
  * - Content entry: Home / its hub / its grouping (no page, so no link) / the entry.
@@ -84,6 +98,9 @@ export const buildTrail = (input: TrailInput): Crumb[] => {
   if ('page' in input) {
     const { page } = input
     if (page.slug === 'home') return [{ label: HOME.label }]
+    // A cluster page: Home / its pillar / the page. Its pillar takes the place
+    // of the breadcrumb parent, which only pages without a pillar use.
+    if (page.parent) return cap([HOME, ...pillarOf(page), { label: pageLabel(page) }])
     return cap([HOME, ...ancestorsOf(page), { label: pageLabel(page) }])
   }
   if ('integration' in input) {
