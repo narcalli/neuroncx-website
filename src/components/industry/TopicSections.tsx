@@ -183,7 +183,7 @@ export const topicSectionContent = (key: string, block: SectionBlock, topic: Ind
       const logos = integrations.map((d) => ({ id: d.id, name: d.name, logo: d.logo, href: integrationHref(d) }))
       // Logos when every one has a file, else names, so none is left out.
       const display = logos.every((l) => l.logo && typeof l.logo === 'object' && l.logo.url) ? 'logos' : 'wordmarks'
-      return <LogoWallBlock label={eyebrow} heading={heading} intro={intro} display={display} logos={logos} />
+      return <LogoWallBlock label={eyebrow} heading={heading} intro={intro} display={display} logos={logos} align="left" />
     }
   }
   return null

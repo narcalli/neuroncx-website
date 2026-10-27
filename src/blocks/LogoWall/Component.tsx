@@ -15,6 +15,8 @@ type Props = {
   intro?: string | null
   display?: 'wordmarks' | 'logos' | null
   logos?: LogoItem[] | null
+  /** The block's Text alignment: Left puts the label, heading and intro on the left; Default and Centre keep them centred. */
+  align?: string | null
 }
 
 /** A logo's cell: a link when it has somewhere to go. */
@@ -27,7 +29,7 @@ const Cell: React.FC<{ href?: string | null; children: React.ReactNode }> = ({ h
     <div className="cell">{children}</div>
   )
 
-export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display, logos }) => {
+export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display, logos, align }) => {
   const asText = display !== 'logos'
 
   // In wordmark mode a name is enough. In logo mode the file has to have resolved.
@@ -37,12 +39,14 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
   if (!items.length) return null
 
   return (
-    <section className="ncx-logowall">
+    <section className="ncx-logowall" data-align={align === 'left' ? 'left' : 'center'}>
       <style>{`
         .ncx-logowall{
           /* No band: the hairlines above and below are the separation. */
           border-top:1px solid var(--ncx-rule);border-bottom:1px solid var(--ncx-rule);
           padding:56px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);text-align:center}
+        .ncx-logowall[data-align="left"]{text-align:left}
+        .ncx-logowall[data-align="left"] .intro{margin-left:0}
         .ncx-logowall .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
         .ncx-logowall h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
@@ -59,7 +63,7 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
           filter:grayscale(1);opacity:.7;mix-blend-mode:multiply;transition:opacity .2s,filter .2s}
         .ncx-logowall img:hover{filter:none;opacity:1}
         .ncx-logowall .wordmark{font-family:var(--font-display),Arial,sans-serif;
-          font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--ncx-faint);
+          font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--ncx-muted);
           white-space:nowrap;transition:color .2s}
         .ncx-logowall .cell:hover .wordmark{color:var(--ncx-body)}
         @media(max-width:900px){.ncx-logowall{padding:40px 0}

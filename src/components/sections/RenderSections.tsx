@@ -46,7 +46,21 @@ export type SectionContext = {
   groupings?: React.ReactNode
   /** A draft preview: drafts and Planned entries are shown too. */
   draft?: boolean
+  /**
+   * Given to the first row when it is a page block: a hero block drawing the
+   * page's hero puts it at the top of its own padding (the breadcrumb bar).
+   */
+  leading?: React.ReactNode
+  /**
+   * Drawn just before the first row that ends the page, the closing panel
+   * section or a closing call to action block (an industry topic's cluster
+   * footer). Without such a row the page draws it itself.
+   */
+  beforeClosing?: React.ReactNode
 }
+
+/** Whether a layout row ends the page: the closing panel section or a closing call to action block. */
+export const endsPage = (blockType: unknown): boolean => blockType === 'closingSection' || blockType === 'closingCta'
 
 type Block = { blockType?: string | null; heading?: string | null; id?: string | null } & Record<
   string,
@@ -153,47 +167,68 @@ const renderSection = (key: string, block: Block, index: number, ctx: SectionCon
 export const RenderSections: React.FC<{ blocks: readonly unknown[]; ctx: SectionContext }> = ({
   blocks,
   ctx,
-}) => (
-  <>
-    <SectionStyles />
-    {(blocks as Block[]).map((block, index) => {
-      const key = sectionKeyOf(block.blockType)
-      const reactKey = block.id || `${block.blockType}-${index}`
-      if (!key) {
-        return <RenderBlocks key={reactKey} blocks={[block as unknown as Page['layout'][0]]} />
-      }
-      // Industry and industry topic sections fetch what they show, and draw their own band.
-      if (ownSectionKey(block.blockType) && ctx.entry) {
+}) => {
+  const rows = blocks as Block[]
+  const end = ctx.beforeClosing ? rows.findIndex((b) => endsPage(b.blockType)) : -1
+  return (
+    <>
+      <SectionStyles />
+      {rows.map((block, index) => {
+        const drawn = drawRow(block, index, ctx)
+        if (index !== end) return drawn
         return (
-          <EntrySectionBand
-            key={reactKey}
-            block={block}
-            entry={ctx.entry as unknown as Sector | IndustryTopic}
-            index={index}
-            draft={Boolean(ctx.draft)}
-          />
+          <React.Fragment key={`before-closing-${index}`}>
+            {ctx.beforeClosing}
+            {drawn}
+          </React.Fragment>
         )
-      }
-      const content = renderSection(key, block, index, ctx)
-      if (!content) return null
-      // The closing panel draws its own navy card, and the grouping sections
-      // their own sections; neither takes a band around it.
-      if (key === 'closing' || key === 'hubGroupings') return <React.Fragment key={reactKey}>{content}</React.Fragment>
-      return (
-        <BlockWrapper
-          key={reactKey}
-          flush
-          htmlId={block.htmlId as string | null}
-          background={block.background as string | null}
-          width={block.width as string | null}
-          spacingTop={block.spacingTop as string | null}
-          spacingBottom={block.spacingBottom as string | null}
-          align={block.align as string | null}
-          hidden={block.hidden as boolean | null}
-        >
-          {content}
-        </BlockWrapper>
-      )
-    })}
-  </>
-)
+      })}
+    </>
+  )
+}
+
+const drawRow = (block: Block, index: number, ctx: SectionContext): React.ReactNode => {
+  const key = sectionKeyOf(block.blockType)
+  const reactKey = block.id || `${block.blockType}-${index}`
+  if (!key) {
+    return (
+      <RenderBlocks
+        key={reactKey}
+        blocks={[block as unknown as Page['layout'][0]]}
+        leading={index === 0 ? ctx.leading : undefined}
+      />
+    )
+  }
+  // Industry and industry topic sections fetch what they show, and draw their own band.
+  if (ownSectionKey(block.blockType) && ctx.entry) {
+    return (
+      <EntrySectionBand
+        key={reactKey}
+        block={block}
+        entry={ctx.entry as unknown as Sector | IndustryTopic}
+        index={index}
+        draft={Boolean(ctx.draft)}
+      />
+    )
+  }
+  const content = renderSection(key, block, index, ctx)
+  if (!content) return null
+  // The closing panel draws its own navy card, and the grouping sections
+  // their own sections; neither takes a band around it.
+  if (key === 'closing' || key === 'hubGroupings') return <React.Fragment key={reactKey}>{content}</React.Fragment>
+  return (
+    <BlockWrapper
+      key={reactKey}
+      flush
+      htmlId={block.htmlId as string | null}
+      background={block.background as string | null}
+      width={block.width as string | null}
+      spacingTop={block.spacingTop as string | null}
+      spacingBottom={block.spacingBottom as string | null}
+      align={block.align as string | null}
+      hidden={block.hidden as boolean | null}
+    >
+      {content}
+    </BlockWrapper>
+  )
+}

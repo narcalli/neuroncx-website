@@ -6,7 +6,7 @@ import { ClusterFooter } from '@/components/ClusterFooter'
 import type { Crumb } from '@/components/Breadcrumbs'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { EntryHero, EntryHeroBar } from '@/components/sections/EntryHero'
-import { RenderSections, type SectionContext } from '@/components/sections/RenderSections'
+import { endsPage, RenderSections, type SectionContext } from '@/components/sections/RenderSections'
 import { fillHeading, SECTION_HEADINGS, sectionKeyOf } from '@/content/registry'
 import type { IndustryTopic, MicroApp, Sector } from '@/payload-types'
 import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
@@ -20,9 +20,11 @@ import { defaultShareImage } from '@/utilities/siteDefaults'
 /**
  * The page of an industry, at /{industry}, or of an industry topic, at
  * /{industry}/{topic}: the hero in the entry's hero design with the
- * breadcrumb bar, the sections of its layout (RenderSections), then, when
- * Show the closing panel is on, the closing panel, unless the layout places
- * it. A topic page also ends with its cluster footer, just before the
+ * breadcrumb bar (or, with Hero block from the layout, the hero block that
+ * is the layout's first row), the sections and page blocks of its layout
+ * (RenderSections), then, when Show the closing panel is on, the closing
+ * panel, unless the layout places it or holds a closing call to action
+ * block. A topic page also ends with its cluster footer, just before the
  * closing panel, unless Hide cluster footer is on.
  */
 
@@ -129,6 +131,36 @@ export const TopicFooter = async ({ topic, draft }: { topic: IndustryTopic; draf
   return <ClusterFooter page={page} siblings={siblings} />
 }
 
+/** The hero blocks a page may start with when its Hero design is Hero block from the layout (neuroncx-cms siteBlocks.ts). */
+export const LAYOUT_HERO_BLOCKS = [
+  'heroCustom',
+  'conversationHero',
+  'statHero',
+  'heroFullBackground',
+  'heroRightPlacement',
+  'heroWorkforceGrid',
+  'agenticHero',
+]
+
+/** Every block that draws a page's H1. */
+const HERO_BLOCKS = [...LAYOUT_HERO_BLOCKS, 'heroStack', 'integrationsLanding']
+
+type Row = { blockType?: string | null; hidden?: boolean | null } & Record<string, unknown>
+
+/**
+ * The rows the page draws, and whether the first is its hero: with Hero
+ * design set to Hero block from the layout, a first row that is a layout
+ * hero draws the hero. A page has one H1, so any other hero row is left out
+ * (the CMS refuses one on publish; a draft may still hold one). Without a
+ * hero row, the entry's own hero fields draw the hero.
+ */
+export const pageRows = (entry: { heroDesign?: string | null; layout?: unknown }): { rows: Row[]; heroFromLayout: boolean } => {
+  const shown = (Array.isArray(entry.layout) ? (entry.layout as Row[]) : []).filter((b) => b && !b.hidden)
+  const heroFromLayout = entry.heroDesign === 'blockHero' && LAYOUT_HERO_BLOCKS.includes(String(shown[0]?.blockType))
+  const rows = shown.filter((b, i) => !HERO_BLOCKS.includes(String(b.blockType)) || (heroFromLayout && i === 0))
+  return { rows, heroFromLayout }
+}
+
 export const IndustryEntryPage = ({
   collection,
   entry,
@@ -144,7 +176,7 @@ export const IndustryEntryPage = ({
   footer?: React.ReactNode
 }) => {
   const tokens = { name: entry.name }
-  const layout = ((entry as Sector).layout ?? []).filter((b) => b && !(b as { hidden?: boolean | null }).hidden)
+  const { rows, heroFromLayout } = pageRows(entry as Sector)
 
   // The page's button: the entry's own, else contact.
   const ownHref = entry.cta?.label ? hrefOf(entry.cta.link as LinkValue) : null
@@ -155,40 +187,46 @@ export const IndustryEntryPage = ({
   const bar = <EntryHeroBar trail={trail} flag={flag} />
   const groupName = collection === 'industryTopics' ? (industryOf(entry as IndustryTopic)?.name ?? null) : null
 
-  const closing = showsClosing(entry) ? (
-    <ClosingCtaBlock
-      heading={fillHeading(SECTION_HEADINGS.closing, tokens)}
-      subhead={null}
-      primaryLabel={ctaLabel}
-      primaryLink={ctaHref}
-      secondaryLabel={null}
-      secondaryLink={null}
-    />
-  ) : null
-  const tail = footer || closing ? (
-    <>
-      {footer}
-      {closing}
-    </>
-  ) : null
-  const closingInLayout = layout.some((b) => sectionKeyOf(b.blockType) === 'closing')
+  // A closing call to action block in the layout is the page's closing panel.
+  const ctaBlock = rows.some((b) => b.blockType === 'closingCta')
+  const closing =
+    showsClosing(entry) && !ctaBlock ? (
+      <ClosingCtaBlock
+        heading={fillHeading(SECTION_HEADINGS.closing, tokens)}
+        subhead={null}
+        primaryLabel={ctaLabel}
+        primaryLink={ctaHref}
+        secondaryLabel={null}
+        secondaryLink={null}
+      />
+    ) : null
+  // The footer goes just before the row that ends the page; without one, after the sections.
+  const placed = rows.some((b) => endsPage(b.blockType))
+  const closingInLayout = rows.some((b) => sectionKeyOf(b.blockType) === 'closing')
+  // The hero block takes the breadcrumb bar: most heroes read it as leading, the conversation hero as crumbs.
+  const drawn = heroFromLayout ? [{ ...rows[0], crumbs: bar }, ...rows.slice(1)] : rows
   const ctx: SectionContext = {
     collection,
     hub: null,
     entry: entry as unknown as SectionContext['entry'],
     tokens,
     customerSeesInHero: false,
-    closing: closingInLayout ? tail : null,
+    closing,
     draft,
+    leading: heroFromLayout ? bar : undefined,
+    beforeClosing: footer,
   }
 
   return (
     <article className="ncx-industry">
       {draft ? <LivePreviewListener /> : null}
       <style>{`.ncx-industry{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}`}</style>
-      <EntryHero bar={bar} entry={entry as unknown as MicroApp} groupName={groupName} primary={{ label: ctaLabel, href: ctaHref }} draft={draft} />
-      <RenderSections blocks={layout} ctx={ctx} />
-      {closingInLayout ? null : tail}
+      {heroFromLayout ? null : (
+        <EntryHero bar={bar} entry={entry as unknown as MicroApp} groupName={groupName} primary={{ label: ctaLabel, href: ctaHref }} draft={draft} />
+      )}
+      <RenderSections blocks={drawn} ctx={ctx} />
+      {placed ? null : footer}
+      {closingInLayout ? null : closing}
     </article>
   )
 }

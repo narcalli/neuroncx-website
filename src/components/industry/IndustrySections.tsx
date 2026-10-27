@@ -100,6 +100,26 @@ const INTERIM: Record<string, { group: keyof Sector; component: AnyBlock; blockT
  * The fields of a shared block that take the row's heading, eyebrow and
  * intro. The stat band has none of them.
  */
+/**
+ * Whether a shared block has anything to draw, as its own component decides:
+ * the list it shows (the trust panel draws with its heading alone). A block
+ * with nothing renders nothing, so it must not leave a wrapper or spacing.
+ */
+const SHARED_LIST: Record<string, string> = {
+  trustPanel: 'cards',
+  howItWorks2: 'steps',
+  productSuite2: 'cards',
+  bentoGrid: 'cards',
+  statBand: 'stats',
+}
+
+export const sharedBlockHasContent = (block: Row): boolean => {
+  const list = SHARED_LIST[String(block.blockType)]
+  if (!list) return true
+  const rows = rowsOf(block[list])
+  return rows.length > 0 || (block.blockType === 'trustPanel' && Boolean(text(block.heading)))
+}
+
 const SHARED_TEXT: Record<string, { heading?: string; eyebrow?: string; intro?: string }> = {
   trustPanel: { heading: 'heading', eyebrow: 'eyebrow', intro: 'intro' },
   howItWorks2: { heading: 'heading', eyebrow: 'eyebrow', intro: 'intro' },
@@ -240,7 +260,7 @@ export const industrySectionContent = async (key: string, block: SectionBlock, e
       const logos = shown.map((d) => ({ id: d.id, name: d.name, logo: d.logo, href: integrationHref(d) }))
       // Logos when every one has a file, else names, so none is left out.
       const display = logos.every((l) => l.logo && typeof l.logo === 'object' && l.logo.url) ? 'logos' : 'wordmarks'
-      return <LogoWallBlock label={eyebrow} heading={heading} intro={intro} display={display} logos={logos} />
+      return <LogoWallBlock label={eyebrow} heading={heading} intro={intro} display={display} logos={logos} align="left" />
     }
     case 'industryCustomers': {
       // Read as a visitor reads them, so a name not cleared for showing stays hidden.
@@ -288,6 +308,8 @@ export const industrySectionContent = async (key: string, block: SectionBlock, e
       const inner = Array.isArray(item.block) ? (item.block[0] as Row | undefined) : undefined
       if (!inner?.blockType) return null
       const names = SHARED_TEXT[inner.blockType] ?? {}
+      // An empty record draws nothing, with no wrapper or spacing (the row's heading cannot fill it).
+      if (!sharedBlockHasContent(inner)) return null
       const overrides: Row = {
         ...(names.heading && text(block.heading) ? { [names.heading]: fill(block.heading!) } : {}),
         ...(names.eyebrow && eyebrow ? { [names.eyebrow]: eyebrow } : {}),
