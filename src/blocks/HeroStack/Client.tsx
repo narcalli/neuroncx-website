@@ -170,6 +170,9 @@ export const HeroStackClient: React.FC<
         .ncx-hstack .hs-pin{position:sticky;top:calc(var(--bar) + env(safe-area-inset-top,0px));
           height:var(--pin-h);display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);
           gap:56px;align-items:center;overflow-x:clip}
+        /* Nothing beside the text: it takes the full width. */
+        .ncx-hstack .hs-pin[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+        .ncx-hstack .hs-pin[data-cols="1"] .hs-intro{max-width:none}
         .ncx-hstack .hs-copy{display:flex;flex-direction:column;gap:22px;align-items:flex-start;min-width:0}
         .ncx-hstack .hs-eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0;
           font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:.75rem;
@@ -242,6 +245,8 @@ export const HeroStackClient: React.FC<
           .ncx-hstack .hs-copy{gap:14px}
           .ncx-hstack h1{font-size:clamp(1.7rem,7vw,2.2rem)}
           .ncx-hstack .hs-intro{display:none}
+          /* Phones show the intro in the product list; with no products it stays here. */
+          .ncx-hstack .hs-pin[data-cols="1"] .hs-intro{display:block}
           .ncx-hstack .hs-visual{display:none}
           .ncx-hstack .hs-list{display:flex;flex-direction:column;gap:28px;margin:32px 0 0;padding:0;list-style:none}
           .ncx-hstack .hs-item .hs-card{position:relative;width:100%;transform:none;opacity:1;filter:none;animation:none}
@@ -254,7 +259,7 @@ export const HeroStackClient: React.FC<
         }
       `}</style>
 
-      <div className="hs-pin ncx-container" ref={pinRef}>
+      <div className="hs-pin ncx-container" ref={pinRef} data-cols={n ? '2' : '1'}>
         <div className="hs-copy">
           {eyebrow ? <p className="hs-eyebrow">{eyebrow}</p> : null}
           <h1>{heading}</h1>

@@ -104,6 +104,7 @@ export const AudienceTabsBlock: React.FC<Props> = ({ eyebrow, heading, intro, ta
               hidden={i !== active}
               // A panel with no links has nothing to focus, so it takes the focus stop itself.
               tabIndex={links.length ? undefined : 0}
+              data-cols={points.length ? '2' : '1'}
             >
               <div className="aud-copy">
                 {t.title ? <h3>{t.title}</h3> : null}
@@ -154,6 +155,8 @@ const css = `
   .ncx-aud .aud-panel{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,4vw,56px);
     align-items:start;padding-top:36px}
   .ncx-aud .aud-panel[hidden]{display:none}
+  /* A tab with no points: its title, intro and links take the full width. */
+  .ncx-aud .aud-panel[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
   .ncx-aud .aud-panel:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:6px;border-radius:var(--ncx-r-card)}
   .ncx-aud .aud-copy h3{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(22px,2.4vw,26px);
     letter-spacing:-.02em;line-height:1.25;margin:0 0 12px;color:var(--ncx-ink)}

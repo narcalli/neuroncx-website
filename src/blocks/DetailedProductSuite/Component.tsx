@@ -97,6 +97,8 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
 
         .ncx-dps .grid{margin-top:40px;display:grid;grid-template-columns:repeat(2,1fr);gap:28px;align-items:stretch}
         .ncx-dps .grid.cols-1{grid-template-columns:1fr}
+        /* A card alone on the last row takes the full width, so no empty cell sits beside it. */
+        .ncx-dps .grid:not(.cols-1) > :last-child:nth-child(odd){grid-column:1 / -1}
 
         .ncx-dps .card{position:relative;overflow:hidden;display:flex;flex-direction:column;
           background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:28px;padding:36px;isolation:isolate}

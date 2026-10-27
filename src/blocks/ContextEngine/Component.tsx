@@ -50,6 +50,9 @@ export const ContextEngineBlock: React.FC<Props> = ({
           /* Band removed; a hairline holds the edge against its neighbours. */
           border-block:1px solid var(--ncx-rule-soft);padding:72px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-ctx .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+        /* Nothing beside the text: it takes the full width. */
+        .ncx-ctx .grid[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+        .ncx-ctx .grid[data-cols="1"] .intro{max-width:none}
         .ncx-ctx .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
           letter-spacing:.04em;color:var(--ncx-crimson);margin:0 0 14px}
         .ncx-ctx h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
@@ -105,7 +108,7 @@ export const ContextEngineBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="inner ncx-container">
-        <div className="grid">
+        <div className="grid" data-cols={placed.length ? '2' : '1'}>
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h2>{heading}</h2>

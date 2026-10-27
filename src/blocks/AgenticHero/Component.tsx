@@ -67,7 +67,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
   const slotNodes = (nodes || []).slice(0, SLOTS.length)
 
   return (
-    <section className="ncx-hero">
+    <section className="ncx-hero" data-cols={slotNodes.length ? '2' : '1'}>
       <style>{`
         .ncx-hero{position:relative;overflow:hidden;isolation:isolate;
           background:var(--wash);color:var(--ncx-body);
@@ -117,6 +117,9 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
           .ncx-hero h1{max-width:min(var(--ncx-heading-max),47%)}
           .ncx-hero .hero-p{max-width:min(54ch,47%)}
         }
+        /* No diagram beside the text: it takes the full width. */
+        .ncx-hero[data-cols="1"] h1{max-width:var(--ncx-heading-max)}
+        .ncx-hero[data-cols="1"] .hero-p{max-width:none}
         .ncx-hero .ln{stroke-dasharray:3 9;animation:ncxFlow 1.4s linear infinite}
         @keyframes ncxFlow{to{stroke-dashoffset:-24}}
         .ncx-hero .ncx-pr{transform-box:fill-box;transform-origin:center;animation:ncxPing 3.2s ease-out infinite}

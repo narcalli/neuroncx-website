@@ -81,6 +81,8 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   const words = headline.trim().split(/\s+/)
   const columnCount = Number(columns) === 2 || Number(columns) === 4 ? Number(columns) : 3
   const cols = distribute((cards || []).filter((c) => c && c.title), columnCount)
+  // No cards: no moving grid beside the text, and no empty box either.
+  const hasCards = cols.some((c) => c.length)
   const href = resolveHref(cta)
   const mult = SPEED_MULT[speed || 'medium'] || SPEED_MULT.medium
 
@@ -123,6 +125,9 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           padding-block:clamp(48px,7vw,88px);display:grid;
           grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
           gap:clamp(28px,4vw,56px);align-items:center}
+        /* Nothing beside the text: it takes the full width. */
+        .ncx-hwg .inner[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+        .ncx-hwg .inner[data-cols="1"] .subhead{max-width:none}
 
         .ncx-hwg .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;
           font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;color:var(--h-eyebrow)}
@@ -209,7 +214,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
 
       <div className="bg" />
 
-      <div className="inner ncx-container">
+      <div className="inner ncx-container" data-cols={hasCards ? '2' : '1'}>
         <Animator className="copy">
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
@@ -244,28 +249,30 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           </div>
         </Animator>
 
-        <div className="grid-wrap" style={{ '--cols': columnCount } as React.CSSProperties}>
-          {cols.map((colCards, i) => (
-            <div
-              className="col"
-              data-dir={i % 2 === 0 ? 'up' : 'down'}
-              style={{ '--dur': `${(BASE_DURATIONS[i % BASE_DURATIONS.length] / mult).toFixed(1)}s` } as React.CSSProperties}
-              key={i}
-            >
-              <div className="track">
-                {colCards.map((card, j) => (
-                  <CardTile card={card} key={j} />
-                ))}
-                {/* An identical clone, so the translateY(-50%) loop has no seam.
-                    Hidden from the accessibility tree and skipped in tab order —
-                    it is a visual loop trick, not distinct content. */}
-                {colCards.map((card, j) => (
-                  <CardTile card={card} key={'dup-' + j} hidden />
-                ))}
+        {hasCards ? (
+          <div className="grid-wrap" style={{ '--cols': columnCount } as React.CSSProperties}>
+            {cols.map((colCards, i) => (
+              <div
+                className="col"
+                data-dir={i % 2 === 0 ? 'up' : 'down'}
+                style={{ '--dur': `${(BASE_DURATIONS[i % BASE_DURATIONS.length] / mult).toFixed(1)}s` } as React.CSSProperties}
+                key={i}
+              >
+                <div className="track">
+                  {colCards.map((card, j) => (
+                    <CardTile card={card} key={j} />
+                  ))}
+                  {/* An identical clone, so the translateY(-50%) loop has no seam.
+                      Hidden from the accessibility tree and skipped in tab order;
+                      it is a visual loop trick, not distinct content. */}
+                  {colCards.map((card, j) => (
+                    <CardTile card={card} key={'dup-' + j} hidden />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   )

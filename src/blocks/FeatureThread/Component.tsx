@@ -75,6 +75,11 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
         .ncx-thread .turn{position:relative}
         .ncx-thread .turn.left{grid-column:1}
         .ncx-thread .turn.right{grid-column:2}
+        /* A single item: one column, the thread on its left, as on phones. */
+        .ncx-thread .spine[data-cols="1"]{grid-template-columns:1fr}
+        .ncx-thread .spine[data-cols="1"]:before{left:4px}
+        .ncx-thread .spine[data-cols="1"] .turn{grid-column:1;padding-left:30px}
+        .ncx-thread .spine[data-cols="1"] .turn:before{left:0;right:auto}
         .ncx-thread .turn:before{content:"";position:absolute;top:12px;width:9px;height:9px;
           border-radius:50%;background:var(--ncx-crimson)}
         .ncx-thread .turn.left:before{right:-4.6%}
@@ -98,7 +103,7 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
 
       {heading ? <h2>{heading}</h2> : null}
 
-      <div className="spine">
+      <div className="spine" data-cols={turns.length > 1 ? '2' : '1'}>
         {turns.map(({ group, item }, i) => (
           <div className={`turn ${i % 2 === 0 ? 'left' : 'right'}`} key={item.id}>
             <span className="cat">{CATEGORY_LABELS[group.category] || group.category}</span>

@@ -34,6 +34,9 @@ export const TrustPanelBlock: React.FC<Props> = ({
         .ncx-trust{
           background:var(--ncx-navy);color:var(--ncx-on-navy);padding:80px 0;font-family:var(--font-body),Arial,sans-serif}
         .ncx-trust .grid{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center}
+        /* Nothing beside the text: it takes the full width. */
+        .ncx-trust .grid[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+        .ncx-trust .grid[data-cols="1"] .intro{max-width:none}
         .ncx-trust .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
           letter-spacing:.04em;color:var(--ncx-crimson-on-navy);margin:0 0 14px}
         .ncx-trust h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
@@ -69,7 +72,7 @@ export const TrustPanelBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="inner ncx-container">
-        <div className="grid">
+        <div className="grid" data-cols={items.length ? '2' : '1'}>
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h2>{heading}</h2>

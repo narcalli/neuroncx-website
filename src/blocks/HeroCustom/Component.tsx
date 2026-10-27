@@ -88,7 +88,7 @@ export const HeroCustomBlock: React.FC<
       ) : null}
       {pos === 'background' && visual ? <div className="hcx-bg">{visual}</div> : null}
       <div className="ncx-container hcx-inner">
-        <div className="hcx-grid">
+        <div className="hcx-grid" data-cols={visual ? undefined : '1'}>
           <div className="hcx-copy">
             {eyebrow ? <p className="hcx-eyebrow">{eyebrow}</p> : null}
             <h1>{headline}</h1>
@@ -139,6 +139,9 @@ const heroCss = `
   .ncx-hcx[data-pos="below"] .hcx-grid,.ncx-hcx[data-pos="background"] .hcx-grid{grid-template-columns:minmax(0,1fr)}
   .ncx-hcx[data-pos="below"] .hcx-copy{max-width:760px}
   .ncx-hcx[data-pos="background"] .hcx-copy{max-width:640px}
+  /* No visual at all: the text takes the full width, whatever the position. */
+  .ncx-hcx .hcx-grid[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+  .ncx-hcx .hcx-grid[data-cols="1"] .hcx-copy,.ncx-hcx .hcx-grid[data-cols="1"] .hcx-sub{max-width:none}
   .ncx-hcx .hcx-copy{min-width:0}
   .ncx-hcx .hcx-eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0 0 18px;
     font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--hcx-muted)}

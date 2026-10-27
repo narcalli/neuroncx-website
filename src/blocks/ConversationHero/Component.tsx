@@ -110,6 +110,9 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         .ncx-chero .inner{position:relative;z-index:1;
           padding-block:calc(64px + clamp(44px,6vw,76px)) clamp(36px,4.5vw,56px)}
         .ncx-chero .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+        /* Nothing beside the text: it takes the full width. */
+        .ncx-chero .grid[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+        .ncx-chero .grid[data-cols="1"] .sub{max-width:none}
 
         .ncx-chero .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
           letter-spacing:.04em;color:var(--ncx-crimson-ink);margin:0 0 14px}
@@ -216,7 +219,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         style={crumbs ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties) : undefined}
       >
         {crumbs}
-        <div className="grid">
+        <div className="grid" data-cols={messages.length ? '2' : '1'}>
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h1>{headline}</h1>
