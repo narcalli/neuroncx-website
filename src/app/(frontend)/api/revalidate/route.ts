@@ -16,6 +16,9 @@ import { CONTENT_COLLECTIONS } from '@/content/registry'
 
 const MAX_PATHS = 50
 
+/** Collections outside the content registry whose cached content is tagged content-{collection}. */
+const TAGGED = ['sectors', 'industryTopics']
+
 const secretMatches = (given: string | null): boolean => {
   const expected = process.env.REVALIDATE_SECRET
   if (!expected || !given) return false
@@ -50,7 +53,8 @@ export async function POST(request: Request) {
   for (const path of valid) revalidatePath(path)
 
   const collection = typeof body.collection === 'string' ? body.collection : null
-  const known = collection && collection in CONTENT_COLLECTIONS
+  // The content collections, and industries and industry topics (utilities/industries.ts).
+  const known = collection && (collection in CONTENT_COLLECTIONS || TAGGED.includes(collection))
   if (known) revalidateTag(`content-${collection}`, 'max')
 
   return json({ revalidated: valid, ...(known ? { tag: `content-${collection}` } : {}) }, 200)

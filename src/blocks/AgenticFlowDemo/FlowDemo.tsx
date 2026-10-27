@@ -27,11 +27,13 @@ const isExternal = (href: string) => /^https?:\/\//.test(href)
  */
 export const FlowDemo: React.FC<
   Pick<AgenticFlowDemoProps, 'heading' | 'intro' | 'events' | 'footnote'> & {
+    /** The small line above the heading (an industry topic's agents section). */
+    eyebrow?: string | null
     design: Design
     /** By event id. */
     links?: Record<string, EventLink>
   }
-> = ({ heading, intro, events, footnote, design: d, links = {} }) => {
+> = ({ eyebrow, heading, intro, events, footnote, design: d, links = {} }) => {
   const list: DemoEvent[] = (events || []).filter((e) => e && e.label)
 
   const [active, setActive] = useState(d.startIndex < list.length ? d.startIndex : 0)
@@ -68,6 +70,7 @@ export const FlowDemo: React.FC<
       <style>{flowCss}</style>
 
       <div className="wrap ncx-container">
+        {eyebrow ? <p className="sec-eyebrow">{eyebrow}</p> : null}
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

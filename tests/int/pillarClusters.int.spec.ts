@@ -10,6 +10,9 @@ vi.mock('next/headers', () => ({ draftMode: async () => ({ isEnabled: false }) }
 // The page body pulls in every block; the routes are checked by what they hand it.
 vi.mock('@/components/PageView', () => ({ PageView: () => null }))
 vi.mock('@/components/PayloadRedirects', () => ({ PayloadRedirects: () => null }))
+// The routes also serve industries (IndustryEntryPage), whose blocks include the
+// code block's copy button, with admin styles this runner cannot read.
+vi.mock('@/blocks/Code/CopyButton', () => ({ CopyButton: () => null }))
 const moved: string[] = []
 vi.mock('next/navigation', () => ({
   permanentRedirect: (to: string) => {

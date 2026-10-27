@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react'
 
 import type { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
+import type { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
 import type { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import type { StatHeroBlock } from '@/blocks/StatHero/Component'
 import type { MicroApp } from '@/payload-types'
@@ -16,11 +17,13 @@ import { isPublicEntry } from '@/utilities/content'
  * - conversation: ConversationHero (chat, chips, chain as workflow steps, stats)
  * - rightPlacement: HeroRightPlacement (picture on the right, motion)
  * - stats: StatHero (2 to 4 stats)
+ * - customCss: HeroCustom (the entry's own HTML and CSS visual, sanitised and
+ *   sealed exactly as on the page block)
  */
 
-export type HeroDesign = 'conversation' | 'rightPlacement' | 'stats'
+export type HeroDesign = 'conversation' | 'rightPlacement' | 'stats' | 'customCss'
 
-const DESIGNS: HeroDesign[] = ['conversation', 'rightPlacement', 'stats']
+const DESIGNS: HeroDesign[] = ['conversation', 'rightPlacement', 'stats', 'customCss']
 
 /** The entry's design; an entry saved before the field existed draws the conversation hero. */
 export const heroDesignOf = (doc: { heroDesign?: string | null }): HeroDesign =>
@@ -45,6 +48,7 @@ export type HeroInput = {
 type ConversationProps = ComponentProps<typeof ConversationHeroBlock>
 type RightPlacementProps = ComponentProps<typeof HeroRightPlacementBlock>
 type StatsProps = ComponentProps<typeof StatHeroBlock>
+type CustomProps = ComponentProps<typeof HeroCustomBlock>
 
 const shared = ({ entry, groupName }: HeroInput) => ({
   eyebrow: entry.heroEyebrow || groupName || null,
@@ -140,5 +144,34 @@ export const toStatsHero = (input: HeroInput): StatsProps => {
     secondaryLabel: secondary?.label ?? null,
     secondaryLink: secondary?.href ?? null,
     stats: statsOf(entry),
+  }
+}
+
+/**
+ * The Custom CSS visual design: the Hero (custom CSS) block with the entry's
+ * eyebrow, heading, subheading, chips and buttons, and its visual on the
+ * right, on the light stage. The block sanitises the HTML and CSS
+ * (HeroCustom/safety.ts) and seals the visual, as on pages.
+ */
+export const toCustomHero = (input: HeroInput): CustomProps => {
+  const { entry, primary } = input
+  const secondary = secondaryOf(entry)
+  const button = (b: HeroButton | null) => (b ? { label: b.label, type: 'custom' as const, url: b.href } : undefined)
+  return {
+    blockType: 'heroCustom',
+    ...shared(input),
+    primaryCta: button(primary),
+    secondaryCta: button(secondary),
+    chips: chipsOf(entry),
+    visualPosition: 'right',
+    split: '50',
+    height: 'natural',
+    phoneVisual: 'below',
+    background: 'cloud',
+    visualHtml: entry.visualHtml ?? null,
+    visualCss: entry.visualCss ?? null,
+    visualAlt: entry.visualAlt ?? null,
+    aspect: entry.aspect ?? 'auto',
+    maxWidth: entry.maxWidth ?? null,
   }
 }

@@ -8,7 +8,7 @@ import { getEntries } from '@/utilities/content'
 import { AgentFeatures } from './AgentFeatures'
 import { resolveDesign } from './design'
 import { eventLinks } from './eventLinks'
-import { chosenIndustries, featureFamilies } from './featureData'
+import { chosenIndustries, featureFamilies, type FeatureFamily } from './featureData'
 import { FlowDemo } from './FlowDemo'
 
 /**
@@ -18,6 +18,32 @@ import { FlowDemo } from './FlowDemo'
  * every agent is in the page's HTML; a draft preview reads their latest
  * drafts. Both modes take the Design tab's options (design.ts).
  */
+/**
+ * Agent features mode's families with their shown agents: the block's picks,
+ * limited to its chosen industries when there are any. Also read by the
+ * industry page's agents section (components/industry/IndustrySections.tsx).
+ */
+export const loadAgentFamilies = async (
+  props: Pick<AgenticFlowDemoProps, 'families' | 'agentsFor' | 'industries'>,
+  draft: boolean,
+): Promise<FeatureFamily[]> => {
+  const [lists, agents] = await Promise.all([
+    getMany<List>(
+      'lists',
+      {
+        'where[type][equals]': 'agentFamily',
+        ...(draft ? { draft: 'true' } : { 'where[_status][equals]': 'published' }),
+        sort: 'order',
+        limit: 50,
+        depth: 0,
+      },
+      { tags: [CMS_TAG, 'content', 'content-microApps'], draft },
+    ),
+    getEntries('microApps', { depth: 0 }, draft) as Promise<MicroApp[]>,
+  ])
+  return featureFamilies(props.families, lists, agents, chosenIndustries(props))
+}
+
 export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
   const draft = (await draftMode()).isEnabled
 
@@ -35,26 +61,10 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
     )
   }
 
-  const [lists, agents] = await Promise.all([
-    getMany<List>(
-      'lists',
-      {
-        'where[type][equals]': 'agentFamily',
-        ...(draft ? { draft: 'true' } : { 'where[_status][equals]': 'published' }),
-        sort: 'order',
-        limit: 50,
-        depth: 0,
-      },
-      { tags: [CMS_TAG, 'content', 'content-microApps'], draft },
-    ),
-    getEntries('microApps', { depth: 0 }, draft) as Promise<MicroApp[]>,
-  ])
-
   // "Show agents for" Chosen industries: only agents used in one of them.
   // With industries chosen and no agent to show, the block is not drawn.
-  const industries = chosenIndustries(props)
-  const families = featureFamilies(props.families, lists, agents, industries)
-  if (industries.length && !families.length) return null
+  const families = await loadAgentFamilies(props, draft)
+  if (chosenIndustries(props).length && !families.length) return null
 
   return (
     <AgentFeatures

@@ -18,13 +18,14 @@ import { featuresCss, flowCss } from './styles'
  * line, buttons and panel; with nothing set it draws as it always has.
  */
 export const AgentFeatures: React.FC<{
+  eyebrow?: string | null
   heading: string
   intro?: string | null
   families: FeatureFamily[]
   pickFamilyLabel: string
   pickAgentLabel: string
   design: Design
-}> = ({ heading, intro, families, pickFamilyLabel, pickAgentLabel, design: d }) => {
+}> = ({ eyebrow, heading, intro, families, pickFamilyLabel, pickAgentLabel, design: d }) => {
   const [familyAt, setFamilyAt] = useState(0)
   const [agentAt, setAgentAt] = useState(0)
 
@@ -36,6 +37,7 @@ export const AgentFeatures: React.FC<{
       <style>{featuresCss}</style>
 
       <div className="wrap ncx-container">
+        {eyebrow ? <p className="sec-eyebrow">{eyebrow}</p> : null}
         <h2>{heading}</h2>
         {intro ? <p className="sec-sub">{intro}</p> : null}
 

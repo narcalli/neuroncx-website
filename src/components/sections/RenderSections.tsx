@@ -10,7 +10,8 @@ import {
   sectionKeyOf,
   type ContentCollectionSlug,
 } from '@/content/registry'
-import type { Hub, Page } from '@/payload-types'
+import { EntrySectionBand, ownSectionKey } from '@/components/industry/EntrySectionBand'
+import type { Hub, IndustryTopic, Page, Sector } from '@/payload-types'
 import { paragraph } from '@/utilities/cmsValues'
 import type { ContentEntry } from '@/utilities/content'
 
@@ -27,8 +28,11 @@ import {
 import { HubArticles, HubIndustries, HubIntro, HubLayers, HubSteps, HubTrust, HubWorksWith } from './HubSections'
 import { SectionStyles } from './SectionShell'
 
+/** The collections whose pages RenderSections draws: the content collections, industries and industry topics. */
+export type SectionCollection = ContentCollectionSlug | 'sectors' | 'industryTopics'
+
 export type SectionContext = {
-  collection: ContentCollectionSlug
+  collection: SectionCollection
   hub: Hub | null
   /** The entry the page is about. Absent on a hub page. */
   entry?: ContentEntry
@@ -61,7 +65,7 @@ export const sectionHeading = (key: string, block: Block, ctx: SectionContext): 
   const template =
     block.heading?.trim() ||
     hubLabel ||
-    CONTENT_COLLECTIONS[ctx.collection].headings[key] ||
+    CONTENT_COLLECTIONS[ctx.collection as ContentCollectionSlug]?.headings[key] ||
     SECTION_HEADINGS[key] ||
     ''
   return fillHeading(template, ctx.tokens)
@@ -87,7 +91,7 @@ const renderSection = (key: string, block: Block, index: number, ctx: SectionCon
     case 'hubLayers':
       return <HubLayers id={id} heading={heading} block={b} draft={ctx.draft} />
     case 'hubWorksWith':
-      return <HubWorksWith id={id} heading={heading} block={b} collection={ctx.collection} draft={ctx.draft} />
+      return <HubWorksWith id={id} heading={heading} block={b} collection={ctx.collection as ContentCollectionSlug} draft={ctx.draft} />
     case 'hubIndustries':
       return <HubIndustries id={id} heading={heading} block={b} />
     case 'hubTrust':
@@ -157,6 +161,18 @@ export const RenderSections: React.FC<{ blocks: readonly unknown[]; ctx: Section
       const reactKey = block.id || `${block.blockType}-${index}`
       if (!key) {
         return <RenderBlocks key={reactKey} blocks={[block as unknown as Page['layout'][0]]} />
+      }
+      // Industry and industry topic sections fetch what they show, and draw their own band.
+      if (ownSectionKey(block.blockType) && ctx.entry) {
+        return (
+          <EntrySectionBand
+            key={reactKey}
+            block={block}
+            entry={ctx.entry as unknown as Sector | IndustryTopic}
+            index={index}
+            draft={Boolean(ctx.draft)}
+          />
+        )
       }
       const content = renderSection(key, block, index, ctx)
       if (!content) return null

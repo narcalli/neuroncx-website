@@ -9,7 +9,12 @@ import { pagePathOf } from '@/utilities/pages'
 
 export type ClusterPage = Pick<Page, 'id' | 'title' | 'slug' | 'parent' | 'breadcrumbs' | 'meta' | 'stage' | 'stageOrder'> & {
   _status?: Page['_status']
+  /** The address of an entry that is not a page, such as an industry topic. */
+  href?: string | null
 }
+
+/** Where a cluster entry links to: its own address, else its page's. */
+export const clusterHref = (page: ClusterPage): string | null => page.href || pagePathOf(page)
 
 /** One page in the cluster, with the stage it is listed under. */
 export type ClusterEntry = { page: ClusterPage; stage: string | null; stageOrder: number | null }
@@ -48,7 +53,7 @@ export const clusterGroups = (entries: ClusterEntry[]): StageGroup[] => {
     const id = String(e.page.id)
     if (seen.has(id)) return false
     seen.add(id)
-    return Boolean(pagePathOf(e.page))
+    return Boolean(clusterHref(e.page))
   })
   const sorted = [...unique].sort(
     (a, b) => orderOf(a.stageOrder) - orderOf(b.stageOrder) || a.page.title.localeCompare(b.page.title),
@@ -75,20 +80,21 @@ export const nextStage = (page: ClusterPage, siblings: ClusterPage[]): ClusterPa
   const own = orderOf(page.stageOrder)
   if (own === Infinity) return null
   const later = siblings
-    .filter((s) => String(s.id) !== String(page.id) && orderOf(s.stageOrder) > own && pagePathOf(s))
+    .filter((s) => String(s.id) !== String(page.id) && orderOf(s.stageOrder) > own && clusterHref(s))
     .sort((a, b) => orderOf(a.stageOrder) - orderOf(b.stageOrder) || a.title.localeCompare(b.title))
   return later[0] ?? null
 }
 
 /**
  * The "Back to" link of a cluster page: its pillar's address, named by the
- * pillar's primary keyword, else its title. Read from the pillar record when
+ * pillar's primary keyword, else its title. An industry topic's pillar is
+ * its industry (components/industry/TopicFooter.tsx). Read from the pillar record when
  * it arrived whole, else from the page's stored breadcrumbs.
  */
 export const backLinkOf = (page: ClusterPage): { href: string; label: string } | null => {
   const pillar = page.parent && typeof page.parent === 'object' ? page.parent : null
   const crumb = page.breadcrumbs?.length && page.breadcrumbs.length > 1 ? page.breadcrumbs[0] : null
-  const href = (pillar && pagePathOf(pillar)) || (crumb?.url ?? null)
+  const href = (pillar && clusterHref(pillar as ClusterPage)) || (crumb?.url ?? null)
   const label = pillar?.meta?.primaryKeyword?.trim() || pillar?.title?.trim() || crumb?.label?.trim() || null
   return href && label ? { href, label } : null
 }

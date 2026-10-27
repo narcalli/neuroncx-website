@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
+import { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import { StatHeroBlock } from '@/blocks/StatHero/Component'
 import { Breadcrumbs, type Crumb } from '@/components/Breadcrumbs'
@@ -9,6 +10,7 @@ import {
   heroDesignOf,
   toConversationHero,
   toRightPlacementHero,
+  toCustomHero,
   toStatsHero,
   type HeroInput,
 } from './entryHeroAdapters'
@@ -39,5 +41,6 @@ export const EntryHero: React.FC<HeroInput & { bar: React.ReactNode }> = ({ bar,
   const design = heroDesignOf(input.entry)
   if (design === 'rightPlacement') return <HeroRightPlacementBlock {...toRightPlacementHero(input)} leading={bar} />
   if (design === 'stats') return <StatHeroBlock {...toStatsHero(input)} leading={bar} />
+  if (design === 'customCss') return <HeroCustomBlock {...toCustomHero(input)} leading={bar} />
   return <ConversationHeroBlock {...toConversationHero(input)} crumbs={bar} />
 }

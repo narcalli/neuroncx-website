@@ -35,7 +35,13 @@ const Button: React.FC<{ cta: LinkGroup | undefined; kind: 'primary' | 'ghost' }
  * layout. The visual is the editor's own HTML and CSS, drawn in a sealed box
  * (ShadowVisual) beside, below or behind the text.
  */
-export const HeroCustomBlock: React.FC<HeroCustomProps & { leading?: React.ReactNode }> = ({
+export const HeroCustomBlock: React.FC<
+  HeroCustomProps & {
+    leading?: React.ReactNode
+    /** Short labels under the subhead. Entry pages pass their hero chips; the page block has none. */
+    chips?: { label: string }[] | null
+  }
+> = ({
   eyebrow,
   headline,
   subhead,
@@ -52,6 +58,7 @@ export const HeroCustomBlock: React.FC<HeroCustomProps & { leading?: React.React
   aspect,
   maxWidth,
   leading,
+  chips,
 }) => {
   const html = safeVisualHtml(visualHtml)
   const css = safeVisualCss(visualCss)
@@ -86,6 +93,13 @@ export const HeroCustomBlock: React.FC<HeroCustomProps & { leading?: React.React
             {eyebrow ? <p className="hcx-eyebrow">{eyebrow}</p> : null}
             <h1>{headline}</h1>
             {subhead ? <p className="hcx-sub">{subhead}</p> : null}
+            {chips?.length ? (
+              <ul className="hcx-chips">
+                {chips.map((c, i) => (
+                  <li key={i}>{c.label}</li>
+                ))}
+              </ul>
+            ) : null}
             {(hrefOf(primaryCta) && primaryCta?.label) || (hrefOf(secondaryCta) && secondaryCta?.label) ? (
               <div className="hcx-cta">
                 <Button cta={primaryCta} kind="primary" />
@@ -132,6 +146,10 @@ const heroCss = `
   .ncx-hcx h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(36px,4.6vw,60px);line-height:1.06;
     letter-spacing:-.025em;margin:0;max-width:var(--ncx-heading-max);color:var(--hcx-ink)}
   .ncx-hcx .hcx-sub{margin:22px 0 0;max-width:52ch;font-size:clamp(16px,1.3vw,19px);line-height:1.65;color:var(--hcx-muted)}
+  .ncx-hcx .hcx-chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+  .ncx-hcx .hcx-chips li{padding:6px 12px;border:1px solid var(--ncx-rule);border-radius:999px;background:var(--ncx-white);
+    font-family:var(--font-display),Arial,sans-serif;font-size:13px;font-weight:500;line-height:1.3;color:var(--ncx-ink)}
+  .ncx-hcx[data-bg="navy"] .hcx-chips li{border-color:var(--ncx-on-navy-rule);background:var(--ncx-on-navy-raise);color:var(--ncx-on-navy)}
   .ncx-hcx .hcx-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
   .ncx-hcx .hcx-btn{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;display:inline-flex;align-items:center;
     padding:13px 22px;border-radius:12px;text-decoration:none;transition:transform .15s ease,background .15s ease}

@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 
-import { backLinkOf, nextStage, type ClusterPage } from '@/utilities/clusters'
-import { pagePathOf } from '@/utilities/pages'
+import { backLinkOf, clusterHref, nextStage, type ClusterPage } from '@/utilities/clusters'
 
 /**
  * The foot of a cluster page: back to its pillar page, and on to the page
@@ -12,7 +11,7 @@ import { pagePathOf } from '@/utilities/pages'
 export const ClusterFooter: React.FC<{ page: ClusterPage; siblings: ClusterPage[] }> = ({ page, siblings }) => {
   const back = backLinkOf(page)
   const next = nextStage(page, siblings)
-  const nextHref = next ? pagePathOf(next) : null
+  const nextHref = next ? clusterHref(next) : null
   if (!back && !(next && nextHref)) return null
 
   return (

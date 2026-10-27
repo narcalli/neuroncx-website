@@ -4,8 +4,11 @@ import { draftMode } from 'next/headers'
 import { permanentRedirect } from 'next/navigation'
 import React from 'react'
 
+import { buildTrail } from '@/components/Breadcrumbs'
+import { entryMetadata, IndustryEntryPage, trailPageOf } from '@/components/industry/IndustryEntryPage'
 import { PageView } from '@/components/PageView'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getIndustryByPath } from '@/utilities/industries'
 import { isCluster, pagePathOf, queryPageBySlug } from '@/utilities/pages'
 
 export const dynamic = 'force-dynamic'
@@ -17,9 +20,10 @@ type Args = {
 }
 
 /**
- * A CMS page at /{slug}. A cluster page lives under its pillar, so asking for
- * it by its bare slug moves permanently to /{pillar}/{slug}
- * (./[cluster]/page.tsx).
+ * /{slug}: a CMS page first, then an industry (CMS sectors) whose page is
+ * here, then a redirect from this address, then not found. A cluster page
+ * lives under its pillar, so asking for it by its bare slug moves
+ * permanently to /{pillar}/{slug} (./[cluster]/page.tsx).
  */
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
@@ -31,6 +35,17 @@ export default async function Page({ params: paramsPromise }: Args) {
   const page = await queryPageBySlug(decodedSlug)
 
   if (!page) {
+    const industry = await getIndustryByPath(url, draft)
+    if (industry) {
+      return (
+        <IndustryEntryPage
+          collection="sectors"
+          entry={industry}
+          trail={buildTrail({ page: trailPageOf(industry, 'sectors', draft) })}
+          draft={draft}
+        />
+      )
+    }
     return <PayloadRedirects url={url} />
   }
 
@@ -47,6 +62,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug(decodedSlug)
+  if (!page) {
+    const industry = await getIndustryByPath(`/${decodedSlug}`, (await draftMode()).isEnabled)
+    if (industry) return entryMetadata(industry)
+  }
 
   return generateMeta({ doc: page, path: pagePathOf(page) ?? (decodedSlug === 'home' ? '/' : `/${decodedSlug}`) })
 }

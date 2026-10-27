@@ -5,14 +5,24 @@ import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign, type SavedCardDesign } from '@/components/cards/defaults'
 import { initialOf, type CardItem } from '@/components/cards/types'
 import type { ClusterLinksBlock as ClusterLinksProps } from '@/payload-types'
-import { clusterGroups, loadClusterPages, type ClusterEntry, type ClusterPage } from '@/utilities/clusters'
-import { pagePathOf } from '@/utilities/pages'
+import { clusterGroups, clusterHref, loadClusterPages, type ClusterEntry, type ClusterPage } from '@/utilities/clusters'
 
 type Props = Omit<ClusterLinksProps, 'cardDesign'> & {
   cardDesign?: SavedCardDesign | null
   /** The page the block sits on (RenderBlocks): its cluster pages are listed. */
   pageId?: string | null
+  /** Entries listed with them, such as an industry's topics (components/industry/IndustrySections.tsx). */
+  items?: ClusterEntry[] | null
 }
+
+/** The block's extra pages that can be listed: outside draft mode, published ones only. */
+export const extraEntries = (extraPages: ClusterLinksProps['extraPages'], draft: boolean): ClusterEntry[] =>
+  (extraPages || []).flatMap((row) => {
+    const page = row?.page
+    if (!page || typeof page !== 'object') return []
+    if (!draft && page._status && page._status !== 'published') return []
+    return [{ page: page as ClusterPage, stage: row.stage ?? null, stageOrder: row.stageOrder ?? null }]
+  })
 
 /**
  * Cluster links: a card for every page under the page this block sits on,
@@ -20,19 +30,14 @@ type Props = Omit<ClusterLinksProps, 'cardDesign'> & {
  * only; in draft mode the latest drafts. Not drawn when there is nothing to list.
  */
 export const ClusterLinksBlock = async (props: Props) => {
-  const { eyebrow, heading, intro, extraPages, cardDesign, pageId } = props
+  const { eyebrow, heading, intro, extraPages, cardDesign, pageId, items } = props
   const { isEnabled: draft } = await draftMode()
 
   const children = pageId ? await loadClusterPages(pageId, draft) : []
-  const extras: ClusterEntry[] = (extraPages || []).flatMap((row) => {
-    const page = row?.page
-    if (!page || typeof page !== 'object') return []
-    // Outside draft mode only published pages are listed.
-    if (!draft && page._status && page._status !== 'published') return []
-    return [{ page: page as ClusterPage, stage: row.stage ?? null, stageOrder: row.stageOrder ?? null }]
-  })
+  const extras = extraEntries(extraPages, draft)
   const groups = clusterGroups([
     ...children.map((page) => ({ page, stage: page.stage ?? null, stageOrder: page.stageOrder ?? null })),
+    ...(items ?? []),
     ...extras,
   ])
   if (!groups.length) return null
@@ -44,7 +49,7 @@ export const ClusterLinksBlock = async (props: Props) => {
     title: page.title,
     text: page.meta?.description || null,
     initial: initialOf(page.title),
-    href: pagePathOf(page),
+    href: clusterHref(page),
     linkLabel: settings.linkLabel,
   })
 

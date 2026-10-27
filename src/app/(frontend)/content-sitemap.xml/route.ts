@@ -1,10 +1,12 @@
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
 import { getEntries, getHub, siteOrigin } from '@/utilities/content'
+import { getIndustryPages } from '@/utilities/industries'
 
 /**
  * The sitemap for content collections: every entry page (published, Live or
  * Pilot, Own page on) and every hub that serves its route base. A hub that
- * is still a preview is left out. Listed in robots.txt by
+ * is still a preview is left out. Then every industry and industry topic
+ * page (published, Live or Pilot, Own page on), at its stored path. Listed in robots.txt by
  * next-sitemap.config.cjs.
  */
 
@@ -28,6 +30,12 @@ export async function GET(request: Request) {
     const entries = await getEntries(collection, { 'where[hasOwnPage][equals]': true, depth: 0 })
     for (const e of entries) {
       if (e.slug) urls.push({ loc: `${origin}${info.route}/${e.slug}`, lastmod: e.updatedAt })
+    }
+  }
+
+  for (const collection of ['sectors', 'industryTopics'] as const) {
+    for (const e of await getIndustryPages(collection)) {
+      if (e.path) urls.push({ loc: `${origin}${e.path}`, lastmod: e.updatedAt })
     }
   }
 

@@ -5,6 +5,8 @@ type LogoItem = {
   logo?: any
   scale?: number | null
   id?: string | null
+  /** Where the logo links to, such as the integration's own page. None: not a link. */
+  href?: string | null
 }
 
 type Props = {
@@ -14,6 +16,16 @@ type Props = {
   display?: 'wordmarks' | 'logos' | null
   logos?: LogoItem[] | null
 }
+
+/** A logo's cell: a link when it has somewhere to go. */
+const Cell: React.FC<{ href?: string | null; children: React.ReactNode }> = ({ href, children }) =>
+  href ? (
+    <a className="cell" href={href}>
+      {children}
+    </a>
+  ) : (
+    <div className="cell">{children}</div>
+  )
 
 export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display, logos }) => {
   const asText = display !== 'logos'
@@ -40,6 +52,9 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
           gap:20px;align-items:center;justify-content:space-between}
         .ncx-logowall .cell{flex:1 1 0;min-width:0;
           display:flex;align-items:center;justify-content:center;height:44px}
+        .ncx-logowall a.cell{text-decoration:none;border-radius:6px}
+        .ncx-logowall a.cell:focus-visible{outline:2px solid var(--ncx-crimson);outline-offset:4px}
+        .ncx-logowall a.cell:hover img{filter:none;opacity:1}
         .ncx-logowall img{width:auto;max-width:100%;object-fit:contain;display:block;
           filter:grayscale(1);opacity:.7;mix-blend-mode:multiply;transition:opacity .2s,filter .2s}
         .ncx-logowall img:hover{filter:none;opacity:1}
@@ -63,22 +78,22 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
           {items.map((l, i) => {
             if (asText) {
               return (
-                <div className="cell" key={l.id || i}>
+                <Cell href={l.href} key={l.id || i}>
                   <span className="wordmark">{l.name}</span>
-                </div>
+                </Cell>
               )
             }
 
             const pct = typeof l.scale === 'number' && l.scale > 0 ? l.scale : 100
             return (
-              <div className="cell" key={l.id || i}>
+              <Cell href={l.href} key={l.id || i}>
                 <img
                   src={l.logo.url}
                   alt={l.name || l.logo.alt || ''}
                   loading="lazy"
                   style={{ height: `${pct}%`, maxHeight: '100%' }}
                 />
-              </div>
+              </Cell>
             )
           })}
         </div>

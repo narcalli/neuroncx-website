@@ -10,6 +10,7 @@ export const flowCss = `
         .ncx-flow{padding:84px 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-flow h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(1.55rem,3.4vw,2.2rem);
           max-width:var(--ncx-heading-max);letter-spacing:-.01em;margin:0;color:var(--ncx-ink)}
+        .ncx-flow .sec-eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;margin:0 0 12px;color:var(--ncx-crimson-ink)}
         .ncx-flow .sec-sub{max-width:62ch;margin-top:18px;color:var(--ncx-muted)}
         .ncx-flow .lab-box{margin-top:44px;border-radius:18px;padding:22px;background:var(--fd-panel-bg,var(--ncx-cloud));
           border:var(--fd-panel-border,1px solid var(--ncx-rule))}
