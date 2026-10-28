@@ -7,6 +7,8 @@ import { FAQBlock } from '@/blocks/FAQ/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { IntegrationsMarqueeBlock } from '@/components/blocks/IntegrationsMarquee/IntegrationsMarquee'
 import type { SavedCardDesign } from '@/components/cards/defaults'
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
 import { CMS_TAG, getMany } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { pickMedia, type MediaValue } from '@/utilities/media'
@@ -274,7 +276,7 @@ export const IntegrationsLandingBlock: React.FC<
       {m.fiveThings?.length ? (
         <section className="ncx-ihub__section">
           <div className="ncx-container">
-            <h2>{m.fiveThingsHeading || 'What connecting your systems gives you'}</h2>
+            <SplitHeading as="h2">{m.fiveThingsHeading || 'What connecting your systems gives you'}</SplitHeading>
             <ol className="ncx-ihub__five">
               {m.fiveThings.map((t, i) => (
                 <li key={t.id || i}>
@@ -291,7 +293,7 @@ export const IntegrationsLandingBlock: React.FC<
       {m.whenFeedsGoWrong?.length ? (
         <section className="ncx-ihub__section ncx-ihub__wrong">
           <div className="ncx-container">
-            <h2>{m.whenFeedsGoWrongHeading || 'When feeds go wrong'}</h2>
+            <SplitHeading as="h2">{m.whenFeedsGoWrongHeading || 'When feeds go wrong'}</SplitHeading>
             <dl className="ncx-ihub__rows">
               {m.whenFeedsGoWrong.map((r, i) => (
                 <div className="ncx-ihub__row" key={r.id || i}>
@@ -309,8 +311,8 @@ export const IntegrationsLandingBlock: React.FC<
           <div className="ncx-container">
             <div className="ncx-ihub__api">
               <div>
-                <h2>{m.apiCard.heading}</h2>
-                {m.apiCard.line ? <p>{m.apiCard.line}</p> : null}
+                <SplitHeading as="h2">{m.apiCard.heading}</SplitHeading>
+                {m.apiCard.line ? <Reveal as="p">{m.apiCard.line}</Reveal> : null}
               </div>
               {apiHref ? (
                 <Link className="btn ghost" href={apiHref}>

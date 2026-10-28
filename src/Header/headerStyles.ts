@@ -71,7 +71,19 @@ export const headerCss = `
   position:sticky;top:env(safe-area-inset-top,0px);z-index:60;
   height:64px;flex:none;margin-bottom:-64px;
   font-family:var(--font-body),Arial,sans-serif;
+  border-bottom:1px solid transparent;box-shadow:none;
+  transition:border-color .25s,transform .3s cubic-bezier(.22,1,.36,1);
 }
+/* Past 8px of scroll (prompt 4): the glass veil gives way to a solid white
+   bar with a hairline and a soft shadow. Riding a dark section keeps the
+   veil instead, so the white bar never fights the dark text over it. */
+.ncx-nav.is-stuck:not(.on-dark){
+  border-bottom-color:var(--hdr-line);box-shadow:var(--hdr-shadow);
+}
+.ncx-nav.is-stuck:not(.on-dark)::before{background:var(--hdr-surface)}
+/* Past 240px, sliding down hides the bar; scrolling up, opening a menu or
+   the drawer, or focus landing inside it (headerScroll.ts) brings it back. */
+.ncx-nav.is-hidden{transform:translateY(-100%)}
 /* The veil: a blur with a light tint, masked so it is solid across the bar and
    feathers out below it. That soft bottom edge is the whole trick — it reads
    as haze over the page rather than as a bar sitting on top of it. */
@@ -121,13 +133,22 @@ export const headerCss = `
 .ncx-mark__img{width:30px;height:30px;border-radius:50%;object-fit:contain;flex:none;display:block}
 
 .ncx-nav__links{display:flex;align-items:center;margin-inline:auto}
-.ncx-navitem{position:static}
+.ncx-navitem{position:relative}
 .ncx-navlink{
+  position:relative;z-index:1;
   display:flex;align-items:center;gap:5px;height:40px;padding:0 15px;
   font-family:var(--font-body),Arial,sans-serif;font-size:14px;
   color:var(--hdr-ink);text-decoration:none;
   background:none;border:0;cursor:pointer;border-radius:8px;
 }
+/* The pill that slides between nav items on hover (point 3, prompt 4): one
+   shared element (layoutId in Component.client.tsx), so moving the mouse
+   from one item to the next slides it rather than fading a new one in. */
+.ncx-navpill{
+  position:absolute;inset:4px 2px;z-index:0;border-radius:8px;
+  background:var(--hdr-hover);
+}
+.ncx-nav.on-dark .ncx-navpill{background:rgba(255,255,255,.14)}
 .ncx-navlink:hover{color:var(--hdr-teal)}
 .ncx-navlink svg{width:10px;height:10px;opacity:.5;transition:transform .2s}
 .ncx-navitem.is-open .ncx-navlink{background:var(--hdr-surface);box-shadow:0 0 0 1px var(--hdr-line)}
@@ -172,6 +193,18 @@ export const headerCss = `
    narrower than its longest word. */
 .ncx-mega__group{flex:0 1 auto;min-width:min-content}
 .ncx-mega__group + .ncx-mega__group{margin-left:10px;padding-left:10px;border-left:1px solid var(--hdr-line-soft)}
+/* Columns following 50ms apart (point 4, prompt 4): each starts a little
+   below and faded out, then drops into place; --i (set in MegaMenu.tsx) is
+   its place in the stagger. The delay is reset to 0 outside .is-open, so
+   closing never waits for it. */
+.ncx-mega__group,.ncx-mega__feature{
+  opacity:0;transform:translateY(-6px);transition-delay:0s;
+  transition:opacity .18s ease,transform .18s ease;
+}
+.ncx-navitem.is-open .ncx-mega__group,
+.ncx-navitem.is-open .ncx-mega__feature{
+  opacity:1;transform:none;transition-delay:calc(var(--i,0) * 50ms);
+}
 .ncx-mega__eyebrow{
   margin:6px 12px 4px;
   font-family:var(--font-label),'IBM Plex Mono',monospace;
@@ -222,7 +255,7 @@ a.ncx-mega__feature:hover{background:var(--hdr-crimson-tint)}
 /* Reduced motion: the panel appears in place, no slide (the rule at the end
    of this sheet also drops the fade). */
 @media (prefers-reduced-motion:reduce){
-  .ncx-mega{transform:none}
+  .ncx-mega,.ncx-mega__group,.ncx-mega__feature{transform:none}
 }
 
 /* ---------- layer behind an open menu ---------- */
@@ -309,8 +342,17 @@ body.ncx-menu-open .ncx-scrim{visibility:visible}
   padding-top:env(safe-area-inset-top,0px);
   background:var(--hdr-surface);color:var(--hdr-ink);
   font-family:var(--font-body),Arial,sans-serif;
+  /* Slides in from the right (point 5, prompt 4). Kept in the DOM (inert
+     when closed, Component.client.tsx) rather than unmounted with [hidden],
+     so there is something to slide; visibility only flips once the slide
+     out has finished, so it stops taking clicks and the tab order right away. */
+  transform:translateX(100%);visibility:hidden;pointer-events:none;
+  transition:transform .32s cubic-bezier(.22,1,.36,1),visibility 0s .32s;
 }
-.ncx-drawer[hidden]{display:none}
+.ncx-drawer.is-open{
+  transform:none;visibility:visible;pointer-events:auto;
+  transition:transform .32s cubic-bezier(.22,1,.36,1),visibility 0s;
+}
 @media (min-width:901px){
   .ncx-drawer{display:none}
 }
@@ -334,6 +376,15 @@ body.ncx-menu-open .ncx-scrim{visibility:visible}
 .ncx-drawer__body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .ncx-drawer__list{list-style:none;margin:0;padding:0}
 .ncx-drawer__item + .ncx-drawer__item{border-top:1px solid var(--hdr-line)}
+/* Links following 40ms apart as the drawer opens (point 5, prompt 4); --i
+   (set in Component.client.tsx) is each row's place in the stagger. */
+.ncx-drawer__item{
+  opacity:0;transform:translateX(12px);transition-delay:0s;
+  transition:opacity .22s ease,transform .22s ease;
+}
+.ncx-drawer.is-open .ncx-drawer__item{
+  opacity:1;transform:none;transition-delay:calc(var(--i,0) * 40ms);
+}
 .ncx-drawer__row{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   width:100%;min-height:56px;padding:0 clamp(18px,5vw,28px);

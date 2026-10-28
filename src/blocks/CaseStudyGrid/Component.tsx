@@ -6,6 +6,8 @@ import { customerHref, publicCustomerQuery, publicCustomers, sectorIds } from '@
 import type { CaseStudyGridBlock as CaseStudyGridProps, Customer } from '@/payload-types'
 
 import { CaseCard, caseArtVars, caseCardCss } from './CaseCard'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 const MAX_CARDS = 6
 
@@ -59,9 +61,9 @@ ${caseCardCss}`}</style>
       <div className="ncx-cs__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header className="ncx-cs__head">
-            {eyebrow ? <p className="ncx-cs__eyebrow">{eyebrow}</p> : null}
-            {heading ? <h2 className="ncx-cs__heading">{heading}</h2> : null}
-            {intro ? <p className="ncx-cs__intro">{intro}</p> : null}
+            {eyebrow ? <Reveal as="p" from="left" className="ncx-cs__eyebrow">{eyebrow}</Reveal> : null}
+            {heading ? <SplitHeading as="h2" className="ncx-cs__heading">{heading}</SplitHeading> : null}
+            {intro ? <Reveal as="p" className="ncx-cs__intro">{intro}</Reveal> : null}
           </header>
         ) : null}
         <ol className="ncx-cs__grid">

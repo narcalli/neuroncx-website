@@ -4,6 +4,8 @@ import React, { useId, useRef, useState } from 'react'
 
 import { BlockIcon } from '@/components/BlockIcon'
 import type { RecordAnatomyBlock as Props } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Entity = Props['entities'][number]
 
@@ -56,9 +58,9 @@ export const RecordAnatomyBlock: React.FC<Props> = ({
     <section className="ncx-rec">
       <style>{css}</style>
       <div className="ncx-container">
-        {eyebrow ? <p className="rec-eyebrow">{eyebrow}</p> : null}
-        <h2 id={headingId}>{heading}</h2>
-        {intro ? <p className="rec-intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="rec-eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2" id={headingId}>{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="rec-intro">{intro}</Reveal> : null}
 
         <div className="rec-body">
           <div className="rec-tablist" role="tablist" aria-orientation="vertical" aria-labelledby={headingId} onKeyDown={onKeyDown}>

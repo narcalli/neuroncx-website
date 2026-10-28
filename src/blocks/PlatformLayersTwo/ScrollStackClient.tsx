@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import { isStill } from '@/motion/still'
 
 export type ScrollStackItem = {
   key: string
@@ -71,7 +72,7 @@ export const ScrollStackClient: React.FC<Props> = ({ items, showIndicators, chil
   }
 
   const scrollTo = (i: number) => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = isStill(cardRefs.current[i])
     cardRefs.current[i]?.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' })
   }
 

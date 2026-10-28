@@ -5,6 +5,9 @@ import { animate, motion, useInView } from 'motion/react'
 
 import type { AgenticStatsBlock as AgenticStatsProps } from '@/payload-types'
 import { StatValue } from '@/utilities/statValue'
+import { isStill } from '@/motion/still'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Stat = NonNullable<AgenticStatsProps['stats']>[number]
 
@@ -14,7 +17,7 @@ function CountUp({ to, suffix }: { to: number; suffix?: string | null }) {
   const [shown, setShown] = useState(to)
 
   useEffect(() => {
-    if (!inView || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!inView || isStill(ref.current)) return
     const controls = animate(0, to, {
       duration: 1.8,
       ease: 'easeOut',
@@ -59,8 +62,8 @@ export const AgenticStatsBlock: React.FC<AgenticStatsProps> = ({ eyebrow, headin
         @media (prefers-reduced-motion:reduce){.ncx-stats .num.pending{animation:none}}
       `}</style>
       <div className="wrap ncx-container">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        {heading ? <h2>{heading}</h2> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+        {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
         <div className="tiles">
           {list.map((s, i) => (
             <motion.div

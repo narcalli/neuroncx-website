@@ -229,7 +229,7 @@ describe('Agent features mode on the page', () => {
     expect(html).toMatch(/class="node on" style="--acc:var\(--ncx-teal\)[^"]*"><span class="tag">Job</)
     expect(html).toMatch(/class="node on" style="--acc:var\(--ncx-navy\)[^"]*"><span class="tag">Can do</)
     expect(html).toMatch(/class="node ok on" style="--acc:#6B7280[^"]*"><span class="tag">Keeps</)
-    expect(html).toContain('<span class="on">Bot</span><span class="on">Staff</span>')
+    expect(html).toMatch(/<span class="on"[^>]*>Bot<\/span><span class="on"[^>]*>Staff<\/span>/)
   })
 
   it('draws the measured line for the shown agent only when animated', () => {

@@ -7,6 +7,8 @@ import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
 import { familyCard, toBentoCard, toDetailedCard, toSuite2Card, toSuiteProduct } from '@/components/cards/adapters/microApp'
 import { bentoSizes } from '@/components/cards/bentoPattern'
 import { sectionDesignOf, showKeyPointsOf } from '@/components/cards/sectionDesign'
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
 import { groupingCopy } from './hubGroupingsPlacement'
 import { CardSection } from '@/components/cards/CardSection'
 import { mergeCardDesign } from '@/components/cards/defaults'
@@ -146,12 +148,16 @@ export const HubGroupings = async ({
           return (
             <section className="ncx-sec" aria-labelledby={id} key={group.id}>
               <div className="ncx-container">
-                <p className="ncx-sec__eyebrow">{eyebrow}</p>
-                <h2 id={id}>{heading}</h2>
+                <Reveal as="p" from="left" className="ncx-sec__eyebrow">
+                  {eyebrow}
+                </Reveal>
+                <SplitHeading as="h2" id={id}>
+                  {heading}
+                </SplitHeading>
                 {intro ? (
-                  <p className="ncx-sec__intro" style={{ marginTop: 0 }}>
+                  <Reveal as="p" className="ncx-sec__intro" style={{ marginTop: 0 }}>
                     {intro}
-                  </p>
+                  </Reveal>
                 ) : null}
                 <CardSection items={entries.map((e) => familyCard(e, draft))} settings={settings} />
               </div>

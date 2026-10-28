@@ -5,7 +5,6 @@ import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { HowItWorksBlock } from '@/blocks/HowItWorks/Component'
 import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
-import { BlockIcon } from '@/components/BlockIcon'
 import type { ContentCollectionSlug } from '@/content/registry'
 import type {
   HubArticlesSection,
@@ -16,9 +15,13 @@ import type {
   HubWorksWithSection,
   HubIndustriesSection,
 } from '@/payload-types'
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
 import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
 import { entryHref, getEntries, isPublicEntry } from '@/utilities/content'
 
+import { HubLayersStack } from './HubLayersStack'
+import { HubTrustCards } from './HubTrustCards'
 import { SectionShell } from './SectionShell'
 
 /**
@@ -77,6 +80,18 @@ export const HubLayers: React.FC<Base & { block: HubLayersSection; draft?: boole
 }) => {
   const layers = (block.layers ?? []).filter((l) => l?.title)
   if (!layers.length) return null
+  if (block.display === 'stack') {
+    return (
+      <SectionShell id={id} heading={heading} eyebrow={block.eyebrow} intro={block.intro}>
+        <HubLayersStack
+          layers={layers.map((l, i) => ({ id: l.id, title: l.title, line: l.line, href: layerHref(l.link, draft) }))}
+          motion={block.motion}
+          autoplay={block.autoplay}
+          speed={block.speed}
+        />
+      </SectionShell>
+    )
+  }
   return (
     <SectionShell id={id} heading={heading} eyebrow={block.eyebrow} intro={block.intro}>
       <ol className="ncx-sec__grid">
@@ -154,19 +169,7 @@ export const HubTrust: React.FC<Base & { block: HubTrustSection }> = ({ id, head
   if (!cards.length) return null
   return (
     <SectionShell id={id} heading={heading} eyebrow={block.eyebrow} intro={block.intro}>
-      <ul className="ncx-sec__grid">
-        {cards.map((c, i) => (
-          <li className="ncx-sec__card" key={c.id || i}>
-            {c.icon ? (
-              <span className="icon" aria-hidden="true">
-                <BlockIcon name={c.icon} fallback="check" />
-              </span>
-            ) : null}
-            <h3>{c.title}</h3>
-            {c.line ? <p>{c.line}</p> : null}
-          </li>
-        ))}
-      </ul>
+      <HubTrustCards cards={cards} motion={block.motion} />
     </SectionShell>
   )
 }
@@ -174,14 +177,18 @@ export const HubTrust: React.FC<Base & { block: HubTrustSection }> = ({ id, head
 export const HubArticles: React.FC<Base & { block: HubArticlesSection }> = ({ id, heading, block }) => (
   <section aria-labelledby={id} className="ncx-sec" style={{ paddingBottom: 0 }}>
     <div className="ncx-container">
-      {block.eyebrow ? <p className="ncx-sec__eyebrow">{block.eyebrow}</p> : null}
-      <h2 id={id} style={{ marginBottom: 0 }}>
+      {block.eyebrow ? (
+        <Reveal as="p" from="left" className="ncx-sec__eyebrow">
+          {block.eyebrow}
+        </Reveal>
+      ) : null}
+      <SplitHeading as="h2" id={id} style={{ marginBottom: 0 }}>
         {heading}
-      </h2>
+      </SplitHeading>
       {block.intro ? (
-        <p className="ncx-sec__intro" style={{ margin: '14px 0 0' }}>
+        <Reveal as="p" className="ncx-sec__intro" style={{ margin: '14px 0 0' }}>
           {block.intro}
-        </p>
+        </Reveal>
       ) : null}
     </div>
     <ArchiveBlock

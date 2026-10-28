@@ -2,7 +2,9 @@ import Link from 'next/link'
 import React from 'react'
 
 import { CardFlag } from '@/components/cards/Flag'
+import { CardMotion } from '@/components/cards/CardMotion'
 import { KeyPointList } from '@/components/cards/KeyPoints'
+import type { MotionSetting } from '@/motion/levels'
 
 /** One related integration, as plain values from the page. */
 export type RelatedCard = {
@@ -72,7 +74,9 @@ export const RelatedCards: React.FC<{
   showAllLink?: boolean
   columns?: 2 | 3 | 4
   fullText?: boolean
-}> = ({ cards, showAllLink = true, columns, fullText = false }) => (
+  /** The block's own Motion panel, where it has one. */
+  motion?: MotionSetting | null
+}> = ({ cards, showAllLink = true, columns, fullText = false, motion }) => (
   <>
     <style>{`
       .ncx-irel{list-style:none;margin:0;padding:0;display:grid;gap:16px;grid-template-columns:repeat(var(--irel-cols,4),minmax(0,1fr))}
@@ -91,25 +95,16 @@ export const RelatedCards: React.FC<{
         display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
       .ncx-irel__text.is-full{display:block;-webkit-line-clamp:unset;line-clamp:none;overflow:visible}
 
-      /* Linked cards only: lift, and the tile turns solid crimson. */
-      a.ncx-irel__card:hover{box-shadow:var(--ncx-lift);border-color:var(--ncx-rule-strong);transform:translateY(-4px)}
+      /* Linked cards only: the tile turns solid crimson. The rise and the
+         tilt on hover are CardMotion's (components/cards/CardMotion.tsx). */
+      a.ncx-irel__card:hover{border-color:var(--ncx-rule-strong)}
       a.ncx-irel__card.is-all:hover{border-color:var(--ncx-crimson)}
       a.ncx-irel__card:hover .ncx-irel__tile{background:var(--ncx-crimson);color:var(--ncx-on-navy)}
       a.ncx-irel__card:hover .ncx-irel__tile img{filter:brightness(0) invert(1)}
       a.ncx-irel__card:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
-
-      @media(prefers-reduced-motion:no-preference){
-        a.ncx-irel__card{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
-        a.ncx-irel__card .ncx-irel__tile{transition:background .25s ease,color .25s ease}
-        /* Each card starts its rise a little further into the scroll than
-           the one before, so a row comes in one card after another. */
-        @supports (animation-timeline: view()){
-          .ncx-irel > li{animation:ncxRelRise linear both;animation-timeline:view();
-            animation-range:entry calc(var(--i) * 12%) entry calc(55% + var(--i) * 12%)}
-        }
-      }
-      @media(prefers-reduced-motion:reduce){a.ncx-irel__card:hover{transform:none}}
-      @keyframes ncxRelRise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+      a.ncx-irel__card{transition:border-color .25s ease}
+      a.ncx-irel__card .ncx-irel__tile{transition:background .25s ease,color .25s ease}
+      @media(prefers-reduced-motion:reduce){a.ncx-irel__card{transition:none}}
 
       @media(max-width:1023.98px){.ncx-irel{grid-template-columns:repeat(var(--irel-mid,2),minmax(0,1fr))}}
       @media(max-width:639.98px){.ncx-irel{grid-template-columns:minmax(0,1fr)}}
@@ -130,28 +125,32 @@ export const RelatedCards: React.FC<{
           <span className="ncx-irel__letter">{c.name.charAt(0)}</span>
         )
         return (
-          <li key={c.id} style={{ '--i': i % (columns || 4) } as React.CSSProperties}>
-            {c.href ? (
-              <Link className="ncx-irel__card" href={c.href}>
-                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
-              </Link>
-            ) : (
-              <div className="ncx-irel__card">
-                <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
-              </div>
-            )}
+          <li key={c.id}>
+            <CardMotion index={i} motion={motion}>
+              {c.href ? (
+                <Link className="ncx-irel__card" href={c.href}>
+                  <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
+                </Link>
+              ) : (
+                <div className="ncx-irel__card">
+                  <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
+                </div>
+              )}
+            </CardMotion>
           </li>
         )
       })}
       {showAllLink ? (
-        <li style={{ '--i': cards.length % (columns || 4) } as React.CSSProperties}>
-          <Link className="ncx-irel__card is-all" href="/integrations">
-            <Body
-              icon={<GridIcon />}
-              name="All integrations"
-              text="Phone systems, CRMs, payments and more"
-            />
-          </Link>
+        <li>
+          <CardMotion index={cards.length} motion={motion}>
+            <Link className="ncx-irel__card is-all" href="/integrations">
+              <Body
+                icon={<GridIcon />}
+                name="All integrations"
+                text="Phone systems, CRMs, payments and more"
+              />
+            </Link>
+          </CardMotion>
         </li>
       ) : null}
     </ul>

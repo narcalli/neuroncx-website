@@ -2,6 +2,8 @@ import React from 'react'
 
 import { cardNumbers, cardTokens, OptionCard } from '@/components/blocks/OptionCard/OptionCard'
 import type { CardColor } from '@/components/blocks/OptionCard/types'
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
 import { pickMedia, type PickedMedia } from '@/utilities/media'
 
 import styles from './BentoGrid.module.css'
@@ -86,13 +88,21 @@ export const BentoGrid: React.FC<BentoGridBlockProps> = ({
       <div className={rootClasses.join(' ')}>
         {hasHeader ? (
           <header className={onDark ? `${styles.header} ${styles.onDark}` : styles.header}>
-            {headEyebrow ? <p className={styles.eyebrow}>{headEyebrow}</p> : null}
-            {headTitle ? (
-              <h2 className={styles.title} id={headingId}>
-                {headTitle}
-              </h2>
+            {headEyebrow ? (
+              <Reveal as="p" from="left" className={styles.eyebrow}>
+                {headEyebrow}
+              </Reveal>
             ) : null}
-            {headDescription ? <p className={styles.description}>{headDescription}</p> : null}
+            {headTitle ? (
+              <SplitHeading as="h2" className={styles.title} id={headingId}>
+                {headTitle}
+              </SplitHeading>
+            ) : null}
+            {headDescription ? (
+              <Reveal as="p" className={styles.description}>
+                {headDescription}
+              </Reveal>
+            ) : null}
           </header>
         ) : null}
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { CardFlag } from '../Flag'
+import { CardMotion } from '../CardMotion'
 import { placementCss, placementVars } from '../layout'
 import type { CardDesignProps } from '../types'
 
@@ -21,6 +22,7 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
   items,
   columns,
   lastRow = 'leave',
+  motion,
   className,
 }) => {
   if (!items.length) return null
@@ -82,14 +84,16 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
             ? (placementVars(i, items.length, columns, lastRow) as React.CSSProperties)
             : undefined
           // An item with its own page links to it; the rest are plain cells.
-          return it.href ? (
-            <Link className="ncx-cgrid__cell" href={it.href} key={it.id} style={style}>
-              {body}
-            </Link>
-          ) : (
-            <div className="ncx-cgrid__cell" key={it.id} style={style}>
-              {body}
-            </div>
+          return (
+            <CardMotion key={it.id} index={i} motion={motion} style={style}>
+              {it.href ? (
+                <Link className="ncx-cgrid__cell" href={it.href}>
+                  {body}
+                </Link>
+              ) : (
+                <div className="ncx-cgrid__cell">{body}</div>
+              )}
+            </CardMotion>
           )
         })}
       </div>

@@ -5,6 +5,7 @@ import Image from 'next/image'
 
 import type { HeroStackBlock as HeroStackProps } from '@/payload-types'
 import type { PickedMedia } from '@/utilities/media'
+import { isStill } from '@/motion/still'
 
 /** One product card, with its screenshot already resolved on the server. */
 export type HeroStackItem = {
@@ -54,7 +55,6 @@ export const HeroStackClient: React.FC<
     if (!track || !pin || n < 2) return
 
     const desktop = window.matchMedia(DESKTOP)
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
     let target = 0
     let cur = 0
     let raf = 0
@@ -84,7 +84,7 @@ export const HeroStackClient: React.FC<
 
     const tick = () => {
       raf = 0
-      cur = reduce.matches ? target : cur + (target - cur) * 0.14
+      cur = isStill(pin) ? target : cur + (target - cur) * 0.14
       if (Math.abs(target - cur) < 0.002) cur = target
       paint(cur)
       if (cur !== target) kick()
@@ -114,7 +114,7 @@ export const HeroStackClient: React.FC<
 
     goToRef.current = (i: number) => {
       const { start, length } = span()
-      window.scrollTo({ top: start + (i / (n - 1)) * length, behavior: reduce.matches ? 'auto' : 'smooth' })
+      window.scrollTo({ top: start + (i / (n - 1)) * length, behavior: isStill(pin) ? 'auto' : 'smooth' })
     }
 
     window.addEventListener('scroll', measure, { passive: true })

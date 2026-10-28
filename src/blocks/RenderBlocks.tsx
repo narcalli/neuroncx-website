@@ -12,6 +12,7 @@ import { AgenticStatsBlock } from '@/blocks/AgenticStats/Component'
 import { AgenticCartsDemoBlock } from '@/blocks/AgenticCartsDemo/Component'
 import { AgenticOrbitBlock } from '@/blocks/AgenticOrbit/Component'
 import { AgenticEpisodeBlock } from '@/blocks/AgenticEpisode/Component'
+import { SwarmDiagramBlock } from '@/blocks/SwarmDiagram/Component'
 import { AgenticCasesBlock } from '@/blocks/AgenticCases/Component'
 import { AgenticClosingBlock } from '@/blocks/AgenticClosing/Component'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
@@ -65,6 +66,7 @@ const blockComponents = {
   agenticCartsDemo: AgenticCartsDemoBlock,
   agenticOrbit: AgenticOrbitBlock,
   agenticEpisode: AgenticEpisodeBlock,
+  swarmDiagram: SwarmDiagramBlock,
   agenticCases: AgenticCasesBlock,
   agenticClosing: AgenticClosingBlock,
   agenticHero: AgenticHeroBlock,
@@ -188,6 +190,7 @@ export const RenderBlocks: React.FC<{
                   spacingBottom={b.spacingBottom}
                   align={b.align}
                   hidden={b.hidden}
+                  motion={b.motion}
                   flush={noMargin.includes(String(blockType))}
                 >
                   <Block

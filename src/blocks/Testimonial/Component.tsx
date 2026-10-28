@@ -7,6 +7,8 @@ import type { Customer, TestimonialBlock as TestimonialProps } from '@/payload-t
 import { customerHref } from '@/utilities/customers'
 
 import { TestimonialCarousel } from './Carousel'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Quote = NonNullable<TestimonialProps['quotes']>[number]
 
@@ -112,8 +114,8 @@ export const TestimonialBlock: React.FC<TestimonialProps> = ({ eyebrow, heading,
         .ncx-testi__dots button.is-active{background:var(--ncx-crimson)}
       `}</style>
       <div className="ncx-testi__wrap ncx-container">
-        {eyebrow ? <p className="ncx-testi__eyebrow">{eyebrow}</p> : null}
-        {heading ? <h2 className="ncx-testi__heading">{heading}</h2> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="ncx-testi__eyebrow">{eyebrow}</Reveal> : null}
+        {heading ? <SplitHeading as="h2" className="ncx-testi__heading">{heading}</SplitHeading> : null}
         {carousel ? (
           <TestimonialCarousel>
             {list.map((q, i) => (

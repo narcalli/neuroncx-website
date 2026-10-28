@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import { isStill } from '@/motion/still'
 
 /** One statusFlow row, as plain text from the page. */
 export type FlowRow = {
@@ -85,7 +86,7 @@ export const StatusFlow: React.FC<Props> = ({ name, logoSrc, brandSrc, rows }) =
   }, [rows.length])
 
   const goTo = (i: number) => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = isStill(steps.current[i])
     steps.current[i]?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
   }
 

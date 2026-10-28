@@ -3,6 +3,9 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 
+import { CardMotion } from '@/components/cards/CardMotion'
+import type { MotionSetting } from '@/motion/levels'
+
 export type DirectoryRow = {
   id: string
   /** Set only for a customer with its own page. */
@@ -21,6 +24,8 @@ type Props = {
   columns?: 2 | 3 | 4
   /** The accessible name of the filter pills. */
   filterLabel?: string
+  /** The block's own Motion panel, where it has one. The grid layout's cards respect it (CardMotion.tsx). */
+  motion?: MotionSetting | null
 }
 
 /**
@@ -36,6 +41,7 @@ export const DirectoryList: React.FC<Props> = ({
   emptyStateText,
   columns,
   filterLabel = 'Filter by sector',
+  motion,
 }) => {
   const [active, setActive] = useState<string>('all')
 
@@ -79,11 +85,15 @@ export const DirectoryList: React.FC<Props> = ({
           className="ncx-dir__cards"
           style={columns ? ({ '--dir-cols': columns } as React.CSSProperties) : undefined}
         >
-          {visible.map((r) => (
-            <li key={r.id} className="ncx-dir__card">
-              <Name row={r} />
-              <p className="ncx-dir__summary">{r.summary}</p>
-              <Tags sectors={r.sectors} />
+          {visible.map((r, i) => (
+            <li key={r.id}>
+              <CardMotion index={i} motion={motion}>
+                <div className="ncx-dir__card">
+                  <Name row={r} />
+                  <p className="ncx-dir__summary">{r.summary}</p>
+                  <Tags sectors={r.sectors} />
+                </div>
+              </CardMotion>
             </li>
           ))}
         </ul>

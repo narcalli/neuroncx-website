@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 
 import type { AgenticOrbitBlock as AgenticOrbitProps } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Role = NonNullable<AgenticOrbitProps['roles']>[number]
 
@@ -57,8 +59,8 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         @media (prefers-reduced-motion:reduce){.ncx-orbit .spin{animation:none}}
       `}</style>
       <div className="wrap ncx-container">
-        <h2>{heading}</h2>
-        {intro ? <p className="sub">{intro}</p> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="sub">{intro}</Reveal> : null}
         <div className="rel">
           <div>
             <ul>

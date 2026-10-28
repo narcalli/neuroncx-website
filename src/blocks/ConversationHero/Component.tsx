@@ -1,6 +1,7 @@
 import React from 'react'
-import { StatValue } from '@/utilities/statValue'
 import { BlockIcon } from '@/components/BlockIcon'
+import { Magnetic } from '@/motion/Magnetic'
+import { StatValue } from '@/utilities/statValue'
 
 // An in-page anchor (e.g. #how-it-works) should stay on this page. Anything
 // else, like a demo booking link, opens in a new tab so the visitor doesn't
@@ -228,25 +229,29 @@ export const ConversationHeroBlock: React.FC<Props> = ({
             {primaryButtonLabel || secondaryButtonLabel ? (
               <div className="cta">
                 {primaryButtonLabel ? (
-                  <a
-                    className="btn btn-primary"
-                    href={primaryButtonLink || '#'}
-                    {...externalAttrs(primaryButtonLink)}
-                  >
-                    {primaryButtonLabel}
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                  </a>
+                  <Magnetic>
+                    <a
+                      className="btn btn-primary"
+                      href={primaryButtonLink || '#'}
+                      {...externalAttrs(primaryButtonLink)}
+                    >
+                      {primaryButtonLabel}
+                      <svg className="ncx-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </a>
+                  </Magnetic>
                 ) : null}
                 {secondaryButtonLabel ? (
-                  <a
-                    className="btn btn-ghost"
-                    href={secondaryButtonLink || '#'}
-                    {...externalAttrs(secondaryButtonLink)}
-                  >
-                    {secondaryButtonLabel}
-                  </a>
+                  <Magnetic>
+                    <a
+                      className="btn btn-ghost"
+                      href={secondaryButtonLink || '#'}
+                      {...externalAttrs(secondaryButtonLink)}
+                    >
+                      {secondaryButtonLabel}
+                    </a>
+                  </Magnetic>
                 ) : null}
               </div>
             ) : null}

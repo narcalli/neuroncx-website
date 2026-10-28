@@ -57,5 +57,13 @@ export async function POST(request: Request) {
   const known = collection && (collection in CONTENT_COLLECTIONS || TAGGED.includes(collection))
   if (known) revalidateTag(`content-${collection}`, 'max')
 
+  // Site Settings reach every page (the Animations switch, utilities/siteSettings.ts):
+  // refresh the cached settings and everything under the root layout.
+  if (collection === 'siteSettings') {
+    revalidateTag('site-settings', 'max')
+    revalidatePath('/', 'layout')
+    return json({ revalidated: valid, tag: 'site-settings', layout: '/' }, 200)
+  }
+
   return json({ revalidated: valid, ...(known ? { tag: `content-${collection}` } : {}) }, 200)
 }

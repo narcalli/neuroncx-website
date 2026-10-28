@@ -18,6 +18,7 @@ export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
   columns = 3,
   tilt = true,
   showKeyPoints = false,
+  motion,
 }) => {
   if (!items.length) return null
   return (
@@ -46,6 +47,7 @@ export const CardStories: React.FC<CardDesignProps & { tilt?: boolean }> = ({
               index={i}
               tilt={tilt}
               linkLabel={it.linkLabel || undefined}
+              motion={motion}
             />
           </li>
         ))}

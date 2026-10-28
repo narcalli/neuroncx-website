@@ -4,6 +4,9 @@ import { Pill as CardPill } from '@/components/cards/Pill'
 import { loadIntegrations, usesCollection } from '@/utilities/integrations'
 import { pickMedia } from '@/utilities/media'
 
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
+
 import styles from './IntegrationsMarquee.module.css'
 import type { IntegrationsMarqueeBlockProps, MarqueeLogo } from './types'
 
@@ -132,9 +135,17 @@ export const IntegrationsMarqueeBlock = async (
       <div className={`${styles.root} ncx-container`}>
         {hasHeader ? (
           <header className={onDark ? `${styles.header} ${styles.onDark}` : styles.header}>
-            {headEyebrow ? <p className={styles.eyebrow}>{headEyebrow}</p> : null}
-            {headTitle ? <h2 className={styles.title}>{headTitle}</h2> : null}
-            {headDescription ? <p className={styles.description}>{headDescription}</p> : null}
+            {headEyebrow ? (
+              <Reveal as="p" from="left" className={styles.eyebrow}>
+                {headEyebrow}
+              </Reveal>
+            ) : null}
+            {headTitle ? <SplitHeading as="h2" className={styles.title}>{headTitle}</SplitHeading> : null}
+            {headDescription ? (
+              <Reveal as="p" className={styles.description}>
+                {headDescription}
+              </Reveal>
+            ) : null}
           </header>
         ) : null}
 

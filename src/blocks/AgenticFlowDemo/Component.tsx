@@ -57,6 +57,7 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
         footnote={props.footnote}
         design={resolveDesign(props, events.length)}
         links={eventLinks(events, draft)}
+        motion={props.motion}
       />
     )
   }
@@ -74,6 +75,7 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
       pickFamilyLabel={props.pickFamilyLabel || 'Pick a family'}
       pickAgentLabel={props.pickAgentLabel || 'Agents'}
       design={resolveDesign(props)}
+      motion={props.motion}
     />
   )
 }

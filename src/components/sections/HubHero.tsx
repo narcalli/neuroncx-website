@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
 
-import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
+import { BotSwarmHero } from '@/components/hubHero/BotSwarmHero'
+import type { ChatRow } from '@/components/hubHero/chatScript'
 import type { Hub } from '@/payload-types'
 import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
 import { isPublicEntry } from '@/utilities/content'
@@ -115,48 +116,47 @@ export const HubHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.React
 }
 
 /**
- * The hub's hero in the conversation design (heroDesign): the Conversation
- * hero block, filled from the same hero fields. Customer messages are the
- * customer's side, entry and team messages the business's, and the entries
- * that reply are listed under the chat, once each, in order, and the
- * breadcrumb trail sits above it. No picture: the design has none.
+ * The hub's hero in the conversation design (heroDesign): the bot swarm
+ * phone mockup (docs/motion/bot-swarm-motion-demo.html), filled from the
+ * same hero fields plus heroUnderlineWord and heroBadges. Resolves each
+ * chat row's agent (name, and its family when it has one, for the matching
+ * chip and the hand-off dividers) here, server side, into plain data; the
+ * phone itself is BotSwarmHero, a client component.
  */
 export const HubConversationHero: React.FC<{ hub: Hub; draft?: boolean; crumbs?: React.ReactNode }> = ({
   hub,
   draft = false,
   crumbs,
 }) => {
-  const chat = (hub.heroChat ?? []).filter((m) => m?.text)
-  const repliers = [
-    ...new Set(
-      chat.flatMap((m) => {
-        const entry = m.entry && typeof m.entry === 'object' ? m.entry.value : null
-        return m.sender === 'business' && isPublicEntry(entry, draft) ? [entry.name] : []
-      }),
-    ),
-  ]
-  // One message per line, as the block reads it; a line break inside a message would split it.
-  const line = (text: string) => text.replace(/\s*\n\s*/g, ' ')
-  const conversation = [
-    ...chat.map((m) => `${m.sender === 'customer' ? 'them' : 'us'}: ${line(m.text)}`),
-    ...repliers.map((name) => `tag: ${name}`),
-  ].join('\n')
+  const rows: ChatRow[] = (hub.heroChat ?? [])
+    .filter((m) => m?.text)
+    .map((m) => {
+      const entry = m.entry && typeof m.entry === 'object' ? m.entry.value : null
+      const agent = m.sender === 'business' && isPublicEntry(entry, draft) ? entry : null
+      const family = agent && 'family' in agent && agent.family && typeof agent.family === 'object' ? agent.family.name : null
+      return { sender: m.sender, text: m.text, agentName: agent?.name ?? null, agentFamily: family }
+    })
+  const badges = (hub.heroBadges ?? []).filter((b) => b?.label)
   const button = (b: Hub['heroCta']) => (b?.label ? { label: b.label, href: hrefOf(b as LinkValue) } : null)
   const primary = button(hub.heroCta)
   const secondary = button(hub.heroSecondaryCta)
+  const buttons = [primary, secondary].filter((b): b is { label: string; href: string } => Boolean(b?.href))
 
   return (
-    <ConversationHeroBlock
+    <BotSwarmHero
       eyebrow={hub.eyebrow}
-      headline={hub.h1}
-      subhead={hub.subheading}
-      primaryButtonLabel={primary?.href ? primary.label : null}
-      primaryButtonLink={primary?.href ?? null}
-      secondaryButtonLabel={secondary?.href ? secondary.label : null}
-      secondaryButtonLink={secondary?.href ?? null}
-      chips={hub.heroChips}
-      conversationLabel={hub.heroChatCaption}
-      conversation={conversation}
+      h1={hub.h1}
+      underlineWord={hub.heroUnderlineWord}
+      subheading={hub.subheading}
+      chips={hub.heroChips ?? []}
+      buttons={buttons}
+      rows={rows}
+      caption={hub.heroChatCaption}
+      badges={badges}
+      motion={hub.heroAnimation?.motion}
+      autoplay={hub.heroAnimation?.autoplay}
+      loop={hub.heroAnimation?.loop}
+      speed={hub.heroAnimation?.speed}
       crumbs={crumbs}
     />
   )

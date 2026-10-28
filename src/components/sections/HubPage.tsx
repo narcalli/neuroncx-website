@@ -16,6 +16,7 @@ import { HubGroupings } from './HubGroupings'
 import { groupingsPlaced } from './hubGroupingsPlacement'
 import { HubConversationHero, HubHero } from './HubHero'
 import { RenderSections, type SectionContext } from './RenderSections'
+import { MotionPage } from '@/motion/MotionProvider'
 
 /**
  * A content collection's hub page from its hub record (foundation.md section
@@ -51,31 +52,39 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
     <Breadcrumbs items={buildTrail({ page: { title: label, slug: CONTENT_COLLECTIONS[collection].route.slice(1) } })} />
   )
 
+  const heroMotion = hub.heroAnimation?.motion
+  const heroStill = heroMotion === 'off' || heroMotion === 'reduced' ? heroMotion : undefined
+
   return (
-    <article>
-      {draft ? <LivePreviewListener /> : null}
-      {hub.heroDesign === 'conversation' ? (
-        <HubConversationHero hub={hub} draft={draft} crumbs={crumbs} />
-      ) : (
-        <HubHero hub={hub} draft={draft} crumbs={crumbs} />
-      )}
-      {placed ? null : groupings}
-      <RenderSections blocks={hub.layout ?? []} ctx={ctx} />
-      {faqs.length ? (
-        <FAQBlock
-          blockType="faq"
-          heading={fillHeading(hub.faqHeading || SECTION_HEADINGS.faq, tokens)}
-          items={faqs.map((f, i) => ({
-            id: f.id || String(i),
-            question: f.question,
-            answer: paragraph(f.answer),
-            defaultOpen: i === 0,
-          }))}
-          emitSchema
-        />
-      ) : null}
-      {closing}
-    </article>
+    <MotionPage page={hub.pageMotion}>
+      <article>
+        {draft ? <LivePreviewListener /> : null}
+        {/* The hero's own animation setting (Hero tab, Hero animation). */}
+        <div data-motion={heroStill} style={{ display: 'contents' }}>
+          {hub.heroDesign === 'conversation' ? (
+            <HubConversationHero hub={hub} draft={draft} crumbs={crumbs} />
+          ) : (
+            <HubHero hub={hub} draft={draft} crumbs={crumbs} />
+          )}
+        </div>
+        {placed ? null : groupings}
+        <RenderSections blocks={hub.layout ?? []} ctx={ctx} />
+        {faqs.length ? (
+          <FAQBlock
+            blockType="faq"
+            heading={fillHeading(hub.faqHeading || SECTION_HEADINGS.faq, tokens)}
+            items={faqs.map((f, i) => ({
+              id: f.id || String(i),
+              question: f.question,
+              answer: paragraph(f.answer),
+              defaultOpen: i === 0,
+            }))}
+            emitSchema
+          />
+        ) : null}
+        {closing}
+      </article>
+    </MotionPage>
   )
 }
 

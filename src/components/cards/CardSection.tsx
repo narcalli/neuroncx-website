@@ -1,5 +1,7 @@
 import React from 'react'
 
+import type { MotionSetting } from '@/motion/levels'
+
 import type { CardDesignSettings } from './defaults'
 import { CardDesign, type CardDesignName } from './registry'
 import type { CardColumns, CardItem } from './types'
@@ -19,10 +21,12 @@ type Group = { design: CardDesignName; items: CardItem[] }
  * before; with more, an empty "cards per row" becomes 3 for every group, so
  * the groups line up. Logo cards here never get the "All integrations" card.
  */
-export const CardSection: React.FC<{ items: CardItem[]; settings: CardDesignSettings }> = ({
-  items,
-  settings,
-}) => {
+export const CardSection: React.FC<{
+  items: CardItem[]
+  settings: CardDesignSettings
+  /** The block's own Motion panel, where it has one. Every design's cards respect it (CardMotion.tsx). */
+  motion?: MotionSetting | null
+}> = ({ items, settings, motion }) => {
   const { design, columns, lastRow, look, allowItemDesigns, showKeyPoints } = settings
   // The look only means something to the feature card, as before. Key points
   // go to every design; the ones without room for them ignore it.
@@ -31,6 +35,7 @@ export const CardSection: React.FC<{ items: CardItem[]; settings: CardDesignSett
     lastRow,
     look: d === 'feature' ? look : undefined,
     showKeyPoints,
+    motion,
   })
 
   const groups: Group[] = []

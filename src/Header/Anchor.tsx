@@ -8,13 +8,15 @@ export const Anchor: React.FC<{
   href?: string | null
   newTab?: boolean | null
   className?: string
+  style?: React.CSSProperties
   children: React.ReactNode
-}> = ({ href, newTab, className, children }) => {
+}> = ({ href, newTab, className, style, children }) => {
   const target = href || '/'
   if (isExternal(target) || newTab) {
     return (
       <a
         className={className}
+        style={style}
         href={target}
         {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : { rel: 'noopener' })}
       >
@@ -23,7 +25,7 @@ export const Anchor: React.FC<{
     )
   }
   return (
-    <Link className={className} href={target}>
+    <Link className={className} style={style} href={target}>
       {children}
     </Link>
   )

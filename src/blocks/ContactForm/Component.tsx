@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Props = {
   label?: string | null
@@ -113,9 +115,9 @@ export const ContactFormBlock: React.FC<Props> = ({
 
       <div className="cols">
         <div>
-          {label ? <p className="label">{label}</p> : null}
-          {heading ? <h2>{heading}</h2> : null}
-          {intro ? <p className="intro">{intro}</p> : null}
+          {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
+          {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+          {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
         </div>
 
         <div className="card">

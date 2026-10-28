@@ -4,6 +4,7 @@ import React from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 
 import type { AgenticCasesBlock as AgenticCasesProps } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
 
 type Case = NonNullable<AgenticCasesProps['cases']>[number]
 
@@ -94,7 +95,7 @@ export const AgenticCasesBlock: React.FC<AgenticCasesProps> = ({ heading, cases,
         }
       `}</style>
       <div className="wrap ncx-container">
-        <h2>{heading}</h2>
+        <SplitHeading as="h2">{heading}</SplitHeading>
         <div className="grid">
           {list.map((c, i) => (
             <TiltCard key={i} item={c} index={i} glow={glow} />

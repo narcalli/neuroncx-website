@@ -1,4 +1,6 @@
 import React from 'react'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 /**
  * The frame every content section uses, in the light theme of the
@@ -15,9 +17,9 @@ export const SectionShell: React.FC<{
 }> = ({ id, heading, eyebrow, intro, children }) => (
   <section className="ncx-sec" aria-labelledby={id}>
     <div className="ncx-container">
-      {eyebrow ? <p className="ncx-sec__eyebrow">{eyebrow}</p> : null}
-      <h2 id={id}>{heading}</h2>
-      {intro ? <p className="ncx-sec__intro">{intro}</p> : null}
+      {eyebrow ? <Reveal as="p" from="left" className="ncx-sec__eyebrow">{eyebrow}</Reveal> : null}
+      <SplitHeading as="h2" id={id}>{heading}</SplitHeading>
+      {intro ? <Reveal as="p" className="ncx-sec__intro">{intro}</Reveal> : null}
       {children}
     </div>
   </section>

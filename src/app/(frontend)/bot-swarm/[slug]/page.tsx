@@ -25,6 +25,7 @@ import {
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { defaultShareImage } from '@/utilities/siteDefaults'
+import { MotionPage } from '@/motion/MotionProvider'
 
 type Args = { params: Promise<{ slug: string }> }
 
@@ -140,25 +141,27 @@ export default async function AgentPage({ params }: Args) {
   const closingInLayout = layout.some((b) => sectionKeyOf(b.blockType) === 'closing')
 
   return (
-    <article className="ncx-agent">
-      {draft ? <LivePreviewListener /> : null}
-      <style>{`
-        /* Without the closing panel the footer follows the last section, which keeps its own bottom padding. */
-        .ncx-agent{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-      `}</style>
+    <MotionPage page={d.pageMotion}>
+      <article className="ncx-agent">
+        {draft ? <LivePreviewListener /> : null}
+        <style>{`
+          /* Without the closing panel the footer follows the last section, which keeps its own bottom padding. */
+          .ncx-agent{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+        `}</style>
 
-      <EntryHero
-        bar={bar}
-        entry={d}
-        groupName={family?.name}
-        primary={{ label: ctaLabel, href: ctaHref }}
-        chain={chain}
-        draft={draft}
-      />
+        <EntryHero
+          bar={bar}
+          entry={d}
+          groupName={family?.name}
+          primary={{ label: ctaLabel, href: ctaHref }}
+          chain={chain}
+          draft={draft}
+        />
 
-      <RenderSections blocks={layout} ctx={ctx} />
+        <RenderSections blocks={layout} ctx={ctx} />
 
-      {closingInLayout ? null : closing}
-    </article>
+        {closingInLayout ? null : closing}
+      </article>
+    </MotionPage>
   )
 }

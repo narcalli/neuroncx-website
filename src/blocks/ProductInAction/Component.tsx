@@ -4,6 +4,8 @@ import Image from 'next/image'
 import { BlockIcon } from '@/components/BlockIcon'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import type { ProductInActionBlock as ProductInActionProps } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Card = NonNullable<ProductInActionProps['cards']>[number]
 
@@ -94,9 +96,9 @@ export const ProductInActionBlock: React.FC<ProductInActionProps> = ({
       <div className="ncx-pia__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header className="ncx-pia__head">
-            {eyebrow ? <p className="ncx-pia__eyebrow">{eyebrow}</p> : null}
-            {heading ? <h2>{heading}</h2> : null}
-            {intro ? <p className="ncx-pia__intro">{intro}</p> : null}
+            {eyebrow ? <Reveal as="p" from="left" className="ncx-pia__eyebrow">{eyebrow}</Reveal> : null}
+            {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+            {intro ? <Reveal as="p" className="ncx-pia__intro">{intro}</Reveal> : null}
           </header>
         ) : null}
 

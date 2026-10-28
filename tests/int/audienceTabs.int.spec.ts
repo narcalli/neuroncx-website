@@ -164,9 +164,20 @@ describe('"#" links', () => {
     target.scrollIntoView = scroll
     return { target, scroll }
   }
-  // jsdom has no matchMedia: stand one in that answers the reduced-motion question.
+  // jsdom has no matchMedia: stand one in that answers the reduced-motion
+  // question. addEventListener/removeEventListener too, now that rendering
+  // the block's heading (SplitHeading, Reveal) also reads it, through
+  // usePrefersReducedMotion's useSyncExternalStore subscription.
   const motion = (reduce: boolean) =>
-    vi.stubGlobal('matchMedia', (q: string) => ({ matches: reduce && q.includes('reduce') }) as MediaQueryList)
+    vi.stubGlobal(
+      'matchMedia',
+      (q: string) =>
+        ({
+          matches: reduce && q.includes('reduce'),
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        }) as unknown as MediaQueryList,
+    )
 
   it('scroll smoothly to the section, update the address and move the focus there', () => {
     const { target, scroll } = withTarget()

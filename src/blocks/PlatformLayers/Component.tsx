@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { BlockIcon } from '@/components/BlockIcon'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Layer = {
   title?: string | null
@@ -92,9 +94,9 @@ export const PlatformLayersBlock: React.FC<Props> = ({ eyebrow, heading, intro, 
       `}</style>
 
       <div className="inner ncx-container">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h2>{heading}</h2>
-        {intro ? <p className="intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
         <div className="scroller">
           <div className="stage">

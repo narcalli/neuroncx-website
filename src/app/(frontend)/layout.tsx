@@ -15,6 +15,8 @@ import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/utilities/siteDefaults'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
+import { MotionProvider } from '@/motion/MotionProvider'
+import { ReadingProgress } from '@/motion/ReadingProgress'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 
@@ -50,6 +52,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const faviconSvg = siteFileUrl(settings.faviconSvg) || '/favicon.svg'
   const favicon32 = siteFileUrl(settings.favicon32)
   const appleTouchIcon = siteFileUrl(settings.appleTouchIcon)
+  // Site Settings, Animations: on until set. In the server HTML, so CSS holds before any script runs.
+  const animations = settings.animations || 'on'
 
   return (
     <html
@@ -61,6 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         labelFont.variable,
       )}
       lang="en"
+      data-motion={animations}
       suppressHydrationWarning
     >
       <head>
@@ -78,9 +83,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         /> */}
 
-        <Header />
-        {children}
-        <Footer />
+        <MotionProvider site={animations}>
+          <ReadingProgress />
+          <Header />
+          {children}
+          <Footer />
+        </MotionProvider>
         {/* Every page, while draft mode is on: a preview is never mistaken for the live site. */}
         {isEnabled ? <DraftBanner /> : null}
       </body>

@@ -213,9 +213,17 @@ const drawRow = (block: Block, index: number, ctx: SectionContext): React.ReactN
   }
   const content = renderSection(key, block, index, ctx)
   if (!content) return null
-  // The closing panel draws its own navy card, and the grouping sections
-  // their own sections; neither takes a band around it.
-  if (key === 'closing' || key === 'hubGroupings') return <React.Fragment key={reactKey}>{content}</React.Fragment>
+  // The grouping sections draw their own sections, with no band around them.
+  if (key === 'hubGroupings') return <React.Fragment key={reactKey}>{content}</React.Fragment>
+  // The closing panel draws its own navy card, with no band around it; only its own animation setting.
+  if (key === 'closing') {
+    const still = block.motion === 'off' || block.motion === 'reduced' ? String(block.motion) : undefined
+    return (
+      <div key={reactKey} data-motion={still} style={{ display: 'contents' }}>
+        {content}
+      </div>
+    )
+  }
   return (
     <BlockWrapper
       key={reactKey}
@@ -227,6 +235,7 @@ const drawRow = (block: Block, index: number, ctx: SectionContext): React.ReactN
       spacingBottom={block.spacingBottom as string | null}
       align={block.align as string | null}
       hidden={block.hidden as boolean | null}
+      motion={block.motion as string | null}
     >
       {content}
     </BlockWrapper>

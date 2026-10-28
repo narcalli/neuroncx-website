@@ -6,6 +6,8 @@ import { mergeCardDesign, type SavedCardDesign } from '@/components/cards/defaul
 import { initialOf, type CardItem } from '@/components/cards/types'
 import type { ClusterLinksBlock as ClusterLinksProps } from '@/payload-types'
 import { clusterGroups, clusterHref, loadClusterPages, type ClusterEntry, type ClusterPage } from '@/utilities/clusters'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Props = Omit<ClusterLinksProps, 'cardDesign'> & {
   cardDesign?: SavedCardDesign | null
@@ -73,9 +75,9 @@ export const ClusterLinksBlock = async (props: Props) => {
           .ncx-cluster .group + .group{margin-top:32px}}
       `}</style>
 
-      {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-      {heading ? <h2>{heading}</h2> : null}
-      {intro ? <p className="intro">{intro}</p> : null}
+      {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+      {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+      {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
       <div className="cards">
         {groups.map((group) => (

@@ -14,6 +14,12 @@ type Props = Presentation & {
   flush?: boolean
   /** Lets a link elsewhere on the page (e.g. "#how-it-works") jump to this block. */
   htmlId?: string | null
+  /**
+   * The block's own animation setting (its Motion panel). Off or reduced is
+   * written on the wrapper, so CSS holds the block still before any script
+   * runs (globals.css); the block's scripts read it through useMotionLevel.
+   */
+  motion?: string | null
   children: React.ReactNode
 }
 
@@ -87,9 +93,11 @@ export const BlockWrapper: React.FC<Props> = ({
   hidden,
   flush,
   htmlId,
+  motion,
   children,
 }) => {
   if (hidden) return null
+  const still = motion === 'off' || motion === 'reduced' ? motion : undefined
 
   const outer: React.CSSProperties = {}
   const inner: React.CSSProperties = {}
@@ -136,14 +144,14 @@ export const BlockWrapper: React.FC<Props> = ({
 
   if (!hasOuter && !hasInner) {
     return (
-      <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'}>
+      <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'} data-motion={still}>
         {children}
       </div>
     )
   }
 
   return (
-    <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'} style={outer}>
+    <div id={htmlId || undefined} className={isFlush ? '' : 'my-4'} style={outer} data-motion={still}>
       {content}
     </div>
   )

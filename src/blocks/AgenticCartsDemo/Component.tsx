@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { motion } from 'motion/react'
 
 import type { AgenticCartsDemoBlock as AgenticCartsDemoProps } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Cart = NonNullable<AgenticCartsDemoProps['carts']>[number]
 
@@ -71,8 +73,8 @@ export const AgenticCartsDemoBlock: React.FC<AgenticCartsDemoProps> = ({
         .ncx-carts .note{font-size:.92rem;color:var(--ncx-muted);flex:1;min-width:220px}
       `}</style>
       <div className="wrap ncx-container">
-        <h2>{heading}</h2>
-        {intro ? <p className="sec-sub">{intro}</p> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="sec-sub">{intro}</Reveal> : null}
 
         <div className="seg" role="group" aria-label="Choose a model">
           <span className={`seg-pill ${mode}`} aria-hidden="true" />

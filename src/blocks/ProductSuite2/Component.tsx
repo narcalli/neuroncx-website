@@ -2,6 +2,8 @@ import React from 'react'
 
 import { cardNumbers, cardTokens, OptionCard } from '@/components/blocks/OptionCard/OptionCard'
 import type { CardLinkData, CardOptionFields } from '@/components/blocks/OptionCard/types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Card = CardOptionFields & {
   icon?: string | null
@@ -51,9 +53,9 @@ export const ProductSuite2Block: React.FC<Props> = ({ eyebrow, heading, intro, c
       `}</style>
 
       <div className="inner ncx-container">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        {heading ? <h2 id={headingId}>{heading}</h2> : null}
-        {intro ? <p className="intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+        {heading ? <SplitHeading as="h2" id={headingId}>{heading}</SplitHeading> : null}
+        {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
         <div className={`grid ${cardTokens}`}>
           {items.map((card, i) => (

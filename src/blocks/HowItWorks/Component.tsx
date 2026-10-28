@@ -1,4 +1,7 @@
 import React from 'react'
+import { Magnetic } from '@/motion/Magnetic'
+import { Reveal } from '@/motion/Reveal'
+import { SplitHeading } from '@/motion/SplitHeading'
 
 type Step = { title?: string | null; description?: string | null; id?: string | null }
 
@@ -42,9 +45,9 @@ export const HowItWorksBlock: React.FC<Props> = ({
         @media(max-width:900px){.ncx-how{padding-block:44px}.ncx-how .steps{gap:28px;margin-top:34px}}
       `}</style>
 
-      {label ? <p className="label">{label}</p> : null}
-      {heading ? <h2>{heading}</h2> : null}
-      {intro ? <p className="intro">{intro}</p> : null}
+      {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
+      {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+      {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
       <div className="steps">
         {items.map((step, i) => (
@@ -58,7 +61,9 @@ export const HowItWorksBlock: React.FC<Props> = ({
 
       {ctaLabel ? (
         <div className="cta">
-          <a className="btn" href={ctaLink || '#'}>{ctaLabel}</a>
+          <Magnetic>
+            <a className="btn" href={ctaLink || '#'}>{ctaLabel}</a>
+          </Magnetic>
         </div>
       ) : null}
     </section>

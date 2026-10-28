@@ -4,6 +4,8 @@ import { CMSLink } from '@/components/Link'
 import type { PlatformLayersTwoBlock as PlatformLayersTwoProps } from '@/payload-types'
 
 import { ScrollStackClient, type ScrollStackItem } from './ScrollStackClient'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Layer = NonNullable<PlatformLayersTwoProps['layers']>[number]
 
@@ -112,9 +114,9 @@ export const PlatformLayersTwoBlock: React.FC<PlatformLayersTwoProps> = ({
 
       <div className="ncx-ss__wrap ncx-container">
         <ScrollStackClient items={items} showIndicators={Boolean(showIndicators)}>
-          {eyebrow ? <p className="ncx-ss__eyebrow">{eyebrow}</p> : null}
-          <h2>{heading}</h2>
-          {intro ? <p className="ncx-ss__intro">{intro}</p> : null}
+          {eyebrow ? <Reveal as="p" from="left" className="ncx-ss__eyebrow">{eyebrow}</Reveal> : null}
+          <SplitHeading as="h2">{heading}</SplitHeading>
+          {intro ? <Reveal as="p" className="ncx-ss__intro">{intro}</Reveal> : null}
         </ScrollStackClient>
       </div>
     </section>

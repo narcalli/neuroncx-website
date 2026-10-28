@@ -1,5 +1,6 @@
 import React from 'react'
 import { getMany, CMS_TAG } from '@/utilities/cms'
+import { SplitHeading } from '@/motion/SplitHeading'
 
 type Props = {
   heading?: string | null
@@ -101,7 +102,7 @@ export const FeatureThreadBlock: React.FC<Props> = async ({
         }
       `}</style>
 
-      {heading ? <h2>{heading}</h2> : null}
+      {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
 
       <div className="spine" data-cols={turns.length > 1 ? '2' : '1'}>
         {turns.map(({ group, item }, i) => (

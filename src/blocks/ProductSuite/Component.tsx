@@ -4,6 +4,8 @@ import Image from 'next/image'
 import { BlockIcon } from '@/components/BlockIcon'
 import { CardFlag } from '@/components/cards/Flag'
 import { getPayloadURL, getServerSideURL } from '@/utilities/getURL'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type MediaSize = { url?: string | null }
 
@@ -210,9 +212,9 @@ export const ProductSuiteBlock: React.FC<Props> = ({ label, heading, intro, prod
         }
       `}</style>
 
-      {label ? <p className="label">{label}</p> : null}
-      {heading ? <h2 id={headingId}>{heading}</h2> : null}
-      {intro ? <p className="intro">{intro}</p> : null}
+      {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
+      {heading ? <SplitHeading as="h2" id={headingId}>{heading}</SplitHeading> : null}
+      {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
       <div className="grid">
         {items.map((p, i) => {

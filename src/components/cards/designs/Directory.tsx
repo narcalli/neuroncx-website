@@ -15,7 +15,7 @@ import type { CardDesignProps } from '../types'
  */
 export const CardDirectory: React.FC<
   CardDesignProps & { layout?: 'grid' | 'list'; filterLabel?: string }
-> = ({ items, columns, layout = 'grid', filterLabel = 'Filter by category' }) => {
+> = ({ items, columns, layout = 'grid', filterLabel = 'Filter by category', motion }) => {
   if (!items.length) return null
   const tags = new Set(items.map((it) => it.badge).filter(Boolean))
   return (
@@ -35,6 +35,7 @@ export const CardDirectory: React.FC<
         emptyStateText="Nothing to show yet."
         columns={columns}
         filterLabel={filterLabel}
+        motion={motion}
       />
     </div>
   )

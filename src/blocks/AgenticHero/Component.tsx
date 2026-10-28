@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'motion/react'
 
 import type { AgenticHeroBlock as AgenticHeroProps } from '@/payload-types'
+import { Magnetic } from '@/motion/Magnetic'
 
 type Node = NonNullable<AgenticHeroProps['nodes']>[number]
 
@@ -194,15 +195,18 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         ) : null}
 
         {ctaLabel && ctaUrl ? (
-          <motion.a
-            className="btn"
-            href={ctaUrl}
+          <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: 'inline-block' }}
           >
-            {ctaLabel}
-          </motion.a>
+            <Magnetic>
+              <a className="btn" href={ctaUrl}>
+                {ctaLabel}
+              </a>
+            </Magnetic>
+          </motion.div>
         ) : null}
       </div>
     </section>

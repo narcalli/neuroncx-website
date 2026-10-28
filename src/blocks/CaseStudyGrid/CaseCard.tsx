@@ -2,9 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import { CardMotion } from '@/components/cards/CardMotion'
 import { KeyPointList } from '@/components/cards/KeyPoints'
-
-import { TiltAnchor } from './TiltAnchor'
+import type { MotionSetting } from '@/motion/levels'
 
 /**
  * One case study card: a logo on a white frame (or, without a logo, one of
@@ -45,11 +45,14 @@ export const CaseCard = ({
   index,
   tilt,
   linkLabel = 'Read story →',
+  motion,
 }: {
   item: CaseCardItem
   index: number
   tilt: boolean
   linkLabel?: string
+  /** The block's own Motion panel, where it has one. */
+  motion?: MotionSetting | null
 }) => {
   const { href, logo } = item
 
@@ -89,22 +92,25 @@ export const CaseCard = ({
     </>
   )
 
-  if (!href) return <div className="ncx-cs__card ncx-cs__card--static">{inner}</div>
+  if (!href) {
+    return (
+      <CardMotion index={index} motion={motion} tilt={tilt}>
+        <div className="ncx-cs__card ncx-cs__card--static">{inner}</div>
+      </CardMotion>
+    )
+  }
 
-  return tilt ? (
-    <TiltAnchor href={href} className="ncx-cs__card">
-      {inner}
-    </TiltAnchor>
-  ) : (
-    <Link href={href} className="ncx-cs__card">
-      {inner}
-    </Link>
+  return (
+    <CardMotion index={index} motion={motion} tilt={tilt}>
+      <Link href={href} className="ncx-cs__card">
+        {inner}
+      </Link>
+    </CardMotion>
   )
 }
 
 /** The card's styles, for the element that wraps the cards. */
-export const caseCardCss = `        .ncx-cs__tilt{height:100%}
-        .ncx-cs__card{display:flex;flex-direction:column;gap:20px;text-decoration:none;color:inherit;height:100%}
+export const caseCardCss = `        .ncx-cs__card{display:flex;flex-direction:column;gap:20px;text-decoration:none;color:inherit;height:100%}
         .ncx-cs__img{width:100%;aspect-ratio:4/3.2;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:transform .35s ease}
         .ncx-cs__card:hover .ncx-cs__img{transform:scale(1.03)}
         .ncx-cs__img--1{background:radial-gradient(ellipse at 22% 28%,rgba(255,255,255,0.20) 0%,transparent 50%),radial-gradient(ellipse at 80% 75%,rgba(198,40,40,0.40) 0%,transparent 55%),linear-gradient(135deg,var(--ncx-navy) 0%,var(--art-navy-2) 100%)}

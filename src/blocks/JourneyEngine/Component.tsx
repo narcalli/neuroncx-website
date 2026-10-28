@@ -2,6 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { BlockIcon } from '@/components/BlockIcon'
+import { isStill } from '@/motion/still'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Stage = { label?: string | null; icon?: string | null; id?: string | null }
 type Detail = { title?: string | null; description?: string | null; id?: string | null }
@@ -52,8 +55,7 @@ export const JourneyEngineBlock: React.FC<Props> = ({
     )
     if (wrapRef.current) io.observe(wrapRef.current)
 
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (reduce.matches) {
+    if (isStill(wrapRef.current)) {
       stop()
       io.disconnect()
       return
@@ -137,9 +139,9 @@ export const JourneyEngineBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="inner ncx-container">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h2>{heading}</h2>
-        {intro ? <p className="intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
         <div className="tabs" role="tablist">
           {tabs.map((t, i) => (

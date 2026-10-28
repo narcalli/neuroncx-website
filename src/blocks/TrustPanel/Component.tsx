@@ -1,5 +1,7 @@
 import React from 'react'
 import { BlockIcon } from '@/components/BlockIcon'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Card = {
   title?: string | null
@@ -74,9 +76,9 @@ export const TrustPanelBlock: React.FC<Props> = ({
       <div className="inner ncx-container">
         <div className="grid" data-cols={items.length ? '2' : '1'}>
           <div>
-            {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-            <h2>{heading}</h2>
-            {intro ? <p className="intro">{intro}</p> : null}
+            {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+            <SplitHeading as="h2">{heading}</SplitHeading>
+            {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
             {buttonLabel ? (
               <a className="btn" href={buttonHref || '/contact'}>
                 {buttonLabel}

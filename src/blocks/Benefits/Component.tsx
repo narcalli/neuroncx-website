@@ -1,4 +1,6 @@
 import React from 'react'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Item = { title?: string | null; description?: string | null; id?: string | null }
 
@@ -31,8 +33,8 @@ export const BenefitsBlock: React.FC<Props> = ({ label, heading, items }) => {
           .ncx-benefits .grid{margin-top:32px;gap:28px}}
       `}</style>
 
-      {label ? <p className="label">{label}</p> : null}
-      {heading ? <h2>{heading}</h2> : null}
+      {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
+      {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
 
       <div className="grid">
         {list.map((b, i) => (

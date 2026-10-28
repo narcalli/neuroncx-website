@@ -8,6 +8,9 @@ import type { AgenticFlowDemoBlock as AgenticFlowDemoProps } from '@/payload-typ
 import { accentVars, designClasses, designVars, nextEvent, type Design } from './design'
 import { StageLine } from './StageLine'
 import { flowCss } from './styles'
+import { useMotionLevel } from '@/motion/useMotionLevel'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type DemoEvent = NonNullable<AgenticFlowDemoProps['events']>[number]
 
@@ -29,11 +32,14 @@ export const FlowDemo: React.FC<
   Pick<AgenticFlowDemoProps, 'heading' | 'intro' | 'events' | 'footnote'> & {
     /** The small line above the heading (an industry topic's agents section). */
     eyebrow?: string | null
+    /** The block's Motion panel: anything but on (with the page and site) stops the autoplay. */
+    motion?: AgenticFlowDemoProps['motion']
     design: Design
     /** By event id. */
     links?: Record<string, EventLink>
   }
-> = ({ eyebrow, heading, intro, events, footnote, design: d, links = {} }) => {
+> = ({ eyebrow, heading, intro, events, footnote, design: d, links = {}, motion }) => {
+  const level = useMotionLevel(motion)
   const list: DemoEvent[] = (events || []).filter((e) => e && e.label)
 
   const [active, setActive] = useState(d.startIndex < list.length ? d.startIndex : 0)
@@ -50,7 +56,7 @@ export const FlowDemo: React.FC<
 
   useEffect(() => {
     if (!d.autoplay || touched || list.length < 2) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (level !== 'on') return
     timer.current = window.setInterval(() => {
       setActive((i) => nextEvent(i, list.length))
       setPlays((n) => n + 1)
@@ -58,7 +64,7 @@ export const FlowDemo: React.FC<
     return () => {
       if (timer.current) window.clearInterval(timer.current)
     }
-  }, [d.autoplay, touched, list.length])
+  }, [d.autoplay, touched, list.length, level])
 
   if (!list.length) return null
 
@@ -70,9 +76,9 @@ export const FlowDemo: React.FC<
       <style>{flowCss}</style>
 
       <div className="wrap ncx-container">
-        {eyebrow ? <p className="sec-eyebrow">{eyebrow}</p> : null}
-        <h2>{heading}</h2>
-        {intro ? <p className="sec-sub">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="sec-eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="sec-sub">{intro}</Reveal> : null}
 
         <div className="lab-box">
           {d.prompt ? <p className="lab-q">{d.prompt}</p> : null}

@@ -85,36 +85,36 @@ describe('the panel', () => {
   )
 
   it('selects the first family and its first agent, with real buttons', () => {
-    expect(html).toMatch(/<button type="button" class="tb" aria-pressed="true">Book and get paid<\/button>/)
-    expect(html).toMatch(/<button type="button" class="tb" aria-pressed="false">Read and match documents<\/button>/)
-    expect(html).toMatch(/class="chip" aria-pressed="true" aria-controls="ncx-agent-a1">Appointment assistance</)
-    expect(html).toMatch(/aria-pressed="false" aria-controls="ncx-agent-a2">Payment services<span class="pilot">Pilot<\/span>/)
+    expect(html).toMatch(/<button type="button" class="tb" aria-pressed="true"><span class="fam-ind"[^>]*><\/span><span class="fam-label">Book and get paid<\/span><\/button>/)
+    expect(html).toMatch(/<button type="button" class="tb" aria-pressed="false"><span class="fam-label">Read and match documents<\/span><\/button>/)
+    expect(html).toMatch(/class="chip" aria-pressed="true" aria-controls="ncx-agent-a1"[^>]*>Appointment assistance</)
+    expect(html).toMatch(/aria-pressed="false" aria-controls="ncx-agent-a2"[^>]*>Payment services<span class="pilot">Pilot<\/span>/)
   })
 
-  it("puts every agent's panel in the HTML, only the selected one shown", () => {
+  it("puts every agent's panel in the HTML (motion plan prompt 7: out of flow, not display:none), only the selected one laid out", () => {
     for (const id of ['a1', 'a2', 'a3']) expect(html).toContain(`id="ncx-agent-${id}"`)
-    expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance">/)
-    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" hidden="">/)
-    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" hidden="">/)
+    expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance" aria-hidden="false" style="position:relative;pointer-events:auto"/)
+    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"/)
+    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"/)
     expect(html).not.toContain('Recover')
   })
 
   it('draws the three cards: what it does, features, saves to your systems (teal)', () => {
     const a2 = html.slice(html.indexOf('id="ncx-agent-a2"'), html.indexOf('id="ncx-agent-a3"'))
     expect(a2).toMatch(/<div class="node on" style="[^"]*"><span class="tag">What it does<\/span><b>Payment services<\/b><small>Does the job.<\/small><div class="hch"><span>Works on WhatsApp<\/span><\/div>/)
-    expect(a2).toMatch(/<span class="tag">Features<\/span>[^]*class="ncx-keypts"[^]*<span>One<\/span>[^]*<span>Three<\/span><\/li><\/ul>/)
+    expect(a2).toMatch(/<span class="tag">Features<\/span>[^]*class="feat"[^]*<span>One<\/span>[^]*<span>Three<\/span><\/li><\/ul>/)
     expect(a2).not.toContain('<span>Four</span>')
-    expect(a2).toContain('<span class="on">Virtual agent</span><span class="on">Human team</span>')
-    expect(a2).toMatch(/<div class="node ok on" style="[^"]*"><span class="tag">Saves to your systems<\/span><small>The booking on the record.<\/small><small class="you-set"><strong>You set:<\/strong> Services and slots.<\/small>/)
+    expect(a2).toMatch(/<span class="on"[^>]*>Virtual agent<\/span><span class="on"[^>]*>Human team<\/span>/)
+    expect(a2).toMatch(/<div class="node ok on" style="[^"]*"><span class="tag">Saves to your systems<\/span><div class="saves">[^]*<small>The booking on the record.<\/small><\/div><small class="you-set"><strong>You set:<\/strong> Services and slots.<\/small>/)
     // No hand-over: no Human team tag.
     const a1 = html.slice(html.indexOf('id="ncx-agent-a1"'), html.indexOf('id="ncx-agent-a2"'))
-    expect(a1).toContain('<span class="on">Virtual agent</span></div>')
+    expect(a1).toMatch(/<span class="on"[^>]*>Virtual agent<\/span><\/div>/)
     expect(a1).not.toContain('Human team')
   })
 
-  it('stacks the cards below 900px and keeps hidden panels hidden', () => {
+  it('stacks the cards below 900px, and the stage-outer tracks the active panel alone', () => {
     expect(html).toContain('@media (max-width:899.98px)')
-    expect(html).toContain('.ncx-flow--features .stage[hidden],.ncx-flow--features .chips[hidden]{display:none}')
+    expect(html).toContain('.ncx-flow--features .stage-outer{position:relative}')
   })
 
   it('draws nothing without a family to show', () => {

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Magnetic } from '@/motion/Magnetic'
 import { StatValue } from '@/utilities/statValue'
 
 type Stat = { value?: string | null; label?: string | null; id?: string | null }
@@ -102,14 +103,18 @@ export const StatHeroBlock: React.FC<Props> = ({
         {primaryLabel || secondaryLabel ? (
           <div className="cta">
             {primaryLabel ? (
-              <a className="btn solid" href={primaryLink || '#'}>
-                {primaryLabel}
-              </a>
+              <Magnetic>
+                <a className="btn solid" href={primaryLink || '#'}>
+                  {primaryLabel}
+                </a>
+              </Magnetic>
             ) : null}
             {secondaryLabel ? (
-              <a className="btn ghost" href={secondaryLink || '#'}>
-                {secondaryLabel}
-              </a>
+              <Magnetic>
+                <a className="btn ghost" href={secondaryLink || '#'}>
+                  {secondaryLabel}
+                </a>
+              </Magnetic>
             ) : null}
           </div>
         ) : null}

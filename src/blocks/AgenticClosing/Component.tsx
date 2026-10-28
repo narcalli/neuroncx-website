@@ -4,6 +4,7 @@ import React, { useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
 
 import type { AgenticClosingBlock as AgenticClosingProps } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
 
 export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ctaLabel, ctaUrl }) => {
   const sectionRef = useRef<HTMLElement>(null)
@@ -45,7 +46,7 @@ export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ct
         @media (prefers-reduced-motion:reduce){.ncx-closing{animation:none}}
       `}</style>
       <div className="wrap ncx-container">
-        <h2>{heading}</h2>
+        <SplitHeading as="h2">{heading}</SplitHeading>
         <motion.a ref={btnRef} className="btn" href={ctaUrl} style={{ x: sx, y: sy }}>
           {ctaLabel}
         </motion.a>

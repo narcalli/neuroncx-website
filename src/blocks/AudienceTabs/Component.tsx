@@ -3,6 +3,9 @@
 import React, { useId, useRef, useState } from 'react'
 
 import type { AudienceTabsBlock as Props } from '@/payload-types'
+import { isStill } from '@/motion/still'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Tab = Props['tabs'][number]
 
@@ -20,7 +23,7 @@ function onHashLink(e: React.MouseEvent<HTMLAnchorElement>) {
   const target = id ? document.getElementById(id) : null
   if (!target) return
   e.preventDefault()
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduce = isStill(e.currentTarget)
   target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
   history.pushState(null, '', href)
   if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
@@ -67,9 +70,9 @@ export const AudienceTabsBlock: React.FC<Props> = ({ eyebrow, heading, intro, ta
     <section className="ncx-aud">
       <style>{css}</style>
       <div className="ncx-container">
-        {eyebrow ? <p className="aud-eyebrow">{eyebrow}</p> : null}
-        <h2 id={headingId}>{heading}</h2>
-        {intro ? <p className="aud-intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="aud-eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2" id={headingId}>{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="aud-intro">{intro}</Reveal> : null}
 
         <div className="aud-tablist" role="tablist" aria-labelledby={headingId} onKeyDown={onKeyDown}>
           {list.map((t, i) => (

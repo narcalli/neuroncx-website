@@ -370,3 +370,37 @@ h2 {
     font-family: var(--font-body), Arial, sans-serif;
   }
 }
+
+/* Motion levels (src/motion/): data-motion is set on <html> for the site,
+   on a page's wrapper and on a block's wrapper, server-rendered, so it holds
+   before any script runs. Off: every animation and transition finishes at
+   once, at its end state, so nothing waits hidden for an entrance that will
+   not play. Reduced: loops play once and stop. */
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-iteration-count: 1 !important;
+}
+
+/* The arrow glyph inside a CTA (point 6, prompt 4): moves 4px right while
+   its link or button is hovered. One class, used wherever a CTA already
+   renders an arrow. Off is instant (the rule above); reduced still gets it,
+   the same as any other small hover transition. */
+.ncx-arrow {
+  display: inline-block;
+  transition: transform 0.18s ease;
+}
+a:hover .ncx-arrow,
+button:hover .ncx-arrow {
+  transform: translateX(4px);
+}

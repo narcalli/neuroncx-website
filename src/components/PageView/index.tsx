@@ -9,6 +9,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import type { Page } from '@/payload-types'
 import { loadClusterPages } from '@/utilities/clusters'
 import { isCluster } from '@/utilities/pages'
+import { MotionPage } from '@/motion/MotionProvider'
 
 // Blocks that own their top spacing and should sit flush under the header.
 // Keep in sync with noMargin in src/blocks/RenderBlocks.tsx.
@@ -55,20 +56,22 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const crumbs = page.slug === 'home' ? null : <Breadcrumbs items={buildTrail({ page })} onDark={onDark} />
 
   return (
-    <article className={startsFlush ? 'pb-24' : 'pt-16 pb-24'}>
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+    <MotionPage page={page.pageMotion}>
+      <article className={startsFlush ? 'pb-24' : 'pt-16 pb-24'}>
+        {/* Allows redirects for valid pages too */}
+        <PayloadRedirects disableNotFound url={url} />
 
-      {draft && <LivePreviewListener />}
+        {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} leading={crumbs} />
-      {heroDisabled && !startsFlush && crumbs ? <div className="ncx-container pt-7">{crumbs}</div> : null}
-      <RenderBlocks
-        blocks={layout}
-        leading={startsFlush ? crumbs : undefined}
-        pageId={String(page.id)}
-        beforeClosing={footer}
-      />
-    </article>
+        <RenderHero {...hero} leading={crumbs} />
+        {heroDisabled && !startsFlush && crumbs ? <div className="ncx-container pt-7">{crumbs}</div> : null}
+        <RenderBlocks
+          blocks={layout}
+          leading={startsFlush ? crumbs : undefined}
+          pageId={String(page.id)}
+          beforeClosing={footer}
+        />
+      </article>
+    </MotionPage>
   )
 }

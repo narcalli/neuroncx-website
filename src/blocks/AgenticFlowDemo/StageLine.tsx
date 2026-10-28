@@ -4,8 +4,8 @@ import { animate } from 'motion/react'
 import React, { useEffect, useLayoutEffect, useRef } from 'react'
 
 import type { LineStyle } from './design'
+import { isStill } from '@/motion/still'
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * The line joining a stage's three cards, measured from the cards themselves
@@ -71,7 +71,7 @@ export const StageLine: React.FC<{
 
   useLayoutEffect(() => {
     layout()
-    if (firstDraw.current || lineStyle !== 'animated' || reducedMotion()) {
+    if (firstDraw.current || lineStyle !== 'animated' || isStill(pathRef.current)) {
       firstDraw.current = false
       running.current?.stop()
       paint(1)

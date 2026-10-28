@@ -65,7 +65,20 @@ export const flowCss = `
  * over the grid and flex displays, or every panel would show.
  */
 export const featuresCss = `
-        .ncx-flow--features .stage[hidden],.ncx-flow--features .chips[hidden]{display:none}
+        /* The family tab's own sliding indicator (a shared layoutId, Framer
+           Motion), behind the selected tab's label. */
+        .ncx-flow--features .fam-trig .tb{position:relative;overflow:hidden;z-index:0}
+        .ncx-flow--features .fam-ind{position:absolute;inset:0;border-radius:999px;z-index:-1;
+          background:var(--fd-sel-bg,var(--ncx-crimson))}
+        .ncx-flow--features .fam-trig .tb[aria-pressed="true"]{background:transparent}
+        .ncx-flow--features .fam-label{position:relative;z-index:1}
+        /* The agent list: one family mounted at a time (AnimatePresence),
+           sliding in from the direction of travel. */
+        .ncx-flow--features .chips-wrap{position:relative;overflow:hidden}
+        /* The stage-outer's own height tracks whichever panel is laid out
+           (Framer Motion layout); the rest sit position:absolute inside it,
+           out of flow, so they add nothing to that height. */
+        .ncx-flow--features .stage-outer{position:relative}
         .ncx-flow--features .lab-q--agents{margin:20px 0 10px}
         .ncx-flow--features .chips{display:flex;flex-wrap:wrap;gap:8px}
         .ncx-flow--features .chip{display:inline-flex;align-items:center;gap:7px;color:var(--ncx-body);background:var(--ncx-white);
@@ -80,9 +93,18 @@ export const featuresCss = `
         /* Animated draws the measured line instead (StageLine); none draws no line. */
         .ncx-flow--features.fd-line-animated .stage::before,.ncx-flow--features.fd-line-none .stage::before{display:none}
         .ncx-flow--features .node{min-height:0}
+        .ncx-flow--features .feat{list-style:none;padding:0;margin:0 0 4px;display:flex;flex-direction:column;gap:9px}
+        .ncx-flow--features .feat li{display:flex;align-items:flex-start;gap:9px;font-size:.88rem;line-height:1.45;color:var(--ncx-body)}
+        .ncx-flow--features .feat svg{flex:none;margin-top:2px;color:var(--ncx-crimson)}
         .ncx-flow--features .hch{margin-top:4px}
         .ncx-flow--features .hch--handlers{margin-top:12px}
         .ncx-flow--features .you-set strong{font-weight:600;color:var(--ncx-ink)}
+        /* The database icon beside "Saves to your systems": a crimson packet
+           arcs into it on a change (GSAP MotionPath), and it dips once. */
+        .ncx-flow--features .saves{display:flex;align-items:center;gap:12px;margin-top:2px}
+        .ncx-flow--features .saves-ic{flex:none}
+        .ncx-flow--features .saves .pkt{fill:var(--ncx-crimson)}
+        .ncx-flow--features .saves small{color:var(--ncx-muted);font-size:.85rem;line-height:1.45}
         @media (max-width:899.98px){
           .ncx-flow--features .stage{grid-template-columns:1fr;gap:30px}
           .ncx-flow--features .stage::before{left:50%;right:auto;top:0;bottom:0;width:3px;height:auto;margin:0 0 0 -1.5px}

@@ -1,9 +1,11 @@
 'use client'
 
+import { motion } from 'motion/react'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 
 import type { WhatsappWidgetBlock as Props } from '@/payload-types'
+import { SPRING } from '@/motion/tokens'
 
 /** The page the click came from, as it appears in the CMS. */
 const slugFrom = (pathname: string) => {
@@ -24,8 +26,9 @@ const WhatsAppGlyph = () => (
 
 /**
  * A fixed pill, bottom right. Three behaviours, all deliberate:
- *  - it holds back on first paint and fades in once the visitor is past the
- *    hero, so it is not competing for the first click;
+ *  - it holds back on first paint and springs up once the visitor has
+ *    scrolled a third of the page, so it is not competing for the first
+ *    click;
  *  - it steps aside whenever a closing CTA is on screen, since both live in
  *    the same corner and the CTA is the stronger ask;
  *  - it drops to the glyph alone on narrow screens.
@@ -45,7 +48,12 @@ export const WhatsappWidgetBlock: React.FC<Props> = ({
   useEffect(() => {
     if (!enabled || !phone) return
 
-    const past = () => window.scrollY > 420
+    // A third of how far there is to scroll, not a fixed pixel: short and
+    // long pages both ask for the same share of the visit first.
+    const past = () => {
+      const travel = document.documentElement.scrollHeight - window.innerHeight
+      return travel > 0 && window.scrollY > travel / 3
+    }
     let ticking = false
 
     const paint = () => {
@@ -95,12 +103,15 @@ export const WhatsappWidgetBlock: React.FC<Props> = ({
   const text_ = label || 'Chat with us'
 
   return (
-    <div className={`ncx-wa${shown ? ' is-shown' : ''}`}>
+    <motion.div
+      className="ncx-wa"
+      style={{ visibility: shown ? 'visible' : 'hidden', pointerEvents: shown ? 'auto' : 'none' }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 16 }}
+      transition={SPRING}
+    >
       <style>{`
-        .ncx-wa{position:fixed;right:20px;bottom:20px;z-index:50;
-          opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;
-          transition:opacity .28s ease,transform .28s ease,visibility .28s ease}
-        .ncx-wa.is-shown{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+        .ncx-wa{position:fixed;right:20px;bottom:20px;z-index:50}
         .ncx-wa__link{
           display:flex;align-items:center;gap:10px;text-decoration:none;
           background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:999px;
@@ -119,7 +130,7 @@ export const WhatsappWidgetBlock: React.FC<Props> = ({
           .ncx-wa__link{padding:9px;gap:0}
         }
         @media(prefers-reduced-motion:reduce){
-          .ncx-wa,.ncx-wa__link{transition:none!important}
+          .ncx-wa__link{transition:none!important}
         }
       `}</style>
 
@@ -133,6 +144,6 @@ export const WhatsappWidgetBlock: React.FC<Props> = ({
         <WhatsAppGlyph />
         <span className="ncx-wa__label">{text_}</span>
       </a>
-    </div>
+    </motion.div>
   )
 }

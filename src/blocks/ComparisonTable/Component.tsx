@@ -1,6 +1,8 @@
 import React from 'react'
 
 import type { ComparisonTableBlock as Props } from '@/payload-types'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 /**
  * Comparison table: NeuronCx beside other types of system. A real table for
@@ -20,9 +22,9 @@ export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro,
     <section className="ncx-cmp" style={{ '--cmp-cols': cols.length } as React.CSSProperties}>
       <style>{css}</style>
       <div className="ncx-container">
-        {eyebrow ? <p className="cmp-eyebrow">{eyebrow}</p> : null}
-        <h2>{heading}</h2>
-        {intro ? <p className="cmp-intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="cmp-eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="cmp-intro">{intro}</Reveal> : null}
 
         <div className="cmp-scroll" role="region" aria-label={`${heading}: comparison table`} tabIndex={0}>
           <table>

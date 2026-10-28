@@ -46,11 +46,11 @@ export const MegaPanel = React.forwardRef<
 
   return (
     <div className="ncx-mega" id={id} ref={ref}>
-      {layout.groups.map((g) => {
+      {layout.groups.map((g, i) => {
         const labelId = `${id}-${g.id}`
         const showLabel = layout.showLabels && Boolean(g.label)
         return (
-          <div className="ncx-mega__group" key={g.id}>
+          <div className="ncx-mega__group" key={g.id} style={{ '--i': i } as React.CSSProperties}>
             {showLabel ? (
               <p className="ncx-mega__eyebrow" id={labelId}>
                 {g.label}
@@ -72,7 +72,8 @@ export const MegaPanel = React.forwardRef<
         )
       })}
 
-      {card ? <FeaturedCard card={card} image={image} /> : null}
+      {/* Last in the column stagger, after every group. */}
+      {card ? <FeaturedCard card={card} image={image} index={layout.groups.length} /> : null}
     </div>
   )
 })
@@ -81,7 +82,9 @@ export const MegaPanel = React.forwardRef<
 const FeaturedCard: React.FC<{
   card: NonNullable<ReturnType<typeof panelLayout>['featured']>
   image?: FeaturedImage | null
-}> = ({ card, image }) => {
+  /** Its place in the column stagger, after the groups before it. */
+  index: number
+}> = ({ card, image, index }) => {
   const body = (
     <>
       {image ? (
@@ -98,11 +101,14 @@ const FeaturedCard: React.FC<{
       ) : null}
     </>
   )
+  const style = { '--i': index } as React.CSSProperties
   return card.href ? (
-    <Anchor className="ncx-mega__feature" href={card.href} newTab={card.newTab}>
+    <Anchor className="ncx-mega__feature" href={card.href} newTab={card.newTab} style={style}>
       {body}
     </Anchor>
   ) : (
-    <div className="ncx-mega__feature">{body}</div>
+    <div className="ncx-mega__feature" style={style}>
+      {body}
+    </div>
   )
 }

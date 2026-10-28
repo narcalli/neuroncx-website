@@ -16,6 +16,7 @@ import { getIndustryTopicPages, industryHref, type IndustryCollection } from '@/
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { defaultShareImage } from '@/utilities/siteDefaults'
+import { MotionPage } from '@/motion/MotionProvider'
 
 /**
  * The page of an industry, at /{industry}, or of an industry topic, at
@@ -218,15 +219,17 @@ export const IndustryEntryPage = ({
   }
 
   return (
-    <article className="ncx-industry">
-      {draft ? <LivePreviewListener /> : null}
-      <style>{`.ncx-industry{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}`}</style>
-      {heroFromLayout ? null : (
-        <EntryHero bar={bar} entry={entry as unknown as MicroApp} groupName={groupName} primary={{ label: ctaLabel, href: ctaHref }} draft={draft} />
-      )}
-      <RenderSections blocks={drawn} ctx={ctx} />
-      {placed ? null : footer}
-      {closingInLayout ? null : closing}
-    </article>
+    <MotionPage page={entry.pageMotion}>
+      <article className="ncx-industry">
+        {draft ? <LivePreviewListener /> : null}
+        <style>{`.ncx-industry{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}`}</style>
+        {heroFromLayout ? null : (
+          <EntryHero bar={bar} entry={entry as unknown as MicroApp} groupName={groupName} primary={{ label: ctaLabel, href: ctaHref }} draft={draft} />
+        )}
+        <RenderSections blocks={drawn} ctx={ctx} />
+        {placed ? null : footer}
+        {closingInLayout ? null : closing}
+      </article>
+    </MotionPage>
   )
 }

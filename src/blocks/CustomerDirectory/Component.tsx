@@ -6,6 +6,8 @@ import type { Customer, CustomerDirectoryBlock as CustomerDirectoryProps, Sector
 
 import { DirectoryList, type DirectoryRow } from './DirectoryList'
 import { directoryListCss } from './styles'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 const MAX_ROWS = 100
 
@@ -52,9 +54,9 @@ ${directoryListCss}`}</style>
       <div className="ncx-dir__wrap ncx-container">
         {eyebrow || heading || intro ? (
           <header>
-            {eyebrow ? <p className="ncx-dir__eyebrow">{eyebrow}</p> : null}
-            {heading ? <h2 className="ncx-dir__heading">{heading}</h2> : null}
-            {intro ? <p className="ncx-dir__intro">{intro}</p> : null}
+            {eyebrow ? <Reveal as="p" from="left" className="ncx-dir__eyebrow">{eyebrow}</Reveal> : null}
+            {heading ? <SplitHeading as="h2" className="ncx-dir__heading">{heading}</SplitHeading> : null}
+            {intro ? <Reveal as="p" className="ncx-dir__intro">{intro}</Reveal> : null}
           </header>
         ) : null}
         <DirectoryList

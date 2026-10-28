@@ -95,15 +95,20 @@ describe('the markup', () => {
   )
 
   it('marks the first, middle and last points, and passes the count to the CSS', () => {
-    expect(html).toContain('style="--n:5"')
+    expect(html).toContain('--n:5')
+    // The server HTML (and motion off, or reduced) is the finished episode: every point done.
     expect(html.match(/<li class="(first|mid|last)[^"]*" style="--i:(\d)"/g)).toEqual([
-      // The first point counts as reached from the start.
       '<li class="first done" style="--i:0"',
-      '<li class="mid" style="--i:1"',
-      '<li class="mid" style="--i:2"',
-      '<li class="mid" style="--i:3"',
-      '<li class="last" style="--i:4"',
+      '<li class="mid done" style="--i:1"',
+      '<li class="mid done" style="--i:2"',
+      '<li class="mid done" style="--i:3"',
+      '<li class="last done" style="--i:4"',
     ])
+  })
+
+  it('shows the last point in the panel by default', () => {
+    expect(html).toContain('<b>Review visit</b>')
+    expect(html).toContain('<span>What attaches at Review visit</span>')
   })
 
   it('puts the start and end labels in the head, to line up over the end points', () => {
@@ -119,7 +124,7 @@ describe('the markup', () => {
 
   it('wraps labels to two lines at most, on one top line', () => {
     expect(html).toMatch(/\.ncx-epi \.lbl\{[^}]*-webkit-line-clamp:2/)
-    expect(html).toMatch(/\.ncx-epi \.tl li\{pointer-events:none;position:absolute;top:11px;/)
+    expect(html).toMatch(/\.ncx-epi \.tl li\{pointer-events:none;position:absolute;top:calc\(11px/)
   })
 
   it("keeps each label's click area to its own button", () => {
@@ -129,5 +134,46 @@ describe('the markup', () => {
   it('rings only the point, only for keyboard focus', () => {
     expect(html).toContain('.ncx-epi .pt:focus,.ncx-epi .pt:focus-visible{outline:none}')
     expect(html).toContain('.ncx-epi .pt:focus-visible .dot{outline:2px solid var(--ncx-crimson);outline-offset:4px}')
+  })
+})
+
+describe('a branch point', () => {
+  const points = [
+    { id: 'p0', label: 'Booking', caption: 'Request made' },
+    { id: 'p1', label: 'Payment sent', caption: 'Link texted' },
+    { id: 'p2', label: 'Lost or expired link', caption: 'A fresh link is sent', isBranch: true, branchLabel: 'Only if needed' },
+    { id: 'p3', label: 'Payment confirmed', caption: 'Saved to the record' },
+  ]
+  const html = renderToStaticMarkup(
+    React.createElement(AgenticEpisodeBlock, {
+      blockType: 'agenticEpisode',
+      heading: 'One booking, two agents',
+      points,
+    } as unknown as Episode),
+  )
+
+  it('sits raised, with its own note, and reserves room above the line for it', () => {
+    expect(html).toContain('<li class="mid done branch" style="--i:2">')
+    expect(html).toContain('<em class="branch-note">Only if needed</em>')
+    expect(html).toContain("--branch-h:56px")
+  })
+
+  it('gets a dashed arc, already crimson (reached) in the finished state', () => {
+    expect(html).toContain('class="arc on"')
+    expect(html).toMatch(/\.ncx-epi \.arc\{[^}]*border:2px dashed/)
+    expect(html).toMatch(/\.ncx-epi \.arc\.on\{border-color:var\(--ncx-crimson\)\}/)
+  })
+
+  it('without any branch point, reserves no extra room', () => {
+    const plain = renderToStaticMarkup(
+      React.createElement(AgenticEpisodeBlock, {
+        blockType: 'agenticEpisode',
+        heading: 'One episode',
+        points: points.map((p) => ({ id: p.id, label: p.label, caption: p.caption })),
+      } as unknown as Episode),
+    )
+    expect(plain).toContain('--branch-h:0px')
+    expect(plain).not.toContain('class="arc')
+    expect(plain).not.toContain(' branch"')
   })
 })

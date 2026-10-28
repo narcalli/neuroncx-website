@@ -3,6 +3,7 @@ import React from 'react'
 import { cardTokens, OptionCard } from '@/components/blocks/OptionCard/OptionCard'
 import type { CardOptionFields } from '@/components/blocks/OptionCard/types'
 
+import { CardMotion } from '../CardMotion'
 import type { CardDesignProps } from '../types'
 
 /**
@@ -15,7 +16,7 @@ import type { CardDesignProps } from '../types'
  * a shadow by default. Cards with gaps, so `lastRow` does not apply. With
  * `showKeyPoints`, each card lists its item's key points under the body.
  */
-export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, look, showKeyPoints = false }) => {
+export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, look, showKeyPoints = false, motion }) => {
   if (!items.length) return null
   return (
     <>
@@ -33,7 +34,7 @@ export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, lo
           { '--cfeat-cols': columns, '--cfeat-mid': Math.min(columns, 2) } as React.CSSProperties
         }
       >
-        {items.map((it) => {
+        {items.map((it, i) => {
           const options: CardOptionFields = {
             cardColor: look?.cardColor || 'white',
             border: look?.border || 'none',
@@ -48,18 +49,20 @@ export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, lo
           }
           return (
             <li key={it.id}>
-              <OptionCard
-                options={options}
-                number={null}
-                title={it.title}
-                body={it.tagline || it.text || null}
-                icon={it.logo ? null : it.icon || null}
-                // Decorative: the title right below names the item.
-                logo={it.logo ? { src: it.logo.src, alt: '' } : null}
-                link={it.href ? { label: it.linkLabel || 'Learn more', url: it.href } : null}
-                keyPoints={showKeyPoints ? it.keyPoints : null}
-                defaultColor="white"
-              />
+              <CardMotion index={i} motion={motion}>
+                <OptionCard
+                  options={options}
+                  number={null}
+                  title={it.title}
+                  body={it.tagline || it.text || null}
+                  icon={it.logo ? null : it.icon || null}
+                  // Decorative: the title right below names the item.
+                  logo={it.logo ? { src: it.logo.src, alt: '' } : null}
+                  link={it.href ? { label: it.linkLabel || 'Learn more', url: it.href } : null}
+                  keyPoints={showKeyPoints ? it.keyPoints : null}
+                  defaultColor="white"
+                />
+              </CardMotion>
             </li>
           )
         })}

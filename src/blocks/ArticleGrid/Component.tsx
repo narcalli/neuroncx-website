@@ -1,6 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 import { getMany, CMS_TAG } from '@/utilities/cms'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Props = {
   heading?: string | null
@@ -48,8 +50,8 @@ export const ArticleGridBlock: React.FC<Props> = async ({ heading, intro, limit 
         }
       `}</style>
 
-      {heading ? <h2>{heading}</h2> : null}
-      {intro ? <p className="lede">{intro}</p> : null}
+      {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+      {intro ? <Reveal as="p" className="lede">{intro}</Reveal> : null}
 
       <div className="grid">
         {posts.map((post: any) => {

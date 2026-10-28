@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Item = { label?: string | null; href?: string | null; id?: string | null }
 type Group = { title?: string | null; items?: Item[] | null; id?: string | null }
@@ -49,9 +51,9 @@ export const SolutionGridBlock: React.FC<Props> = ({ eyebrow, heading, intro, gr
       `}</style>
 
       <div className="inner ncx-container">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h2>{heading}</h2>
-        {intro ? <p className="intro">{intro}</p> : null}
+        {eyebrow ? <Reveal as="p" from="left" className="eyebrow">{eyebrow}</Reveal> : null}
+        <SplitHeading as="h2">{heading}</SplitHeading>
+        {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
         {rows.map((g, i) => (
           <div className="group" key={g.id || i}>

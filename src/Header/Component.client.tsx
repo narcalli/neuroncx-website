@@ -1,12 +1,17 @@
 'use client'
 
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import type { Header } from '@/payload-types'
+import { Magnetic } from '@/motion/Magnetic'
+import { SPRING } from '@/motion/tokens'
+import { useMotionLevel } from '@/motion/useMotionLevel'
 
 import { AnnouncementBar } from './AnnouncementBar'
+import { nextHeaderState } from './headerScroll'
 import { headerCss } from './headerStyles'
 
 import { Anchor } from './Anchor'
@@ -77,11 +82,27 @@ export const HeaderClient: React.FC<{
   // read by its focus and click handlers; empty for the keyboard.
   const pressedWith = useRef('')
   const [open, setOpen] = useState<number | null>(null)
+  // The pill behind the hovered nav item or link (mouse only). A shared
+  // layoutId, not the open dropdown's state: a plain link can take it too.
+  const [hovered, setHovered] = useState<number | null>(null)
+  const hasFocus = useRef(false)
   const pathname = usePathname()
+  // Site and page level only: the bar's own hide-on-scroll is infrastructure,
+  // not a block's animation, so it has no Motion panel of its own.
+  const level = useMotionLevel()
 
   // The menu drawer: whether it is open, and which of its dropdown sections
   // is expanded (one at a time).
   const [drawerOpen, setDrawerOpen] = useState(false)
+  // Read inside the scroll effect below, which only ever re-attaches on a
+  // route change: refs so it sees this frame's values, not the ones it
+  // closed over when it last ran.
+  const openRef = useRef(open)
+  openRef.current = open
+  const drawerOpenRef = useRef(drawerOpen)
+  drawerOpenRef.current = drawerOpen
+  const levelRef = useRef(level)
+  levelRef.current = level
   const [section, setSection] = useState<number | null>(null)
   const drawerRef = useRef<HTMLDivElement | null>(null)
   const burgerRef = useRef<HTMLButtonElement | null>(null)
@@ -158,9 +179,10 @@ export const HeaderClient: React.FC<{
   const items = (data.navItems || []).filter((i) => i?.label)
   const announcement = data.announcement
 
-  // `is-stuck` and `on-dark` are written straight onto the element rather than
-  // held in state: this runs on every scroll frame, and re-rendering the whole
-  // nav that often would be wasteful. One rAF per frame, guarded by `ticking`.
+  // `is-stuck`, `is-hidden` and `on-dark` are written straight onto the
+  // element rather than held in state: this runs on every scroll frame, and
+  // re-rendering the whole nav that often would be wasteful. One rAF per
+  // frame, guarded by `ticking`.
   //
   // `on-dark` is decided by sampling what the header is actually sitting on,
   // at three points across its width. `data-nav="dark"` stays as the manual
@@ -171,6 +193,7 @@ export const HeaderClient: React.FC<{
 
     let darkZones: Element[] = []
     let ticking = false
+    let lastScrollY = window.scrollY
     // Separate thresholds, so a boundary drifting across a probe cannot make
     // the header strobe between the two states.
     const GOES_DARK = 92
@@ -183,7 +206,12 @@ export const HeaderClient: React.FC<{
 
     const paint = () => {
       ticking = false
-      nav.classList.toggle('is-stuck', window.scrollY > 36)
+      const scrollY = window.scrollY
+      const held = openRef.current !== null || drawerOpenRef.current || hasFocus.current || levelRef.current !== 'on'
+      const { stuck, hidden } = nextHeaderState({ scrollY, lastScrollY, held })
+      lastScrollY = scrollY
+      nav.classList.toggle('is-stuck', stuck)
+      nav.classList.toggle('is-hidden', hidden)
       const r = nav.getBoundingClientRect()
       const probe = r.top + r.height / 2
 
@@ -229,13 +257,28 @@ export const HeaderClient: React.FC<{
       onScroll()
     }
 
+    // Focus landing anywhere inside the bar holds it shown; the next paint
+    // picks this up through the ref, and this also brings it back at once
+    // rather than waiting for the next scroll event.
+    const onFocusIn = () => {
+      hasFocus.current = true
+      nav.classList.remove('is-hidden')
+    }
+    const onFocusOut = (e: FocusEvent) => {
+      hasFocus.current = Boolean(e.relatedTarget) && nav.contains(e.relatedTarget as Node)
+    }
+
     collect()
     paint()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize, { passive: true })
+    nav.addEventListener('focusin', onFocusIn)
+    nav.addEventListener('focusout', onFocusOut)
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
+      nav.removeEventListener('focusin', onFocusIn)
+      nav.removeEventListener('focusout', onFocusOut)
     }
     // Re-reads the dark sections after a client-side navigation.
   }, [pathname])
@@ -361,6 +404,12 @@ export const HeaderClient: React.FC<{
     return () => document.body.classList.remove('ncx-menu-open')
   }, [open])
 
+  // A dropdown or the drawer opening brings the bar back at once, rather
+  // than waiting for the next scroll event to notice it is held.
+  useEffect(() => {
+    if (open !== null || drawerOpen) navRef.current?.classList.remove('is-hidden')
+  }, [open, drawerOpen])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(null)
@@ -436,7 +485,10 @@ export const HeaderClient: React.FC<{
           <nav
             className="ncx-nav__links"
             onPointerLeave={(e) => {
-              if (e.pointerType === 'mouse') closeSoon()
+              if (e.pointerType === 'mouse') {
+                closeSoon()
+                setHovered(null)
+              }
             }}
             onPointerEnter={(e) => {
               if (e.pointerType === 'mouse') hold()
@@ -446,11 +498,28 @@ export const HeaderClient: React.FC<{
               const entry = menuKind(item)
 
               if (entry.kind === 'none') return null
+              // The hover pill (point 3, prompt 4): one shared element, kept
+              // mounted only inside whichever item the mouse is currently
+              // over. Its layoutId is how it slides from the last item to
+              // this one instead of fading in fresh each time.
+              const pill =
+                hovered === i ? (
+                  <motion.span className="ncx-navpill" layoutId="ncx-navpill" transition={SPRING} />
+                ) : null
               if (entry.kind === 'link') {
                 return (
-                  <Anchor key={item.id || i} className="ncx-navlink" href={entry.href} newTab={entry.newTab}>
-                    {item.label}
-                  </Anchor>
+                  <div
+                    key={item.id || i}
+                    className="ncx-navitem"
+                    onPointerEnter={(e) => {
+                      if (e.pointerType === 'mouse') setHovered(i)
+                    }}
+                  >
+                    {pill}
+                    <Anchor className="ncx-navlink" href={entry.href} newTab={entry.newTab}>
+                      {item.label}
+                    </Anchor>
+                  </div>
                 )
               }
 
@@ -473,8 +542,10 @@ export const HeaderClient: React.FC<{
                     if (e.pointerType !== 'mouse') return
                     hold()
                     setOpen(i)
+                    setHovered(i)
                   }}
                 >
+                  {pill}
                   <button
                     className="ncx-navlink"
                     type="button"
@@ -567,12 +638,13 @@ export const HeaderClient: React.FC<{
           collapsed; one opens at a time. Any link tapped in it closes it. */}
       <div
         ref={drawerRef}
-        className="ncx-drawer"
+        className={`ncx-drawer${drawerOpen ? ' is-open' : ''}`}
         id="ncx-drawer"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        hidden={!drawerOpen}
+        aria-hidden={!drawerOpen}
+        inert={!drawerOpen}
         onClick={(e) => {
           if ((e.target as Element).closest('a[href]')) closeDrawer({ focus: false })
         }}
@@ -598,7 +670,11 @@ export const HeaderClient: React.FC<{
               if (entry.kind === 'none') return null
               if (entry.kind === 'link') {
                 return (
-                  <li className="ncx-drawer__item" key={item.id || i}>
+                  <li
+                    className="ncx-drawer__item"
+                    key={item.id || i}
+                    style={{ '--i': i } as React.CSSProperties}
+                  >
                     <Anchor className="ncx-drawer__row" href={entry.href} newTab={entry.newTab}>
                       {item.label}
                     </Anchor>
@@ -609,7 +685,11 @@ export const HeaderClient: React.FC<{
               const sectionId = `ncx-drawer-${item.id || i}`
 
               return (
-                <li className="ncx-drawer__item" key={item.id || i}>
+                <li
+                  className="ncx-drawer__item"
+                  key={item.id || i}
+                  style={{ '--i': i } as React.CSSProperties}
+                >
                   <button
                     className="ncx-drawer__row"
                     type="button"

@@ -1,4 +1,5 @@
 import type { CardOptionFields } from '@/components/blocks/OptionCard/types'
+import type { MotionSetting } from '@/motion/levels'
 
 /**
  * One card, whatever it describes. Every card design (designs/*) takes a list
@@ -67,6 +68,8 @@ export type CardLayoutProps = {
   look?: CardLook
   /** List each item's key points under its description. Read by feature, logo card and story. */
   showKeyPoints?: boolean
+  /** The block's own Motion panel, where it has one (CardMotion.tsx). */
+  motion?: MotionSetting | null
 }
 
 export type CardDesignProps = { items: CardItem[] } & CardLayoutProps

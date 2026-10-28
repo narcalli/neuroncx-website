@@ -1,4 +1,6 @@
 import React from 'react'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type LogoItem = {
   name?: string | null
@@ -74,9 +76,9 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
       `}</style>
 
       <div className="inner ncx-container">
-        {label ? <p className="label">{label}</p> : null}
-        {heading ? <h2>{heading}</h2> : null}
-        {intro ? <p className="intro">{intro}</p> : null}
+        {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
+        {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+        {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
 
         <div className="grid">
           {items.map((l, i) => {

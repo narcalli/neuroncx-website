@@ -2,6 +2,8 @@ import React from 'react'
 
 import { BlockIcon } from '@/components/BlockIcon'
 import { CardFlag } from '@/components/cards/Flag'
+import { SplitHeading } from '@/motion/SplitHeading'
+import { Reveal } from '@/motion/Reveal'
 
 type Highlight = { icon?: string | null; label?: string | null; id?: string | null }
 
@@ -163,9 +165,9 @@ export const DetailedProductSuiteBlock: React.FC<Props> = ({
 
       {hasHeader ? (
         <header className="head">
-          {headEyebrow ? <p className="eyebrow">{headEyebrow}</p> : null}
-          {headTitle ? <h2 id={headingId}>{headTitle}</h2> : null}
-          {headDescription ? <p className="intro">{headDescription}</p> : null}
+          {headEyebrow ? <Reveal as="p" from="left" className="eyebrow">{headEyebrow}</Reveal> : null}
+          {headTitle ? <SplitHeading as="h2" id={headingId}>{headTitle}</SplitHeading> : null}
+          {headDescription ? <Reveal as="p" className="intro">{headDescription}</Reveal> : null}
         </header>
       ) : null}
 
