@@ -493,6 +493,13 @@ export const HeaderClient: React.FC<{
             onPointerEnter={(e) => {
               if (e.pointerType === 'mouse') hold()
             }}
+            // Focus leaving the menus (Tab past the last item, or into the
+            // page) closes an open panel, so it never sits over the content
+            // the keyboard has moved on to. Moving between a trigger and its
+            // own panel stays inside, and keeps it open.
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(null)
+            }}
           >
             {items.map((item, i) => {
               const entry = menuKind(item)
@@ -587,6 +594,7 @@ export const HeaderClient: React.FC<{
                       panels.current.set(i, el)
                     }}
                     groups={entry.groups}
+                    open={open === i}
                     featured={item.featured}
                     image={item.id ? featuredImages?.[item.id] : null}
                   />

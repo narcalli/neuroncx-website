@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
 
@@ -11,6 +11,8 @@ type Props = {
   buttonLabel?: string | null
   successMessage?: string | null
   showMessageField?: boolean | null
+  /** h1 when the form is the page's first block and the page has no hero (PageView). */
+  headingLevel?: 'h1' | 'h2'
 }
 
 export const ContactFormBlock: React.FC<Props> = ({
@@ -20,9 +22,14 @@ export const ContactFormBlock: React.FC<Props> = ({
   buttonLabel,
   successMessage,
   showMessageField,
+  headingLevel = 'h2',
 }) => {
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const [error, setError] = useState('')
+  // Which required fields were empty on the last submit, for aria-invalid.
+  const [missing, setMissing] = useState<{ name: boolean; email: boolean }>({ name: false, email: false })
+  const nameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
   const [values, setValues] = useState({
     name: '',
     company: '',
@@ -37,9 +44,13 @@ export const ContactFormBlock: React.FC<Props> = ({
   const submit = async () => {
     if (status === 'sending') return
 
-    if (!values.name.trim() || !values.email.trim()) {
+    const empty = { name: !values.name.trim(), email: !values.email.trim() }
+    setMissing(empty)
+    if (empty.name || empty.email) {
       setError('Name and business email are required.')
       setStatus('error')
+      // To the first empty field, which names the error through aria-describedby.
+      ;(empty.name ? nameRef : emailRef).current?.focus()
       return
     }
 
@@ -83,7 +94,7 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact .cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
         .ncx-contact .label{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
-        .ncx-contact h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:500;
+        .ncx-contact h1,.ncx-contact h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:500;
           font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-contact .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:46ch;font-size:18px;line-height:1.6}
         /* Was a violet-to-cyan gradient rim showing through a 1px pad. Both
@@ -106,6 +117,7 @@ export const ContactFormBlock: React.FC<Props> = ({
           background:var(--ncx-navy);color:var(--ncx-on-navy);margin-top:4px}
         .ncx-contact button[disabled]{opacity:.6;cursor:default}
         .ncx-contact .err{color:var(--ncx-crimson-ink);font-size:15px;margin:12px 0 0}
+        .ncx-contact .err:empty{margin:0}
         .ncx-contact .done{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:17px;
           line-height:1.6;color:var(--ncx-ink);margin:0}
         .ncx-contact .req{color:var(--ncx-crimson-ink)}
@@ -116,25 +128,40 @@ export const ContactFormBlock: React.FC<Props> = ({
       <div className="cols">
         <div>
           {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
-          {heading ? <SplitHeading as="h2">{heading}</SplitHeading> : null}
+          {/* As the page's H1 it is plain: an H1 is never hidden or split (it can be the LCP). */}
+          {heading ? (
+            headingLevel === 'h1' ? <h1>{heading}</h1> : <SplitHeading as="h2">{heading}</SplitHeading>
+          ) : null}
           {intro ? <Reveal as="p" className="intro">{intro}</Reveal> : null}
         </div>
 
         <div className="card">
           <div className="in">
             {status === 'done' ? (
-              <p className="done">
-                {successMessage || "Thanks — we've got your enquiry and will be in touch shortly."}
+              <p className="done" role="status">
+                {successMessage || "Thanks, we've got your enquiry and will be in touch shortly."}
               </p>
             ) : (
-              <div>
+              <form
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  submit()
+                }}
+              >
                 <div className="field">
                   <label htmlFor="ncx-name">
-                    Your name <span className="req">*</span>
+                    Your name <span className="req" aria-hidden="true">*</span>
                   </label>
                   <input
+                    ref={nameRef}
                     id="ncx-name"
+                    name="name"
                     type="text"
+                    autoComplete="name"
+                    required
+                    aria-invalid={missing.name || undefined}
+                    aria-describedby={missing.name && error ? 'ncx-contact-error' : undefined}
                     value={values.name}
                     onChange={(e) => set('name', e.target.value)}
                   />
@@ -144,7 +171,9 @@ export const ContactFormBlock: React.FC<Props> = ({
                   <label htmlFor="ncx-company">Company name</label>
                   <input
                     id="ncx-company"
+                    name="company"
                     type="text"
+                    autoComplete="organization"
                     value={values.company}
                     onChange={(e) => set('company', e.target.value)}
                   />
@@ -152,11 +181,17 @@ export const ContactFormBlock: React.FC<Props> = ({
 
                 <div className="field">
                   <label htmlFor="ncx-email">
-                    Business email <span className="req">*</span>
+                    Business email <span className="req" aria-hidden="true">*</span>
                   </label>
                   <input
+                    ref={emailRef}
                     id="ncx-email"
+                    name="email"
                     type="email"
+                    autoComplete="email"
+                    required
+                    aria-invalid={missing.email || undefined}
+                    aria-describedby={missing.email && error ? 'ncx-contact-error' : undefined}
                     value={values.email}
                     onChange={(e) => set('email', e.target.value)}
                   />
@@ -166,7 +201,9 @@ export const ContactFormBlock: React.FC<Props> = ({
                   <label htmlFor="ncx-mobile">Mobile number with country code</label>
                   <input
                     id="ncx-mobile"
+                    name="mobile"
                     type="tel"
+                    autoComplete="tel"
                     value={values.mobile}
                     onChange={(e) => set('mobile', e.target.value)}
                   />
@@ -177,6 +214,7 @@ export const ContactFormBlock: React.FC<Props> = ({
                     <label htmlFor="ncx-message">What would you like to automate?</label>
                     <textarea
                       id="ncx-message"
+                      name="message"
                       value={values.message}
                       onChange={(e) => set('message', e.target.value)}
                     />
@@ -195,12 +233,15 @@ export const ContactFormBlock: React.FC<Props> = ({
                   />
                 </div>
 
-                <button type="button" onClick={submit} disabled={status === 'sending'}>
+                <button type="submit" disabled={status === 'sending'}>
                   {status === 'sending' ? 'Sending…' : buttonLabel || 'Submit enquiry'}
                 </button>
 
-                {error ? <p className="err">{error}</p> : null}
-              </div>
+                {/* Always in the page, so the alert is announced when its text arrives. */}
+                <p id="ncx-contact-error" className="err" role="alert">
+                  {error}
+                </p>
+              </form>
             )}
           </div>
         </div>

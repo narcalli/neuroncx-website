@@ -59,6 +59,7 @@ function Row({ logos, durationSeconds, reverse }: { logos: MarqueeLogo[]; durati
     <div className={styles.row}>
       <div
         className={reverse ? `${styles.track} ${styles.reverse}` : styles.track}
+        data-loop
         style={{ '--dur': `${durationSeconds}s` } as React.CSSProperties}
       >
         {/* Repeats added to fill the row are hidden from assistive tech and, under reduced motion, not shown. */}

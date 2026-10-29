@@ -81,7 +81,7 @@ export default async function CardDesignsPreview() {
     }))
 
   return (
-    <main className="ncx-devcards ncx-container">
+    <div className="ncx-devcards ncx-container">
       <style>{`
         .ncx-devcards{padding-block:calc(64px + 48px) 96px;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-devcards h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:36px;margin:0 0 8px;color:var(--ncx-ink)}
@@ -171,6 +171,6 @@ export default async function CardDesignsPreview() {
       <Section title="Unknown design" note="An unknown design name falls back to the grid.">
         <CardDesign design="nope" items={items.slice(0, 3)} columns={3} />
       </Section>
-    </main>
+    </div>
   )
 }

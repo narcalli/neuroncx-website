@@ -39,13 +39,20 @@ const Item: React.FC<{ item: MenuEntry; withIcon: boolean }> = ({ item, withIcon
  */
 export const MegaPanel = React.forwardRef<
   HTMLDivElement,
-  { id: string; groups: MenuGroup[]; featured: NavItem['featured'] | null; image?: FeaturedImage | null }
->(function MegaPanel({ id, groups, featured, image }, ref) {
+  {
+    id: string
+    groups: MenuGroup[]
+    featured: NavItem['featured'] | null
+    image?: FeaturedImage | null
+    /** Closed panels are inert: out of the tab order at once, not after the fade (visibility .15s). */
+    open?: boolean
+  }
+>(function MegaPanel({ id, groups, featured, image, open = true }, ref) {
   const layout = panelLayout(groups, featured)
   const card = layout.featured
 
   return (
-    <div className="ncx-mega" id={id} ref={ref}>
+    <div className="ncx-mega" id={id} ref={ref} inert={!open}>
       {layout.groups.map((g, i) => {
         const labelId = `${id}-${g.id}`
         const showLabel = layout.showLabels && Boolean(g.label)

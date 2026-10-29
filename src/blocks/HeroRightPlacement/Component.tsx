@@ -286,7 +286,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         className="bg"
         {...(ratio ? { 'data-fit': '', style: { '--r': ratio } as React.CSSProperties } : {})}
       >
-        <div className="bg-inner">
+        <div className="bg-inner" data-loop>
           <MediaLayer value={mediaValue} poster={videoPoster} />
         </div>
       </div>

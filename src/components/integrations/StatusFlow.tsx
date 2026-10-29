@@ -101,8 +101,11 @@ export const StatusFlow: React.FC<Props> = ({ name, logoSrc, brandSrc, rows }) =
         /* Steps */
         .ncx-sflow__steps{list-style:none;margin:0;padding:0}
         .ncx-sflow__step{min-height:60vh;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:24px 0}
-        .ncx-sflow.is-live .ncx-sflow__step{opacity:.3}
-        .ncx-sflow.is-live .ncx-sflow__step.is-active{opacity:1}
+        /* Steps other than the current one step back in colour, not opacity:
+           the muted ink still reads at 5.6:1, where opacity .3 left the text
+           below 2:1. */
+        .ncx-sflow.is-live .ncx-sflow__step:not(.is-active) h3,
+        .ncx-sflow.is-live .ncx-sflow__step:not(.is-active) .ncx-sflow__happens p{color:var(--ncx-muted)}
         .ncx-sflow__count{margin:0;font-family:var(--font-display),Arial,sans-serif;font-size:13px;
           letter-spacing:.04em;color:var(--ncx-crimson-ink)}
         .ncx-sflow__step h3{margin:0;font-family:var(--font-display),Arial,sans-serif;font-weight:600;
@@ -149,7 +152,7 @@ export const StatusFlow: React.FC<Props> = ({ name, logoSrc, brandSrc, rows }) =
 
         /* Motion, only when the visitor has not asked for less. */
         @media(prefers-reduced-motion:no-preference){
-          .ncx-sflow__step{transition:opacity .35s ease}
+          .ncx-sflow__step h3,.ncx-sflow__happens p{transition:color .35s ease}
           .ncx-sflow__bar::before{transition:background .25s ease}
           .ncx-sflow__glow{animation:ncxSflowGlow 2.4s ease-in-out infinite}
           .ncx-sflow__card .ncx-sflow__pill{animation:ncxSflowFlip .45s cubic-bezier(.2,.7,.2,1) both;transform-origin:50% 100%}

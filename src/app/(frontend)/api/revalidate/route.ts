@@ -19,6 +19,29 @@ const MAX_PATHS = 50
 /** Collections outside the content registry whose cached content is tagged content-{collection}. */
 const TAGGED = ['sectors', 'industryTopics']
 
+/**
+ * The other CMS collections and globals the site reads, and the cache tags
+ * their reads carry, so a change reaches every page that shows them, not
+ * only the paths sent (neuroncx-cms src/hooks/revalidateOnSite.ts).
+ */
+const SITE_TAGS: Record<string, string[]> = {
+  pages: ['pages-sitemap'],
+  integrations: ['integrations'],
+  integrationsMaster: ['integrations-master'],
+  integrationCategories: ['integration-categories', 'integrations'],
+  connectionTypes: ['integrations'],
+  products: ['integrations', 'customers'],
+  customers: ['customers'],
+  posts: ['posts'],
+  features: ['features'],
+  redirects: ['redirects'],
+  header: ['header'],
+  footer: ['footer'],
+}
+
+/** Globals drawn on every page: the whole layout refreshes with them. */
+const ON_EVERY_PAGE = ['header', 'footer']
+
 const secretMatches = (given: string | null): boolean => {
   const expected = process.env.REVALIDATE_SECRET
   if (!expected || !given) return false
@@ -56,6 +79,13 @@ export async function POST(request: Request) {
   // The content collections, and industries and industry topics (utilities/industries.ts).
   const known = collection && (collection in CONTENT_COLLECTIONS || TAGGED.includes(collection))
   if (known) revalidateTag(`content-${collection}`, 'max')
+  const siteTags = (collection && SITE_TAGS[collection]) || []
+  for (const tag of siteTags) revalidateTag(tag, 'max')
+
+  if (collection && ON_EVERY_PAGE.includes(collection)) {
+    revalidatePath('/', 'layout')
+    return json({ revalidated: valid, tags: siteTags, layout: '/' }, 200)
+  }
 
   // Site Settings reach every page (the Animations switch, utilities/siteSettings.ts):
   // refresh the cached settings and everything under the root layout.
@@ -65,5 +95,8 @@ export async function POST(request: Request) {
     return json({ revalidated: valid, tag: 'site-settings', layout: '/' }, 200)
   }
 
-  return json({ revalidated: valid, ...(known ? { tag: `content-${collection}` } : {}) }, 200)
+  return json(
+    { revalidated: valid, ...(known ? { tag: `content-${collection}` } : {}), ...(siteTags.length ? { tags: siteTags } : {}) },
+    200,
+  )
 }

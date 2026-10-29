@@ -392,14 +392,14 @@ h2 {
   animation-iteration-count: 1 !important;
 }
 
-/* Loops: every infinite CSS animation sits on, or inside, an element tagged
-   data-loop. src/motion/LoopWatch.tsx sets data-inview on it while it is on
-   screen; off screen its animations are paused (only once the watcher runs,
-   so with no script they play as before). At reduced and off, from the site,
-   the page or the block, a tagged element's own loop and its ::before and
-   ::after stop on their final frame. Only those: an entrance inside a tagged
-   section keeps its own reduced handling, and a loop further inside one ends
-   on its resting style through the [data-motion] rules above. */
+/* Loops: every element with an infinite CSS animation is tagged data-loop,
+   or, when the loop is a section's own ::before or ::after, the section is.
+   src/motion/LoopWatch.tsx sets data-inview on each while it is on screen;
+   off screen it, and anything inside it, is paused (only once the watcher
+   runs, so with no script they play as before). At reduced and off, from the
+   site, the page or the block, a tagged loop and its ::before and ::after
+   stop on their final frame. Untagged entrances inside a tagged section keep
+   their own reduced handling. */
 html[data-loopwatch] [data-loop]:not([data-inview]),
 html[data-loopwatch] [data-loop]:not([data-inview])::before,
 html[data-loopwatch] [data-loop]:not([data-inview])::after,
@@ -418,6 +418,30 @@ html[data-loopwatch] [data-loop]:not([data-inview]) *::after {
   animation-delay: 0s !important;
   animation-iteration-count: 1 !important;
   animation-fill-mode: forwards !important;
+}
+
+/* Skip link: out of sight until it has keyboard focus, then above the header. */
+.ncx-skip {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 1000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--ncx-navy);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.ncx-skip:focus-visible {
+  transform: none;
+  outline: 2px solid var(--ncx-focus);
+  outline-offset: 2px;
+}
+/* The skip link's target takes focus so the next Tab starts in the content; it draws no ring. */
+#main:focus {
+  outline: none;
 }
 
 /* The arrow glyph inside a CTA (point 6, prompt 4): moves 4px right while

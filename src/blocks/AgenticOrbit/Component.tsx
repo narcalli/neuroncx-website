@@ -5,19 +5,23 @@ import React, { useState } from 'react'
 import type { AgenticOrbitBlock as AgenticOrbitProps } from '@/payload-types'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
+import { useMotionLevel } from '@/motion/useMotionLevel'
 
 type Role = NonNullable<AgenticOrbitProps['roles']>[number]
 
 export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro, centreLabel, roles }) => {
   const list: Role[] = (roles || []).filter((r) => r && r.label)
   const [active, setActive] = useState<number | null>(null)
+  // The orbit turns for as long as it is on screen, so it has a pause (WCAG 2.2.2).
+  const [paused, setPaused] = useState(false)
+  const level = useMotionLevel()
   if (!list.length) return null
 
-  const caption = active !== null ? list[active].caption : 'Hover a role to see where it sits.'
-  const hold = active !== null
+  const caption = active !== null ? list[active].caption : 'Hover or select a role to see where it sits.'
+  const hold = active !== null || paused
 
   return (
-    <section className="ncx-orbit" data-loop>
+    <section className="ncx-orbit">
       <style>{`
         .ncx-orbit{
           --orbit-core-hi:#3B4A8C; /* lit stop of the core sphere gradient */
@@ -28,6 +32,11 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         .ncx-orbit ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--ncx-rule)}
         .ncx-orbit li{padding:14px 12px;border-bottom:1px solid var(--ncx-rule);font-weight:500;border-left:4px solid transparent;transition:background .25s,border-color .25s}
         .ncx-orbit li.hl{background:var(--ncx-white);border-left-color:var(--ncx-crimson);padding-left:18px}
+        .ncx-orbit .role{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+        .ncx-orbit .role:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:4px;border-radius:4px}
+        .ncx-orbit .toggle{display:block;margin:10px auto 0;padding:6px 12px;border:1px solid var(--ncx-rule);border-radius:999px;
+          background:var(--ncx-white);color:var(--ncx-body);font:500 .8rem var(--font-body),Arial,sans-serif;cursor:pointer}
+        .ncx-orbit .toggle:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
         /* The radius follows the orbit's own width. It used to be a fixed 150px
            while the orbit shrank with the screen, so on a phone the chips
            circled past the edge and the whole page scrolled sideways. At the
@@ -65,17 +74,20 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
           <div>
             <ul>
               {list.map((r, i) => (
-                <li
-                  key={i}
-                  tabIndex={0}
-                  className={active === i ? 'hl' : ''}
-                  onMouseEnter={() => setActive(i)}
-                  onMouseLeave={() => setActive(null)}
-                  onFocus={() => setActive(i)}
-                  onBlur={() => setActive(null)}
-                >
-                  {r.label}
-                  {r.subLabel ? <span style={{ display: 'block', fontWeight: 400, fontSize: '.9rem', color: 'var(--ncx-muted)' }}>{r.subLabel}</span> : null}
+                <li key={i} className={active === i ? 'hl' : ''}>
+                  {/* One control per role: hover, focus or a tap shows its caption below the orbit. */}
+                  <button
+                    type="button"
+                    className="role"
+                    onMouseEnter={() => setActive(i)}
+                    onMouseLeave={() => setActive(null)}
+                    onFocus={() => setActive(i)}
+                    onBlur={() => setActive(null)}
+                    onClick={() => setActive(i)}
+                  >
+                    {r.label}
+                    {r.subLabel ? <span style={{ display: 'block', fontWeight: 400, fontSize: '.9rem', color: 'var(--ncx-muted)' }}>{r.subLabel}</span> : null}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -91,18 +103,21 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
                   <div
                     key={i}
                     className={`spin${hold ? ' paused' : ''}`}
+                    data-loop
                     style={{ ['--a' as string]: `${angle}deg` }}
                   >
-                    <button
-                      type="button"
+                    {/* The orbit repeats the list above for the eye, so it is
+                        left out of the tab order and the accessibility tree;
+                        the list's buttons are the controls. */}
+                    <span
                       className={`on-node${active === i ? ' hl' : ''}`}
+                      aria-hidden="true"
                       onMouseEnter={() => setActive(i)}
                       onMouseLeave={() => setActive(null)}
-                      onFocus={() => setActive(i)}
-                      onBlur={() => setActive(null)}
+                      onClick={() => setActive(i)}
                     >
                       {r.label}
-                    </button>
+                    </span>
                   </div>
                 )
               })}
@@ -110,6 +125,11 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
             <p className="cap" aria-live="polite">
               {caption}
             </p>
+            {level === 'on' ? (
+              <button type="button" className="toggle" onClick={() => setPaused((p) => !p)}>
+                {paused ? 'Play the orbit' : 'Pause the orbit'}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

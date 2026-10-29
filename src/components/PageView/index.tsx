@@ -47,6 +47,12 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
 
+  // With no hero, a contact form that opens the page carries its one H1.
+  const headedLayout =
+    heroDisabled && firstBlockType === 'contactForm' && Array.isArray(layout)
+      ? layout.map((b: any) => (b === firstBlock ? { ...b, headingLevel: 'h1' } : b))
+      : layout
+
   // The breadcrumbs go inside whatever renders first: the configured hero,
   // else a flush first block, else a container above the blocks (on the
   // page's light background, so never on dark there).
@@ -66,7 +72,7 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
         <RenderHero {...hero} leading={crumbs} />
         {heroDisabled && !startsFlush && crumbs ? <div className="ncx-container pt-7">{crumbs}</div> : null}
         <RenderBlocks
-          blocks={layout}
+          blocks={headedLayout}
           leading={startsFlush ? crumbs : undefined}
           pageId={String(page.id)}
           beforeClosing={footer}

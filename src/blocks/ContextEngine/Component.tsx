@@ -172,7 +172,7 @@ export const ContextEngineBlock: React.FC<Props> = ({
                   </g>
                 ))}
 
-                <circle className="core-glow" cx={CX} cy={CY} r={54} />
+                <circle className="core-glow" data-loop cx={CX} cy={CY} r={54} />
                 <g className="core">
                   <circle className="body" cx={CX} cy={CY} r={42} />
                   <text x={CX} y={CY - 2} textAnchor="middle">

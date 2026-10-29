@@ -84,11 +84,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         /> */}
 
+        {/* The first stop for keyboard users: past the header to the content. */}
+        <a className="ncx-skip" href="#main">
+          Skip to content
+        </a>
         <MotionProvider site={animations}>
           <ReadingProgress />
           <LoopWatch />
           <Header />
-          {children}
+          <main id="main" tabIndex={-1}>
+            {children}
+          </main>
           <Footer />
         </MotionProvider>
         {/* Every page, while draft mode is on: a preview is never mistaken for the live site. */}

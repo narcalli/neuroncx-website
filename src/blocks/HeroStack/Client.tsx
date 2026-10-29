@@ -292,7 +292,8 @@ export const HeroStackClient: React.FC<
             <div className="hs-caprow">
               <p className="hs-cap" aria-live="polite">
                 <strong>{current?.label}</strong>
-                {current?.caption ? <span>{current.caption}</span> : null}
+                {/* A real space, so the label and caption are not read as one word. */}
+                {current?.caption ? <>{' '}<span>{current.caption}</span></> : null}
               </p>
             </div>
           </div>

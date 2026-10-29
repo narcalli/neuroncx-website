@@ -250,7 +250,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
                 style={{ '--dur': `${(BASE_DURATIONS[i % BASE_DURATIONS.length] / mult).toFixed(1)}s` } as React.CSSProperties}
                 key={i}
               >
-                <div className="track">
+                <div className="track" data-loop>
                   {colCards.map((card, j) => (
                     <CardTile card={card} key={j} />
                   ))}

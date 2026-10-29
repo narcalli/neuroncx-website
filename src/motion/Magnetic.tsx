@@ -38,6 +38,10 @@ export const Magnetic: React.FC<{
       className={className}
       style={{ display: 'inline-block', x, y }}
       whileTap={on ? { scale: 0.95 } : undefined}
+      // Motion makes a whileTap element focusable (tabindex 0) when it is not
+      // already; the link or button inside is the control, so the wrapper
+      // stays out of the tab order.
+      tabIndex={-1}
       onPointerMove={(e) => {
         if (!on || e.pointerType !== 'mouse') return
         const r = e.currentTarget.getBoundingClientRect()

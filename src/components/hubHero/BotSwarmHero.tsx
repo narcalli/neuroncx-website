@@ -418,9 +418,9 @@ export const BotSwarmHero: React.FC<Props> = ({
                     <m.div className="typing" data-loop initial={{ opacity: 0, y: 14, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={BUBBLE_SPRING}>
                       <span className="bot-name">{shortName(typingAgent)}</span>
                       <span className="dots">
-                        <i />
-                        <i />
-                        <i />
+                        <i data-loop />
+                        <i data-loop />
+                        <i data-loop />
                       </span>
                     </m.div>
                   ) : null}

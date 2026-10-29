@@ -75,7 +75,7 @@ export const AgenticStatsBlock: React.FC<AgenticStatsProps> = ({ eyebrow, headin
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
               {s.pending ? (
-                <div className="num pending">
+                <div className="num pending" data-loop>
                   <StatValue value={`00${s.suffix ?? ''}`} />
                 </div>
               ) : (

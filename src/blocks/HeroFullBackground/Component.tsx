@@ -91,6 +91,7 @@ const MediaLayer: React.FC<{
       <>
         <video
           className="media media-video"
+          data-loop
           style={style}
           autoPlay
           muted
@@ -105,6 +106,7 @@ const MediaLayer: React.FC<{
         {posterPic ? (
           <Image
             className="media media-video-fallback"
+            data-loop
             src={posterPic.src}
             alt=""
             fill
@@ -119,12 +121,13 @@ const MediaLayer: React.FC<{
 
   if (pic.isGif) {
     // eslint-disable-next-line @next/next/no-img-element -- next/image's optimiser drops GIF animation.
-    return <img className="media" src={pic.src} alt={pic.alt} style={style} />
+    return <img className="media" data-loop src={pic.src} alt={pic.alt} style={style} />
   }
 
   return (
     <Image
       className="media"
+      data-loop
       src={pic.src}
       alt={pic.alt}
       fill

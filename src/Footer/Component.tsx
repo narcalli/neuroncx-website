@@ -40,7 +40,7 @@ export async function Footer() {
         .ncx-footer .inner{padding-block:64px 36px}
         .ncx-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
         .ncx-footer .tagline{color:#9AA5BF;margin:16px 0 0;max-width:34ch;font-size:16px;line-height:1.6}
-        .ncx-footer h5{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
+        .ncx-footer .ncx-footer__h{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           font-weight:500;margin:0 0 14px;color:#9AA5BF}
         .ncx-footer a{display:block;color:#fff;text-decoration:none;font-size:16px;
           margin-bottom:9px;opacity:.85}
@@ -66,7 +66,7 @@ export async function Footer() {
 
           {columns.map((column: any, i: number) => (
             <div key={i}>
-              <h5>{column?.title}</h5>
+              <h2 className="ncx-footer__h">{column?.title}</h2>
               {(column?.navItems || []).map(({ link }: any, j: number) => (
                 <Link key={j} href={hrefFor(link)}>
                   {link?.label}
@@ -77,7 +77,7 @@ export async function Footer() {
 
           {footerData?.email || footerData?.phone ? (
             <div>
-              <h5>Contact</h5>
+              <h2 className="ncx-footer__h">Contact</h2>
               {footerData?.email ? (
                 <a href={`mailto:${footerData.email}`}>{footerData.email}</a>
               ) : null}

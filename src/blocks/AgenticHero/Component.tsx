@@ -34,7 +34,7 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
   if (node.kind === 'human') {
     return (
       <g transform={`translate(${x} ${y})`}>
-        <circle className="ncx-pr" r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
+        <circle className="ncx-pr" data-loop r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
         <circle r={22} fill="var(--ncx-paper)" />
         <PersonIcon />
       </g>
@@ -50,7 +50,7 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
   }
   return (
     <g transform={`translate(${x} ${y})`}>
-      <circle className="ncx-pr" r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
+      <circle className="ncx-pr" data-loop r={22} fill="none" stroke="rgba(26,32,53,.4)" strokeWidth={1.5} style={{ animationDelay: `${delay}s` }} />
       <circle r={22} fill="var(--ncx-navy-tint)" stroke="rgba(26,32,53,.35)" strokeWidth={1.5} />
       <SparkIcon />
     </g>
@@ -142,6 +142,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
                 <line
                   key={i}
                   className="ln"
+                  data-loop
                   x1={300}
                   y1={210}
                   x2={SLOTS[i][0]}
@@ -151,7 +152,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
               ))}
             </g>
             <g transform="translate(300 210)">
-              <circle className="ncx-pr" r={32} fill="none" stroke="var(--ncx-crimson)" strokeWidth={2} />
+              <circle className="ncx-pr" data-loop r={32} fill="none" stroke="var(--ncx-crimson)" strokeWidth={2} />
               <g transform="scale(2.4) translate(-13 -13)">
                 <circle cx={13} cy={13} r={13} fill="var(--ncx-crimson)" />
                 <path d="M13 6c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 8 4.5 8s4.5-4.8 4.5-8C17.5 8 15.5 6 13 6z" fill="var(--ncx-on-navy)" />
