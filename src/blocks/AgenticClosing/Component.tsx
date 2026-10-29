@@ -29,6 +29,7 @@ export const AgenticClosingBlock: React.FC<AgenticClosingProps> = ({ heading, ct
     <section
       ref={sectionRef}
       className="ncx-closing"
+      data-loop
       onPointerMove={onMove}
       onPointerLeave={() => {
         mx.set(0)

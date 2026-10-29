@@ -250,18 +250,15 @@ export default async function IntegrationPage({ params }: Args) {
         .ncx-iitem__works{margin:20px 0 0;font-size:15px;line-height:1.5;color:var(--ncx-muted)}
 
         /* Hero motion, CSS only and only when the visitor has not asked for
-           less: the H1 words rise in one after another (--i), then the
-           subheading, button and Works with line fade up in turn (--step),
-           starting once the last word is in (--words). Without motion, all of
-           it is simply there. */
+           less: the button and the Works with line fade up in turn (--step).
+           The H1 and the subheading are at rest from the first paint, since
+           either can be the LCP element. Without motion, all of it is simply
+           there. */
         .ncx-iitem__word{display:inline-block}
         @media(prefers-reduced-motion:no-preference){
-          .ncx-iitem__word{animation:ncxWordRise .6s cubic-bezier(.2,.7,.2,1) both;
-            animation-delay:calc(var(--i) * 70ms)}
           .ncx-iitem__fade{animation:ncxFadeUp .6s ease-out both;
-            animation-delay:calc(var(--words) * 70ms + 150ms + var(--step) * 100ms)}
+            animation-delay:calc(150ms + var(--step) * 100ms)}
         }
-        @keyframes ncxWordRise{from{opacity:0;transform:translateY(.45em)}to{opacity:1;transform:none}}
         @keyframes ncxFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
         /* Sections */
@@ -319,7 +316,7 @@ export default async function IntegrationPage({ params }: Args) {
               ))}
             </h1>
             {d.heroSubheading || d.summary ? (
-              <p className="sub ncx-iitem__fade" style={{ '--step': 0 } as React.CSSProperties}>
+              <p className="sub">
                 {d.heroSubheading || d.summary}
               </p>
             ) : null}

@@ -17,7 +17,7 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
   const hold = active !== null
 
   return (
-    <section className="ncx-orbit">
+    <section className="ncx-orbit" data-loop>
       <style>{`
         .ncx-orbit{
           --orbit-core-hi:#3B4A8C; /* lit stop of the core sphere gradient */

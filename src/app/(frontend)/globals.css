@@ -392,6 +392,34 @@ h2 {
   animation-iteration-count: 1 !important;
 }
 
+/* Loops: every infinite CSS animation sits on, or inside, an element tagged
+   data-loop. src/motion/LoopWatch.tsx sets data-inview on it while it is on
+   screen; off screen its animations are paused (only once the watcher runs,
+   so with no script they play as before). At reduced and off, from the site,
+   the page or the block, a tagged element's own loop and its ::before and
+   ::after stop on their final frame. Only those: an entrance inside a tagged
+   section keeps its own reduced handling, and a loop further inside one ends
+   on its resting style through the [data-motion] rules above. */
+html[data-loopwatch] [data-loop]:not([data-inview]),
+html[data-loopwatch] [data-loop]:not([data-inview])::before,
+html[data-loopwatch] [data-loop]:not([data-inview])::after,
+html[data-loopwatch] [data-loop]:not([data-inview]) *,
+html[data-loopwatch] [data-loop]:not([data-inview]) *::before,
+html[data-loopwatch] [data-loop]:not([data-inview]) *::after {
+  animation-play-state: paused !important;
+}
+[data-motion='reduced'] [data-loop],
+[data-motion='reduced'] [data-loop]::before,
+[data-motion='reduced'] [data-loop]::after,
+[data-motion='off'] [data-loop],
+[data-motion='off'] [data-loop]::before,
+[data-motion='off'] [data-loop]::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  animation-fill-mode: forwards !important;
+}
+
 /* The arrow glyph inside a CTA (point 6, prompt 4): moves 4px right while
    its link or button is hovered. One class, used wherever a CTA already
    renders an arrow. Off is instant (the rule above); reduced still gets it,

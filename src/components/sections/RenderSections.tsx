@@ -27,6 +27,7 @@ import {
 } from './EntrySections'
 import { HubArticles, HubIndustries, HubIntro, HubLayers, HubSteps, HubTrust, HubWorksWith } from './HubSections'
 import { SectionStyles } from './SectionShell'
+import { BlockMotion } from '@/motion/BlockMotion'
 
 /** The collections whose pages RenderSections draws: the content collections, industries and industry topics. */
 export type SectionCollection = ContentCollectionSlug | 'sectors' | 'industryTopics'
@@ -220,7 +221,7 @@ const drawRow = (block: Block, index: number, ctx: SectionContext): React.ReactN
     const still = block.motion === 'off' || block.motion === 'reduced' ? String(block.motion) : undefined
     return (
       <div key={reactKey} data-motion={still} style={{ display: 'contents' }}>
-        {content}
+        <BlockMotion motion={block.motion as string | null}>{content}</BlockMotion>
       </div>
     )
   }

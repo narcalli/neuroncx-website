@@ -133,7 +133,11 @@ export const headerCss = `
 .ncx-mark__img{width:30px;height:30px;border-radius:50%;object-fit:contain;flex:none;display:block}
 
 .ncx-nav__links{display:flex;align-items:center;margin-inline:auto}
-.ncx-navitem{position:relative}
+/* Static, so the mega panel is placed against the whole bar (place() in
+   Component.client.tsx measures from it). The hover pill gets its own
+   positioned slot around the link instead. */
+.ncx-navitem{position:static}
+.ncx-navslot{position:relative;display:flex}
 .ncx-navlink{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:5px;height:40px;padding:0 15px;

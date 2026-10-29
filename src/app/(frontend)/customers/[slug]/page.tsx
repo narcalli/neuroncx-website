@@ -297,7 +297,7 @@ export default async function CustomerPage({ params }: Args) {
         }
       `}</style>
 
-      <header className="ncx-cust__hero">
+      <header className="ncx-cust__hero" data-loop>
         <div className="inner ncx-container">
           <Breadcrumbs items={buildTrail({ customer: c })} />
 

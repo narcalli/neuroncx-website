@@ -151,7 +151,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   const ratio = ratioOf(mediaValue, videoPoster)
 
   return (
-    <section className="ncx-hrp" data-anim={anim} data-lead={leading ? '' : undefined}>
+    <section className="ncx-hrp" data-loop data-anim={anim} data-lead={leading ? '' : undefined}>
       <style>{`
         .ncx-hrp{position:relative;overflow:hidden;isolation:isolate;
           background:var(--wash);color:var(--ncx-body);
@@ -236,16 +236,11 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         .ncx-hrp .btn-ghost:hover{background:var(--ncx-paper)}
         .ncx-hrp .btn:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
-        /* Entrance. Base state is fully visible — this only adds motion once
-           the Animator client component marks the block as in view. */
-        .ncx-hrp[data-anim="on"] .word{opacity:0;transform:translateY(.5em);filter:blur(8px)}
-        .ncx-hrp[data-anim="on"] .subhead,.ncx-hrp[data-anim="on"] .cta{opacity:0;transform:translateY(16px)}
-        .ncx-hrp[data-anim="on"] .content.in .word{
-          animation:ncx-hrp-word-in .8s cubic-bezier(.2,.8,.2,1) forwards;
-          animation-delay:calc(var(--i) * 60ms)}
-        .ncx-hrp[data-anim="on"] .content.in .subhead{animation:ncx-hrp-rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.3s}
+        /* Entrance: the buttons rise once the Animator client component marks
+           the block as in view. The H1 and the subhead are at rest from the
+           first paint: either can be the LCP element. */
+        .ncx-hrp[data-anim="on"] .cta{opacity:0;transform:translateY(16px)}
         .ncx-hrp[data-anim="on"] .content.in .cta{animation:ncx-hrp-rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.45s}
-        @keyframes ncx-hrp-word-in{to{opacity:1;transform:none;filter:blur(0)}}
         @keyframes ncx-hrp-rise{to{opacity:1;transform:none}}
 
         @media(prefers-reduced-motion:reduce){

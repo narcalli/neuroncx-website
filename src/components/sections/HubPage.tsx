@@ -17,6 +17,7 @@ import { groupingsPlaced } from './hubGroupingsPlacement'
 import { HubConversationHero, HubHero } from './HubHero'
 import { RenderSections, type SectionContext } from './RenderSections'
 import { MotionPage } from '@/motion/MotionProvider'
+import { BlockMotion } from '@/motion/BlockMotion'
 
 /**
  * A content collection's hub page from its hub record (foundation.md section
@@ -61,11 +62,13 @@ export const HubPage: React.FC<{ hub: Hub; collection: ContentCollectionSlug; dr
         {draft ? <LivePreviewListener /> : null}
         {/* The hero's own animation setting (Hero tab, Hero animation). */}
         <div data-motion={heroStill} style={{ display: 'contents' }}>
-          {hub.heroDesign === 'conversation' ? (
-            <HubConversationHero hub={hub} draft={draft} crumbs={crumbs} />
-          ) : (
-            <HubHero hub={hub} draft={draft} crumbs={crumbs} />
-          )}
+          <BlockMotion motion={heroMotion}>
+            {hub.heroDesign === 'conversation' ? (
+              <HubConversationHero hub={hub} draft={draft} crumbs={crumbs} />
+            ) : (
+              <HubHero hub={hub} draft={draft} crumbs={crumbs} />
+            )}
+          </BlockMotion>
         </div>
         {placed ? null : groupings}
         <RenderSections blocks={hub.layout ?? []} ctx={ctx} />

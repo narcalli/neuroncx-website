@@ -31,7 +31,7 @@ export const StatHeroBlock: React.FC<Props> = ({
   const items = stats || []
 
   return (
-    <section className="ncx-stathero">
+    <section className="ncx-stathero" data-loop>
       <style>{`
         .ncx-stathero{
           /* The same stage as conversationHero: full bleed, four blooms on one

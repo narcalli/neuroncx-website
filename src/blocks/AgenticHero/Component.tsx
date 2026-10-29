@@ -68,7 +68,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
   const slotNodes = (nodes || []).slice(0, SLOTS.length)
 
   return (
-    <section className="ncx-hero" data-cols={slotNodes.length ? '2' : '1'}>
+    <section className="ncx-hero" data-loop data-cols={slotNodes.length ? '2' : '1'}>
       <style>{`
         .ncx-hero{position:relative;overflow:hidden;isolation:isolate;
           background:var(--wash);color:var(--ncx-body);
@@ -169,30 +169,16 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
             const isAccent = accents.has(plain)
             return (
               <React.Fragment key={i}>
-                <motion.span
-                  className={isAccent ? 'w acc' : 'w'}
-                  aria-hidden="true"
-                  initial={{ opacity: 0, y: 34, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: 0.8, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
-                >
+                <span className={isAccent ? 'w acc' : 'w'} aria-hidden="true">
                   {word}
-                </motion.span>{' '}
+                </span>{' '}
               </React.Fragment>
             )
           })}
         </h1>
 
-        {intro ? (
-          <motion.p
-            className="hero-p"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {intro}
-          </motion.p>
-        ) : null}
+        {/* The H1 and the intro are at rest from the first paint: either can be the LCP element. */}
+        {intro ? <p className="hero-p">{intro}</p> : null}
 
         {ctaLabel && ctaUrl ? (
           <motion.div

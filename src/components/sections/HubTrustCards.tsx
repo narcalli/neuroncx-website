@@ -3,15 +3,15 @@
 import React, { useRef } from 'react'
 
 import { BlockIcon } from '@/components/BlockIcon'
+import { draw, undrawn } from '@/motion/draw'
 import { gsap, useGSAP } from '@/motion/gsap'
-import '@/motion/gsapDrawSVG'
 import type { MotionSetting } from '@/motion/levels'
 import { useMotionLevel } from '@/motion/useMotionLevel'
 import { isPastStart, onceInView } from '@/motion/useOnceInView'
 
 type Card = { id?: string | null; title: string; line?: string | null; icon?: string | null }
 
-/** A drawable part's own stroke, when it has one: DrawSVG needs a stroke to draw along, not a fill. */
+/** A drawable part's own stroke, when it has one: drawing needs a stroke to draw along, not a fill. */
 const isStrokedPart = (el: Element): boolean => {
   const fill = el.getAttribute('fill')
   return !fill || fill === 'none'
@@ -55,11 +55,12 @@ export const HubTrustCards: React.FC<{ cards: Card[]; motion?: MotionSetting | n
         if (!card || isPastStart(card)) return undefined
         const parts = Array.from(card.querySelectorAll<SVGElement>('.icon svg > *')).filter(isStrokedPart)
         gsap.set(card, { opacity: 0, y: 40 })
-        if (parts.length) gsap.set(parts, { drawSVG: '0%' })
+        undrawn(parts)
         return onceInView(card, () => {
           const timeline = gsap.timeline({ delay: i * 0.12 })
           timeline.to(card, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
-          if (parts.length) timeline.to(parts, { drawSVG: '100%', duration: 0.8, stagger: 0.15, ease: 'power2.inOut' }, '<.2')
+          const strokes = draw(parts, level, { duration: 0.8, stagger: 0.15 })
+          if (strokes) timeline.add(strokes, '<.2')
         })
       })
 
@@ -67,8 +68,7 @@ export const HubTrustCards: React.FC<{ cards: Card[]; motion?: MotionSetting | n
         if (!card) return undefined
         const onEnter = () => {
           const parts = Array.from(card.querySelectorAll<SVGElement>('.icon svg > *')).filter(isStrokedPart)
-          if (!parts.length) return
-          gsap.fromTo(parts, { drawSVG: '0%' }, { drawSVG: '100%', duration: 0.6, stagger: 0.08, ease: 'power2.inOut', overwrite: true })
+          draw(parts, level, { duration: 0.6, stagger: 0.08, overwrite: true })
         }
         card.addEventListener('pointerenter', onEnter)
         return onEnter
@@ -81,7 +81,10 @@ export const HubTrustCards: React.FC<{ cards: Card[]; motion?: MotionSetting | n
           const onEnter = listeners[i]
           if (onEnter) card.removeEventListener('pointerenter', onEnter)
           gsap.set(card, { clearProps: 'all' })
-          gsap.set(card.querySelectorAll('.icon svg > *'), { clearProps: 'all' })
+          // Strokes left fully drawn, whatever a redraw was doing.
+          const parts = card.querySelectorAll('.icon svg > *')
+          gsap.killTweensOf(parts)
+          if (parts.length) gsap.set(parts, { attr: { 'stroke-dashoffset': 0 } })
         })
       }
     },

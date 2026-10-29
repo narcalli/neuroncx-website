@@ -46,7 +46,7 @@ export const ContextEngineBlock: React.FC<Props> = ({
   })
 
   return (
-    <section className="ncx-ctx">
+    <section className="ncx-ctx" data-loop>
       <style>{`
         .ncx-ctx{
           /* Band removed; a hairline holds the edge against its neighbours. */

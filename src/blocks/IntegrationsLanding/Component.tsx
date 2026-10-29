@@ -203,7 +203,7 @@ export const IntegrationsLandingBlock: React.FC<
         }
       `}</style>
 
-      <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`}>
+      <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`} data-loop>
         <div className="inner ncx-container">
           <div className={`ncx-ihub__grid${image ? '' : ' is-single'}`}>
             <div>

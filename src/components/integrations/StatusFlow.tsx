@@ -155,6 +155,9 @@ export const StatusFlow: React.FC<Props> = ({ name, logoSrc, brandSrc, rows }) =
           .ncx-sflow__card .ncx-sflow__pill{animation:ncxSflowFlip .45s cubic-bezier(.2,.7,.2,1) both;transform-origin:50% 100%}
           .ncx-sflow__now{animation:ncxSflowFade .4s ease-out both}
         }
+        /* The site or page motion level at reduced: the pill and line fade, no flip or rise. */
+        [data-motion='reduced'] .ncx-sflow__card .ncx-sflow__pill,[data-motion='reduced'] .ncx-sflow__now{animation-name:ncxSflowShow}
+        @keyframes ncxSflowShow{from{opacity:0}to{opacity:1}}
         @keyframes ncxSflowGlow{0%,100%{opacity:.2}50%{opacity:.85}}
         @keyframes ncxSflowFlip{from{opacity:0;transform:rotateX(-90deg)}to{opacity:1;transform:none}}
         @keyframes ncxSflowFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -230,7 +233,7 @@ export const StatusFlow: React.FC<Props> = ({ name, logoSrc, brandSrc, rows }) =
               <b>{name}</b>
             </div>
             <span className="ncx-sflow__wire">
-              <span className="ncx-sflow__glow" />
+              <span className="ncx-sflow__glow" data-loop />
             </span>
             <div className="ncx-sflow__tile">
               <span className="ncx-sflow__mark">

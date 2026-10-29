@@ -35,7 +35,9 @@ export const ProblemStatementBlock: React.FC<Props> = ({
         .ncx-prob{
           background:var(--ncx-cloud);padding:72px 0;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-prob .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+        /* minmax(0,1fr), not 1fr: a plain 1fr track will not shrink below its
+           content's min-content width, which pushed the page 12px wide at 390px. */
+        .ncx-prob .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
         /* Nothing beside the text: it takes the full width. */
         .ncx-prob .grid[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
         .ncx-prob .grid[data-cols="1"] .intro{max-width:none}
@@ -73,7 +75,7 @@ export const ProblemStatementBlock: React.FC<Props> = ({
 
         @media(max-width:900px){
           .ncx-prob{padding:48px 0}
-          .ncx-prob .grid{grid-template-columns:1fr;gap:32px}
+          .ncx-prob .grid{grid-template-columns:minmax(0,1fr);gap:32px}
           .ncx-prob h2{max-width:100%}
           .ncx-prob .visual{padding:22px}
         }

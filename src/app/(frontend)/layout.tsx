@@ -16,6 +16,7 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { MotionProvider } from '@/motion/MotionProvider'
+import { LoopWatch } from '@/motion/LoopWatch'
 import { ReadingProgress } from '@/motion/ReadingProgress'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         <MotionProvider site={animations}>
           <ReadingProgress />
+          <LoopWatch />
           <Header />
           {children}
           <Footer />

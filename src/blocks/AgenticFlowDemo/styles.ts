@@ -100,7 +100,7 @@ export const featuresCss = `
         .ncx-flow--features .hch--handlers{margin-top:12px}
         .ncx-flow--features .you-set strong{font-weight:600;color:var(--ncx-ink)}
         /* The database icon beside "Saves to your systems": a crimson packet
-           arcs into it on a change (GSAP MotionPath), and it dips once. */
+           arcs into it on a change (motion/arc.ts), and it dips once. */
         .ncx-flow--features .saves{display:flex;align-items:center;gap:12px;margin-top:2px}
         .ncx-flow--features .saves-ic{flex:none}
         .ncx-flow--features .saves .pkt{fill:var(--ncx-crimson)}

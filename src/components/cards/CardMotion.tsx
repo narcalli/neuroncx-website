@@ -55,9 +55,12 @@ export const CardMotion: React.FC<{
       }
       if (level !== 'on' || isPastStart(el)) return
 
-      gsap.set(el, { opacity: 0, y: 70, rotationX: -16, transformPerspective: 1000, transformOrigin: '50% 100%' })
+      // Tipped back in perspective the card's top edge projects wider than its
+      // box (about 5% a side); the slight scale keeps it inside the page
+      // gutter, so a waiting card at the edge never adds a sideways scroll.
+      gsap.set(el, { opacity: 0, y: 70, rotationX: -16, scale: 0.94, transformPerspective: 1000, transformOrigin: '50% 100%' })
       const stop = onceInView(el, () => {
-        gsap.to(el, { opacity: 1, y: 0, rotationX: 0, duration: 0.9, delay: index * 0.09, ease: 'power3.out' })
+        gsap.to(el, { opacity: 1, y: 0, rotationX: 0, scale: 1, duration: 0.9, delay: index * 0.09, ease: 'power3.out' })
       })
       return () => {
         stop()

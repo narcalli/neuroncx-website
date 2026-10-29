@@ -126,10 +126,9 @@ const SceneArt: React.FC<{ scene: Scene; situation: string }> = ({ scene, situat
 }
 
 /**
- * Edge cases as cards, each with a small looping scene chosen from words in
- * its situation. Pure CSS: the scenes loop and the cards rise in as they
- * scroll into view; under reduced motion every scene shows its end state and
- * nothing moves.
+ * Edge cases as cards, each with a small scene chosen from words in its
+ * situation. Every scene shows its end state and nothing moves (bar the card
+ * hover), until the scenes get their once-in-view ticks.
  */
 export const EdgeCases: React.FC<{ rows: EdgeRow[] }> = ({ rows }) => (
   <>
@@ -182,37 +181,12 @@ export const EdgeCases: React.FC<{ rows: EdgeRow[] }> = ({ rows }) => (
         color:var(--ncx-teal);display:flex;align-items:center;justify-content:center}
       .ncx-iedge__check svg{width:20px;height:20px}
 
-      /* Motion, only when the visitor has not asked for less. */
+      /* Motion: the hover lift only. The scenes and the cards are static, at
+         their end state, until they get their once-in-view ticks; the cards no
+         longer rise with scroll position. */
       @media(prefers-reduced-motion:no-preference){
         .ncx-iedge__card{transition:transform .25s ease,box-shadow .25s ease}
-        .ncx-iedge__scene *{animation-duration:4.2s;animation-iteration-count:infinite;
-          animation-timing-function:ease-in-out;animation-delay:var(--d,0s)}
-        .ncx-iedge__mini.is-a,.ncx-iedge__chip.is-a{animation-name:ncxEdgeA}
-        .ncx-iedge__mini.is-b,.ncx-iedge__chip.is-b{animation-name:ncxEdgeB}
-        .ncx-iedge__badge{animation-name:ncxEdgeBadge}
-        .ncx-iedge__type{animation-name:ncxEdgeType;animation-timing-function:steps(var(--len),end);
-          border-right:2px solid transparent}
-        .ncx-iedge__bell{animation-name:ncxEdgeBell}
-        .ncx-iedge__alert{animation-name:ncxEdgeDrop}
-        .ncx-iedge__check{animation:none}
-        @supports (animation-timeline: view()){
-          .ncx-iedge > li{animation:ncxEdgeRise linear both;animation-timeline:view();animation-range:entry 0% entry 60%}
-        }
       }
-      @keyframes ncxEdgeA{0%{opacity:0;transform:translateX(-34px)}12%{opacity:1;transform:translateX(-34px)}
-        45%,88%{opacity:1;transform:none}100%{opacity:0;transform:none}}
-      @keyframes ncxEdgeB{0%{opacity:0;transform:translateX(34px)}12%{opacity:1;transform:translateX(34px)}
-        45%{opacity:1;transform:none}52%,100%{opacity:0;transform:none}}
-      @keyframes ncxEdgeBadge{0%,50%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.15)}
-        66%,88%{opacity:1;transform:none}100%{opacity:0;transform:none}}
-      @keyframes ncxEdgeType{0%,8%{width:0;border-right-color:var(--ncx-on-navy)}
-        62%,90%{width:calc(var(--len) * 1ch);border-right-color:var(--ncx-on-navy)}
-        95%,100%{width:calc(var(--len) * 1ch);border-right-color:transparent}}
-      @keyframes ncxEdgeBell{0%,8%{transform:none}12%{transform:rotate(16deg)}18%{transform:rotate(-14deg)}
-        24%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}36%,100%{transform:none}}
-      @keyframes ncxEdgeDrop{0%,30%{opacity:0;transform:translateY(-16px)}42%{opacity:1;transform:translateY(2px)}
-        48%,90%{opacity:1;transform:none}100%{opacity:0;transform:none}}
-      @keyframes ncxEdgeRise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
       @media(max-width:1023.98px){.ncx-iedge{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @media(max-width:639.98px){.ncx-iedge{grid-template-columns:minmax(0,1fr)}}

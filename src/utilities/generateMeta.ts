@@ -20,7 +20,8 @@ const mediaImageURL = (image?: Media | Config['db']['defaultIDType'] | null): st
 
 /**
  * Metadata for a CMS page or post. Each value comes from the page's own SEO
- * fields first, then the CMS Site Settings, then the site defaults
+ * fields first (the title falls back to the page's title), then the CMS
+ * Site Settings, then the site defaults
  * (siteDefaults.ts). `path` is the page's address on this site, for the
  * canonical URL and og:url.
  */
@@ -33,7 +34,15 @@ export const generateMeta = async (args: {
 
   const siteName = settings.siteName || SITE_NAME
   const suffix = settings.titleSuffix ?? ''
-  const title = doc?.meta?.title ? doc.meta.title + suffix : settings.defaultTitle || DEFAULT_TITLE
+  // With no SEO title, the page's own title and the site name (SEO titles
+  // carry the brand themselves), so pages do not all share the site's; the
+  // home page keeps the site title.
+  const pageTitle = !doc?.meta?.title && doc?.slug && doc.slug !== 'home' && doc.title ? doc.title : null
+  const title = doc?.meta?.title
+    ? doc.meta.title + suffix
+    : pageTitle
+      ? pageTitle + (suffix || ` | ${siteName}`)
+      : settings.defaultTitle || DEFAULT_TITLE
   const description = doc?.meta?.description || settings.defaultDescription || DEFAULT_DESCRIPTION
 
   // The page's own share image, else the Site Settings one; with neither,

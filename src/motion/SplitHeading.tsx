@@ -22,9 +22,13 @@ type Props = {
 
 /**
  * A section heading whose lines rise out of a mask, one after another, once
- * it comes into view (GSAP SplitText). The split is undone when they have
- * risen, so the heading is plain text again, and it re-splits on resize
- * until then. The server HTML is the plain heading. Reduced fades the
+ * it comes into view (GSAP SplitText). The server HTML is the plain heading.
+ *
+ * Nothing is split on mount: until the heading reaches the in-view point it
+ * is only held at opacity 0, and it is split there, just before its lines
+ * rise. A heading already in view at load is never split. The split is
+ * undone as soon as the lines have risen, so the heading is plain text
+ * again (it re-splits on a resize during the rise). Reduced fades the
  * heading in whole; off leaves it as it is.
  */
 export const SplitHeading: React.FC<Props> = ({
@@ -43,8 +47,9 @@ export const SplitHeading: React.FC<Props> = ({
       const el = ref.current
       if (!el || level === 'off' || isPastStart(el)) return
 
+      gsap.set(el, { opacity: 0 })
+
       if (level === 'reduced') {
-        gsap.set(el, { opacity: 0 })
         const stop = onceInView(el, () =>
           gsap.to(el, { opacity: 1, duration: DURATION.base, ease: EASE.gsap }),
         )
@@ -54,29 +59,33 @@ export const SplitHeading: React.FC<Props> = ({
         }
       }
 
-      let risen = false
-      const split = SplitText.create(el, {
-        type: 'lines',
-        mask: 'lines',
-        autoSplit: true,
-        // Each new split (the first, and any after a resize) starts below its mask until it has risen.
-        onSplit: (self) => {
-          if (!risen) gsap.set(self.lines, { yPercent: 105 })
-        },
-      })
+      let split: SplitText | null = null
       const stop = onceInView(el, () => {
-        risen = true
-        gsap.to(split.lines, {
-          yPercent: 0,
-          duration: DURATION.slow,
-          stagger: 0.1,
-          ease: 'power4.out',
-          onComplete: () => split.revert(),
+        split = SplitText.create(el, {
+          type: 'lines',
+          mask: 'lines',
+          autoSplit: true,
+          // Returned, so a re-split on resize replaces the rise rather than stacking a second one.
+          onSplit: (self) => {
+            gsap.set(el, { opacity: 1 })
+            return gsap.fromTo(
+              self.lines,
+              { yPercent: 105 },
+              {
+                yPercent: 0,
+                duration: DURATION.slow,
+                stagger: 0.1,
+                ease: 'power4.out',
+                onComplete: () => split?.revert(),
+              },
+            )
+          },
         })
       })
       return () => {
         stop()
-        split.revert()
+        split?.revert()
+        gsap.set(el, { clearProps: 'opacity' })
       }
     },
     { dependencies: [level], scope: ref },

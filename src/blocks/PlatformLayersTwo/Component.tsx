@@ -110,6 +110,8 @@ export const PlatformLayersTwoBlock: React.FC<PlatformLayersTwoProps> = ({
           .ncx-ss__card,.ncx-ss__card.is-active{transform:none}
           .ncx-ss__card,.ncx-ss__card::before,.ncx-ss__badge,.ncx-ss__tag{transition:background .35s ease,color .35s ease,border-color .35s ease}
         }
+        /* The site or page motion level at reduced: colour changes only, no lift. */
+        [data-motion='reduced'] .ncx-ss__card,[data-motion='reduced'] .ncx-ss__card.is-active{transform:none}
       `}</style>
 
       <div className="ncx-ss__wrap ncx-container">

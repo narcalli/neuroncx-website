@@ -149,7 +149,7 @@ export const IntegrationsMarqueeBlock = async (
           </header>
         ) : null}
 
-        <div className={styles.marquee}>
+        <div className={styles.marquee} data-loop>
           <div className={styles.rows}>
             {rows.map((row, i) => (
               <Row logos={row} durationSeconds={ROW_SECONDS[i]} reverse={i % 2 === 1} key={i} />

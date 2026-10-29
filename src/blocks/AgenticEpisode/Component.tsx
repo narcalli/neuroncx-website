@@ -6,7 +6,7 @@ import type { AgenticEpisodeBlock as AgenticEpisodeProps } from '@/payload-types
 
 import { edgeLabelWidth, timeline } from './geometry'
 import { gsap, useGSAP } from '@/motion/gsap'
-import '@/motion/gsapMotionPath'
+import { arc, controlThrough } from '@/motion/arc'
 import { isPastStart, onceInView } from '@/motion/useOnceInView'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { useMotionLevel } from '@/motion/useMotionLevel'
@@ -60,7 +60,7 @@ const indexedRefs = <T,>(store: React.RefObject<(T | null)[]>) => {
  * plays once it is in view: a packet travels the bar, the fill grows behind
  * it, each node pops as it arrives, and the panel swaps with it. A point
  * marked as a branch sits raised above the line on a dashed arc, which the
- * packet follows in and out of (MotionPath) on desktop; the arc turns
+ * packet follows in and out of (motion/arc.ts) on desktop; the arc turns
  * crimson once reached. Clicking a point scrubs the timeline to it,
  * forwards or backwards; with motion off or reduced it only changes the
  * panel. Replay restarts the timeline. The packet's positions are
@@ -127,7 +127,7 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
   }
 
   // One GSAP timeline, labelled "s0".."sN": the packet travels point to
-  // point while the fill grows behind it (MotionPath into and out of a
+  // point while the fill grows behind it (motion/arc.ts into and out of a
   // branch point), each node pops as it arrives, and a single onUpdate
   // works out which point was last reached, for the classes and the panel.
   const buildTimeline = (vertical: boolean): gsap.core.Timeline | null => {
@@ -149,15 +149,13 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
     for (let i = 1; i < count; i++) {
       const dur = 0.75 * sp
       const branching = !vertical && (list[i]?.isBranch || list[i - 1]?.isBranch)
-      const move = branching
-        ? {
-            motionPath: {
-              path: [P[i - 1], { x: (P[i - 1].x + P[i].x) / 2, y: list[i]?.isBranch ? P[i].y : P[i - 1].y }, P[i]],
-              curviness: 1.3,
-            },
-          }
-        : { x: P[i].x, y: P[i].y }
-      t.to(packet, { ...move, duration: dur, ease: 'power2.inOut' })
+      if (branching) {
+        // Up onto (or down off) the branch arc: through a point level with the raised node, halfway along.
+        const via = { x: (P[i - 1].x + P[i].x) / 2, y: list[i]?.isBranch ? P[i].y : P[i - 1].y }
+        t.add(arc(packet, [P[i - 1], controlThrough(P[i - 1], via, P[i]), P[i]], { duration: dur, ease: 'power2.inOut' }))
+      } else {
+        t.to(packet, { x: P[i].x, y: P[i].y, duration: dur, ease: 'power2.inOut' })
+      }
       t.to(fill, vertical ? { scaleY: i / last, duration: dur, ease: 'power2.inOut' } : { scaleX: i / last, duration: dur, ease: 'power2.inOut' }, '<')
       t.addLabel(`s${i}`)
       t.fromTo(dots[i], { scale: 1 }, { scale: 1.3, duration: 0.14 * sp, yoyo: true, repeat: 1, ease: 'power2.out' }, `s${i}`)
@@ -203,18 +201,30 @@ export const AgenticEpisodeBlock: React.FC<AgenticEpisodeProps> = ({
       timelineRef.current = t
       t.progress(1)
 
-      if (isPastStart(section)) return undefined
+      if (isPastStart(section)) {
+        return () => {
+          scrubRef.current?.kill()
+          scrubRef.current = null
+          timelineRef.current?.kill()
+          timelineRef.current = null
+        }
+      }
 
       // Its own tweens at time 0 (fill unfilled, packet at the first point and
       // invisible) render through the same onUpdate that drives the classes
       // and the panel, so resetting is just seeking back to the start.
       t.progress(0)
 
-      const stop = onceInView(section, () => t.restart())
+      // The current timeline, not `t`: a resize before the block comes into
+      // view rebuilds it (below) with the new positions.
+      const stop = onceInView(section, () => timelineRef.current?.restart())
       return () => {
         stop()
         scrubRef.current?.kill()
         scrubRef.current = null
+        // A rebuilt timeline was made outside this context, so it is not
+        // reverted with it: kill it by hand along with the first.
+        timelineRef.current?.kill()
         t.kill()
         timelineRef.current = null
         // The visitor's reduced-motion preference resolves after the first

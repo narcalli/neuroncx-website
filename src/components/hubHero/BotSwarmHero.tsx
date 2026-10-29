@@ -5,9 +5,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { BlockIcon } from '@/components/BlockIcon'
 import { Magnetic } from '@/motion/Magnetic'
+import { draw } from '@/motion/draw'
 import { gsap, useGSAP } from '@/motion/gsap'
-import '@/motion/gsapDrawSVG'
-import { SplitText } from '@/motion/gsapSplitText'
 import type { MotionSetting } from '@/motion/levels'
 import { useMotionLevel } from '@/motion/useMotionLevel'
 
@@ -86,7 +85,6 @@ export const BotSwarmHero: React.FC<Props> = ({
   const eyebrowRef = useRef<HTMLParagraphElement>(null)
   const shineRef = useRef<HTMLSpanElement>(null)
   const underlinePathRef = useRef<SVGPathElement>(null)
-  const subRef = useRef<HTMLParagraphElement>(null)
   const chipsRef = useRef<HTMLUListElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const phoneRef = useRef<HTMLDivElement>(null)
@@ -115,15 +113,8 @@ export const BotSwarmHero: React.FC<Props> = ({
     () => {
       if (!heroRef.current) return
 
-      if (doFade) {
-        gsap.set(heroRef.current, { opacity: 0 })
-        gsap.to(heroRef.current, { opacity: 1, duration: 0.5 })
-        return
-      }
-      if (!doLoad) return
-
-      // Hidden instantly, before paint: nothing the timeline will reveal is
-      // ever shown in its "about to animate" state.
+      // Never the H1 or the intro line: either can be the page's LCP element,
+      // so both are at rest from the first paint, at every level.
       const hiddenTargets = [
         crumbsRef.current,
         eyebrowRef.current,
@@ -132,6 +123,15 @@ export const BotSwarmHero: React.FC<Props> = ({
         phoneRef.current,
         ...badgeRefs.current,
       ].filter(Boolean)
+
+      if (doFade) {
+        gsap.fromTo(hiddenTargets, { opacity: 0 }, { opacity: 1, duration: 0.5 })
+        return
+      }
+      if (!doLoad) return
+
+      // Hidden instantly, before paint: nothing the timeline will reveal is
+      // ever shown in its "about to animate" state.
       gsap.set(hiddenTargets, { opacity: 0 })
       gsap.set(crumbsRef.current, { y: -10 })
       gsap.set(eyebrowRef.current, { x: -16 })
@@ -139,12 +139,6 @@ export const BotSwarmHero: React.FC<Props> = ({
       if (ctaRef.current) gsap.set(ctaRef.current.children, { y: 16 })
       gsap.set(phoneRef.current, { y: 90, rotationX: 18, rotationY: -8, scale: 0.9, transformPerspective: 1200 })
       gsap.set(badgeRefs.current, { scale: 0 })
-
-      let split: ReturnType<typeof SplitText.create> | null = null
-      if (subRef.current) {
-        split = SplitText.create(subRef.current, { type: 'lines', mask: 'lines' })
-        gsap.set(split.lines, { yPercent: 100 })
-      }
 
       shineRef.current?.classList.add('shine')
       const timeline = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.15 })
@@ -161,17 +155,14 @@ export const BotSwarmHero: React.FC<Props> = ({
           },
           '<.1',
         )
-      if (underlinePathRef.current) {
-        timeline.from(underlinePathRef.current, { drawSVG: '0%', duration: 0.9 * sp, ease: 'power2.inOut' }, '<.5')
-      }
-      if (split) {
-        timeline.to(split.lines, { yPercent: 0, duration: 0.8 * sp, stagger: 0.08 * sp, ease: 'power4.out' }, '<-.3')
-      }
+        .addLabel('sweep', '<')
+      const underline = draw(underlinePathRef.current, level, { duration: 0.9 * sp })
+      if (underline) timeline.add(underline, 'sweep+=.5')
       if (chipsRef.current?.children.length) {
         timeline.to(
           chipsRef.current.children,
           { opacity: 1, y: 0, scale: 1, stagger: 0.07 * sp, duration: 0.55 * sp, ease: 'back.out(2.2)' },
-          '<.25',
+          'sweep+=.45',
         )
       }
       if (ctaRef.current?.children.length) {
@@ -329,7 +320,7 @@ export const BotSwarmHero: React.FC<Props> = ({
               </span>
             </h1>
             {subheading ? (
-              <p className="sub" ref={subRef}>
+              <p className="sub">
                 {subheading}
               </p>
             ) : null}
@@ -424,7 +415,7 @@ export const BotSwarmHero: React.FC<Props> = ({
                     )
                   })}
                   {typingAgent ? (
-                    <m.div className="typing" initial={{ opacity: 0, y: 14, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={BUBBLE_SPRING}>
+                    <m.div className="typing" data-loop initial={{ opacity: 0, y: 14, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={BUBBLE_SPRING}>
                       <span className="bot-name">{shortName(typingAgent)}</span>
                       <span className="dots">
                         <i />

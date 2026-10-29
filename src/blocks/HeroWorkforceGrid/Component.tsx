@@ -87,7 +87,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   const mult = SPEED_MULT[speed || 'medium'] || SPEED_MULT.medium
 
   return (
-    <section className="ncx-hwg">
+    <section className="ncx-hwg" data-loop>
       <style>{`
 
         .ncx-hwg{
@@ -174,20 +174,12 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           margin:0 0 6px;color:var(--h-text)}
         .ncx-hwg .card__desc{font-size:13px;line-height:1.55;color:var(--h-muted);margin:0}
 
-        /* Entrance. Base state is fully visible — this only adds motion once
-           the Animator client component marks the block as in view. */
-        .ncx-hwg .word{opacity:0;transform:translateY(.5em)}
-        .ncx-hwg .subhead,.ncx-hwg .cta-row{opacity:0;transform:translateY(16px)}
-        .ncx-hwg .grid-wrap{opacity:0}
-        .ncx-hwg .copy.in .word{animation:ncx-hwg-word .75s cubic-bezier(.2,.8,.2,1) forwards;
-          animation-delay:calc(var(--i) * 45ms)}
-        .ncx-hwg .copy.in .subhead{animation:ncx-hwg-rise .75s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.3s}
+        /* Entrance: the buttons rise once the Animator client component marks
+           the block as in view. The H1, the subhead and the card grid are at
+           rest from the first paint: any of them can be the LCP element. */
+        .ncx-hwg .cta-row{opacity:0;transform:translateY(16px)}
         .ncx-hwg .copy.in .cta-row{animation:ncx-hwg-rise .75s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.45s}
-        .ncx-hwg .copy.in ~ .grid-wrap{
-          animation:ncx-hwg-fadein .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.25s}
-        @keyframes ncx-hwg-word{to{opacity:1;transform:none}}
         @keyframes ncx-hwg-rise{to{opacity:1;transform:none}}
-        @keyframes ncx-hwg-fadein{to{opacity:1}}
 
         @media(prefers-reduced-motion:reduce){
           .ncx-hwg .track{animation:none!important}

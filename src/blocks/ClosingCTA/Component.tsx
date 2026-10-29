@@ -50,44 +50,47 @@ export const ClosingCtaBlock: React.FC<Props> = ({
   useGSAP(
     () => {
       const el = headingRef.current
-      if (!el || isPastStart(el)) return
+      if (!el || level === 'off' || isPastStart(el)) return
+
+      // Held at opacity 0, never split, until the in-view point (SplitHeading's rule).
+      gsap.set(el, { opacity: 0 })
 
       if (level === 'reduced') {
-        gsap.set(el, { opacity: 0 })
         const stop = onceInView(el, () => gsap.to(el, { opacity: 1, duration: 0.5 }))
         return () => {
           stop()
           gsap.set(el, { clearProps: 'opacity' })
         }
       }
-      if (level !== 'on') return
 
-      let reverted = false
-      const split = SplitText.create(el, {
-        type: 'words,chars',
-        mask: 'words',
-        autoSplit: true,
-        onSplit: (self) => {
-          if (!reverted) gsap.set(self.chars, { yPercent: 120, rotation: 8, opacity: 0 })
-        },
-      })
+      let split: SplitText | null = null
       const stop = onceInView(el, () => {
-        gsap.to(split.chars, {
-          yPercent: 0,
-          rotation: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: { each: 0.018 },
-          ease: 'power4.out',
-          onComplete: () => {
-            reverted = true
-            split.revert()
+        split = SplitText.create(el, {
+          type: 'words,chars',
+          mask: 'words',
+          autoSplit: true,
+          onSplit: (self) => {
+            gsap.set(el, { opacity: 1 })
+            return gsap.fromTo(
+              self.chars,
+              { yPercent: 120, rotation: 8, opacity: 0 },
+              {
+                yPercent: 0,
+                rotation: 0,
+                opacity: 1,
+                duration: 0.7,
+                stagger: { each: 0.018 },
+                ease: 'power4.out',
+                onComplete: () => split?.revert(),
+              },
+            )
           },
         })
       })
       return () => {
         stop()
-        split.revert()
+        split?.revert()
+        gsap.set(el, { clearProps: 'opacity' })
       }
     },
     { dependencies: [level], scope: sectionRef },

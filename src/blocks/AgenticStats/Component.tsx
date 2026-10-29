@@ -38,7 +38,7 @@ export const AgenticStatsBlock: React.FC<AgenticStatsProps> = ({ eyebrow, headin
   if (!list.length) return null
 
   return (
-    <section className="ncx-stats">
+    <section className="ncx-stats" data-loop>
       <style>{`
         .ncx-stats{padding:70px 0;background:var(--ncx-cloud);border-block:1px solid var(--ncx-rule);font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
         .ncx-stats .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:14px;margin:0 0 12px;color:var(--ncx-crimson-ink)}

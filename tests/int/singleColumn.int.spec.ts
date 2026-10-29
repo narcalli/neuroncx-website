@@ -88,7 +88,7 @@ describe('a block with nothing beside its text goes single-column', () => {
   it('hero stack: without products that have a screenshot, keeping the intro on phones', () => {
     const single = html(HeroStackBlock, { heading: 'The platform', intro: 'One place.', products: [{ label: 'CRM', caption: 'No screenshot yet.' }] })
     expect(cols(single)).toEqual(['1'])
-    expect(single).toContain('.ncx-hstack .hs-pin[data-cols="1"] .hs-intro{display:block}')
+    expect(single).toContain('.ncx-hstack .hs-inner[data-cols="1"] .hs-intro{display:block}')
   })
 })
 

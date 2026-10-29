@@ -515,10 +515,12 @@ export const HeaderClient: React.FC<{
                       if (e.pointerType === 'mouse') setHovered(i)
                     }}
                   >
-                    {pill}
-                    <Anchor className="ncx-navlink" href={entry.href} newTab={entry.newTab}>
-                      {item.label}
-                    </Anchor>
+                    <span className="ncx-navslot">
+                      {pill}
+                      <Anchor className="ncx-navlink" href={entry.href} newTab={entry.newTab}>
+                        {item.label}
+                      </Anchor>
+                    </span>
                   </div>
                 )
               }
@@ -545,37 +547,39 @@ export const HeaderClient: React.FC<{
                     setHovered(i)
                   }}
                 >
-                  {pill}
-                  <button
-                    className="ncx-navlink"
-                    type="button"
-                    ref={(el) => {
-                      triggers.current.set(i, el)
-                    }}
-                    aria-expanded={open === i}
-                    aria-controls={panelId}
-                    onPointerDown={(e) => {
-                      pressedWith.current = e.pointerType
-                    }}
-                    onFocus={() => {
-                      // Focus from a press is left to the click below; only
-                      // keyboard focus opens the menu here.
-                      if (!pressedWith.current) setOpen(i)
-                    }}
-                    onBlur={() => {
-                      // A press dragged off the trigger never clicks; forget it.
-                      pressedWith.current = ''
-                    }}
-                    onClick={() => {
-                      const tapped = pressedWith.current !== '' && pressedWith.current !== 'mouse'
-                      pressedWith.current = ''
-                      if (tapped) setOpen((cur) => (cur === i ? null : i))
-                      else setOpen(i)
-                    }}
-                  >
-                    {item.label}
-                    <Chevron />
-                  </button>
+                  <span className="ncx-navslot">
+                    {pill}
+                    <button
+                      className="ncx-navlink"
+                      type="button"
+                      ref={(el) => {
+                        triggers.current.set(i, el)
+                      }}
+                      aria-expanded={open === i}
+                      aria-controls={panelId}
+                      onPointerDown={(e) => {
+                        pressedWith.current = e.pointerType
+                      }}
+                      onFocus={() => {
+                        // Focus from a press is left to the click below; only
+                        // keyboard focus opens the menu here.
+                        if (!pressedWith.current) setOpen(i)
+                      }}
+                      onBlur={() => {
+                        // A press dragged off the trigger never clicks; forget it.
+                        pressedWith.current = ''
+                      }}
+                      onClick={() => {
+                        const tapped = pressedWith.current !== '' && pressedWith.current !== 'mouse'
+                        pressedWith.current = ''
+                        if (tapped) setOpen((cur) => (cur === i ? null : i))
+                        else setOpen(i)
+                      }}
+                    >
+                      {item.label}
+                      <Chevron />
+                    </button>
+                  </span>
 
                   <MegaPanel
                     id={panelId}

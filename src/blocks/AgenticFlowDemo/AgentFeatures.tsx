@@ -3,8 +3,8 @@
 import { AnimatePresence, motion as m } from 'motion/react'
 import React, { useRef, useState } from 'react'
 
+import { arc, controlThrough } from '@/motion/arc'
 import { gsap, useGSAP } from '@/motion/gsap'
-import '@/motion/gsapMotionPath'
 import { SplitText } from '@/motion/gsapSplitText'
 import type { MotionSetting } from '@/motion/levels'
 import { SPRING } from '@/motion/tokens'
@@ -16,6 +16,9 @@ import { accentVars, designClasses, designVars, type Design } from './design'
 import type { FeatureAgent, FeatureFamily } from './featureData'
 import { StageLine } from './StageLine'
 import { featuresCss, flowCss } from './styles'
+
+/** The "Saves to your systems" packet's hop into the database icon, rising through (18, -18). */
+const PACKET_ARC = [{ x: 0, y: 0 }, controlThrough({ x: 0, y: 0 }, { x: 18, y: -18 }, { x: 42, y: -4 }), { x: 42, y: -4 }]
 
 /** The list arrives from this side and the old one leaves toward it (prompt 7, point 2). */
 const listVariants = {
@@ -36,7 +39,7 @@ const listVariants = {
  * Motion (prompt 7 of the motion plan): the family tab indicator, the agent
  * list, the panel's fade and height, the features and the handler chips use
  * Framer Motion; the agent name and the "Saves to your systems" packet use
- * GSAP (SplitText, MotionPath). Off, every change is instant and the packet
+ * GSAP (SplitText, and the arc helper for the packet). Off, every change is instant and the packet
  * never runs.
  */
 export const AgentFeatures: React.FC<{
@@ -119,13 +122,8 @@ export const AgentFeatures: React.FC<{
         gsap
           .timeline({ delay: 0.5 })
           .fromTo(packetEl, { x: 0, y: 0, opacity: 0, rotation: 0 }, { opacity: 1, duration: 0.15 })
-          .to(packetEl, {
-            motionPath: { path: [{ x: 0, y: 0 }, { x: 18, y: -18 }, { x: 42, y: -4 }], curviness: 1.2 },
-            rotation: 180,
-            transformOrigin: '50% 50%',
-            duration: 0.7,
-            ease: 'power2.in',
-          })
+          .add(arc(packetEl, PACKET_ARC, { duration: 0.7, ease: 'power2.in' }))
+          .to(packetEl, { rotation: 180, transformOrigin: '50% 50%', duration: 0.7, ease: 'power2.in' }, '<')
           .to(packetEl, { opacity: 0, scale: 0.4, duration: 0.12 }, '-=.08')
           .to(dbEl, { y: 3, duration: 0.1, yoyo: true, repeat: 1, ease: 'power2.out' }, '<')
       }

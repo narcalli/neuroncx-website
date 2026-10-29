@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { BlockMotion } from '@/motion/BlockMotion'
+
 type Presentation = {
   background?: string | null
   width?: string | null
@@ -98,6 +100,9 @@ export const BlockWrapper: React.FC<Props> = ({
 }) => {
   if (hidden) return null
   const still = motion === 'off' || motion === 'reduced' ? motion : undefined
+  // data-motion stops CSS animation; the context reaches the script-driven
+  // ones (GSAP, Motion) of every component inside.
+  children = <BlockMotion motion={motion}>{children}</BlockMotion>
 
   const outer: React.CSSProperties = {}
   const inner: React.CSSProperties = {}

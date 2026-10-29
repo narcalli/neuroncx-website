@@ -5,8 +5,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Reveal } from '@/motion/Reveal'
 import { SplitHeading } from '@/motion/SplitHeading'
+import { arc, chainThrough } from '@/motion/arc'
 import { gsap, useGSAP } from '@/motion/gsap'
-import '@/motion/gsapMotionPath'
 import type { MotionSetting } from '@/motion/levels'
 import { useLoopWhileVisible } from '@/motion/useLoopWhileVisible'
 import { useMotionLevel } from '@/motion/useMotionLevel'
@@ -159,11 +159,7 @@ export const SwarmDiagramClient: React.FC<Props> = ({
           })
           .set(packetRef.current, { x: pa.x, y: pa.y })
           .to(packetRef.current, { opacity: 1, duration: 0.15 })
-          .to(
-            packetRef.current,
-            { motionPath: { path: [{ x: pa.x, y: pa.y }, { x: CX, y: CY }, { x: pb.x, y: pb.y }], curviness: 1.5 }, duration: 1.5, ease: 'power2.inOut' },
-            '<',
-          )
+          .add(arc(packetRef.current, chainThrough(pa, { x: CX, y: CY }, pb), { duration: 1.5, ease: 'power2.inOut' }), '<')
           .fromTo(coreRingRef.current, { attr: { r: CORE_R }, opacity: 0.8 }, { attr: { r: CORE_R + 22 }, opacity: 0, duration: 0.7, ease: 'power2.out' }, '<.6')
           .call(() => nodeRefs.current[b]?.classList.add('on'), undefined, '>-.1')
           .fromTo(

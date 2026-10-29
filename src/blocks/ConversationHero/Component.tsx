@@ -77,6 +77,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
   return (
     <section
       className="ncx-chero"
+      data-loop
       style={{ '--chero-h': `${headingPx(headingSize)}px` } as React.CSSProperties}
     >
       <style>{`

@@ -38,7 +38,10 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
           grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;
           background:var(--ncx-rule);border:1px solid var(--ncx-rule);border-radius:12px;overflow:hidden;
           font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
-        .ncx-cgrid__cell{background:var(--ncx-white);padding:24px 22px;display:flex;gap:14px;align-items:flex-start}
+        /* height:100% fills the row through CardMotion's wrappers (each 100%
+           tall), so no grey from the grid's hairline background shows below a
+           short cell. */
+        .ncx-cgrid__cell{background:var(--ncx-white);padding:24px 22px;display:flex;gap:14px;align-items:flex-start;height:100%;box-sizing:border-box}
         .ncx-cgrid__mark{width:34px;height:34px;flex:0 0 34px;border-radius:8px;background:var(--ncx-cloud);
           display:flex;align-items:center;justify-content:center;overflow:hidden}
         .ncx-cgrid__mark img{max-width:26px;max-height:26px;width:auto;height:auto;

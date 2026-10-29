@@ -183,6 +183,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
   return (
     <section
       className="ncx-hfb"
+      data-loop
       data-anim={anim}
       data-height={height === 'medium' ? 'medium' : 'tall'}
       data-overlay={overlayStrength || 'strong'}
@@ -278,26 +279,15 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         .ncx-hfb .meta li{display:flex;align-items:center;gap:8px}
         .ncx-hfb .meta li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ncx-crimson)}
 
-        /* Entrance. Base state is fully visible — this only adds motion once
-           the Animator client component marks the block as in view. */
-        .ncx-hfb[data-anim="subtle"] .word,.ncx-hfb[data-anim="lively"] .word{
-          opacity:0;transform:translateY(16px)}
-        .ncx-hfb[data-anim="lively"] .word{filter:blur(6px);transform:translateY(16px) rotate(-2deg)}
-        .ncx-hfb[data-anim="subtle"] .subhead,.ncx-hfb[data-anim="subtle"] .cta,.ncx-hfb[data-anim="subtle"] .meta,
-        .ncx-hfb[data-anim="lively"] .subhead,.ncx-hfb[data-anim="lively"] .cta,.ncx-hfb[data-anim="lively"] .meta{
+        /* Entrance: the buttons and the meta line rise once the Animator client
+           component marks the block as in view. The H1 and the subhead are at
+           rest from the first paint: either can be the LCP element. */
+        .ncx-hfb[data-anim="subtle"] .cta,.ncx-hfb[data-anim="subtle"] .meta,
+        .ncx-hfb[data-anim="lively"] .cta,.ncx-hfb[data-anim="lively"] .meta{
           opacity:0;transform:translateY(14px)}
 
-        .ncx-hfb[data-anim="subtle"] .content.in .word{
-          animation:ncx-hfb-word-in .6s cubic-bezier(.2,.7,.2,1) forwards;
-          animation-delay:calc(var(--i) * 35ms)}
-        .ncx-hfb[data-anim="lively"] .content.in .word{
-          animation:ncx-hfb-word-in-lively .7s cubic-bezier(.2,.7,.2,1) forwards;
-          animation-delay:calc(var(--i) * 75ms)}
-        .ncx-hfb[data-anim] .content.in .subhead{animation:ncx-hfb-rise .5s ease forwards;animation-delay:.25s}
         .ncx-hfb[data-anim] .content.in .cta{animation:ncx-hfb-rise .5s ease forwards;animation-delay:.38s}
         .ncx-hfb[data-anim] .content.in .meta{animation:ncx-hfb-rise .5s ease forwards;animation-delay:.5s}
-        @keyframes ncx-hfb-word-in{to{opacity:1;transform:none}}
-        @keyframes ncx-hfb-word-in-lively{to{opacity:1;filter:blur(0);transform:none}}
         @keyframes ncx-hfb-rise{to{opacity:1;transform:none}}
 
         .ncx-hfb[data-anim="off"] .word,.ncx-hfb[data-anim="off"] .subhead,

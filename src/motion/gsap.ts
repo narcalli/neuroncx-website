@@ -4,9 +4,8 @@
  * GSAP core and its React hook. Client only: import it from client
  * components, never from a server component.
  *
- * Plugins are registered in their own modules (gsapSplitText,
- * gsapMotionPath, gsapDrawSVG), imported only by the blocks that use them,
- * so a page loads a plugin only when one of its blocks needs it.
+ * SplitText is the one GSAP plugin, registered in gsapSplitText. Stroke
+ * drawing and curved paths use plain tweens instead (draw.ts, arc.ts).
  */
 
 import { useGSAP as useGSAPBase } from '@gsap/react'
