@@ -1,0 +1,584 @@
+<title>Harness Loop Hero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Poppins:wght@500;600&display=swap">
+<style>
+/* Layout: demo controls band, site header, compact hero text (split or centred), then cards beside one diagram panel,
+   sized so the diagram sits above the fold. Light theme only, matching the live site. Brand tokens from the NeuronCx site. */
+:root{
+  color-scheme: light;
+  --ncx-crimson:#C62828; --ncx-navy:#1A2035; --ncx-teal:#136B74;
+  --ncx-ink:#171C2E; --ncx-body:#1A1A2E; --ncx-muted:#5A6379; --ncx-faint:#8A92A6;
+  --ncx-rule:#E2E6EF; --ncx-rule-soft:#EDF0F6; --ncx-wire:#BCC4D4;
+  --ncx-white:#FFFFFF; --ncx-paper:#F6F7FA; --ncx-cloud:#F5F5F7;
+  --ncx-crimson-tint:#FFEBEE; --ncx-teal-tint:#E4F1F1; --ncx-on-navy:#FFFFFF;
+  --ncx-r-card:12px; --ncx-r-panel:20px;
+  --ncx-shadow:0 1px 2px rgba(23,28,46,.06),0 6px 18px rgba(23,28,46,.06);
+  --font-display:'Poppins',ui-sans-serif,system-ui,Arial,sans-serif;
+  --font-body:'Inter',ui-sans-serif,system-ui,Arial,sans-serif;
+  --font-label:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--ncx-cloud);color:var(--ncx-body);font:400 15px/1.6 var(--font-body)}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ncx-crimson);outline-offset:2px}
+
+/* demo controls band (not part of the block) */
+.demo{background:var(--ncx-navy);color:var(--ncx-on-navy)}
+.demo .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;padding-block:10px}
+.demo-t{font:500 12px var(--font-label);letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-right:auto}
+.ctl{display:flex;align-items:center;gap:8px;font:500 12px var(--font-label)}
+.seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:5px 10px;cursor:pointer;color:var(--ncx-on-navy);font:500 12px var(--font-label)}
+.seg button[aria-pressed="true"]{background:var(--ncx-on-navy);color:var(--ncx-navy)}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--ncx-on-navy);font:500 12px var(--font-label)}
+
+/* frame = what a visitor sees: header + hero. Fold lines are measured from its top. */
+.frame{position:relative}
+.fold{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed var(--ncx-crimson);pointer-events:none;z-index:5}
+.fold span{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:-22px;background:var(--ncx-crimson);color:var(--ncx-white);font:500 11px var(--font-label);padding:2px 8px;border-radius:6px}
+.fold.f1{top:657px}.fold.f2{top:789px}
+[data-folds="off"] .fold{display:none}
+@media (max-width:899px){.fold{display:none}}
+
+/* mock site header */
+.site{background:var(--ncx-white);border-bottom:1px solid var(--ncx-rule)}
+.site .wrap{display:flex;align-items:center;gap:28px;padding-block:12px}
+.logo{font:600 19px var(--font-display);color:var(--ncx-ink);letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
+.logo i{width:8px;height:8px;border-radius:50%;background:var(--ncx-crimson)}
+.nav{display:flex;gap:22px;font:500 14px var(--font-display);color:var(--ncx-muted);margin-right:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:12px;font:600 15px var(--font-display);padding:11px 20px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.btn-p{background:var(--ncx-crimson);color:var(--ncx-white)}
+.btn-s{background:var(--ncx-white);color:var(--ncx-ink);border-color:var(--ncx-rule)}
+.btn-sm{padding:9px 16px;font-size:14px}
+@media (max-width:760px){.nav{display:none}.site .btn-sm{margin-left:auto}}
+
+/* hero text */
+.hero{padding-block:clamp(32px,4.5vw,64px) clamp(40px,5vw,64px)}
+h1{font:600 clamp(28px,3.1vw,44px)/1.12 var(--font-display);letter-spacing:-.022em;color:var(--ncx-ink);margin:0;text-wrap:balance}
+.passage{font-size:clamp(15px,1.2vw,17px);line-height:1.7;color:var(--ncx-muted);margin:0;text-wrap:pretty}
+.eyebrow{display:none;margin:0;align-items:center;gap:8px;font:600 12.5px var(--font-display);letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-muted)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
+
+/* version 1: simple left stack */
+[data-hero="stack"] .hero-text,[data-hero="label"] .hero-text{display:flex;flex-direction:column;align-items:flex-start;gap:22px}
+[data-hero="label"] .eyebrow{margin-bottom:-6px}
+[data-hero="stack"] .passage,[data-hero="label"] .passage{max-width:720px}
+/* version 3: left stack with a label */
+[data-hero="label"] .eyebrow{display:flex}
+/* version 2: text lined up with the cards and drawing below */
+[data-hero="grid"] .hero-text{display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:22px 20px}
+[data-hero="grid"] h1{grid-column:1 / -1}
+[data-hero="grid"] .passage{grid-column:2;max-width:760px}
+@media (max-width:899px){
+  [data-hero="grid"] .hero-text{grid-template-columns:minmax(0,1fr)}
+  [data-hero="grid"] .passage{grid-column:1}
+  h1 .br{display:none}
+}
+
+/* stage: cards + diagram */
+.stage{margin-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:20px;align-items:start}
+.cards{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
+.hcard{position:relative;overflow:hidden;text-align:left;cursor:pointer;background:transparent;border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-card);padding:11px 14px 12px;display:flex;flex-direction:column;gap:6px;transition:background .25s,border-color .25s,box-shadow .25s}
+.hcard:hover{background:var(--ncx-white)}
+.hcard[aria-selected="true"]{background:var(--ncx-white);border-color:var(--ncx-wire);box-shadow:var(--ncx-shadow)}
+.hc-top{display:flex;align-items:center;gap:10px}
+.hc-dot{flex:none;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ncx-faint)}
+.hcard[aria-selected="true"] .hc-dot{background:var(--ncx-crimson);border-color:var(--ncx-crimson)}
+.hc-title{font:600 14.5px/1.35 var(--font-display);color:var(--ncx-ink)}
+.hc-body{display:none}
+.hc-prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--ncx-crimson);transform-origin:0 50%;transform:scaleX(0)}
+.hcard[aria-selected="false"] .hc-prog{visibility:hidden}
+
+.panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);padding:12px 16px 10px;min-width:0}
+.panel-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:500 12px var(--font-label);color:var(--ncx-muted);min-height:20px}
+.live{display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.07em;color:var(--ncx-ink)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--ncx-teal)}
+[data-motion="on"] .live i{animation:blink 2.4s ease-in-out infinite}
+#status b{font-weight:500;color:var(--ncx-ink)}
+.dwrap{margin-top:6px}
+/* wide drawing: the status sits in the empty top-left corner of the drawing */
+.panel.land .panel-top{position:absolute;top:14px;left:16px;width:17%;flex-direction:column;align-items:flex-start;gap:5px;z-index:2;font-size:11px;line-height:1.45}
+.panel.land #status b{display:block}
+.panel.land #status .sep{display:none}
+.panel.land .dwrap{margin-top:0}
+.dwrap svg{display:block;width:100%;height:auto;overflow:visible}
+.caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:62px;display:flex;flex-direction:column;gap:6px}
+.cap-body{margin:0;font-size:14px;line-height:1.5;color:var(--ncx-body)}
+.cap-tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font:500 11.5px var(--font-label);color:var(--ncx-muted)}
+.tag{background:var(--ncx-crimson-tint);color:var(--ncx-crimson);border-radius:999px;padding:2px 9px}
+.note{margin-top:14px;font:400 12.5px var(--font-label);color:var(--ncx-muted);text-align:center}
+
+@media (max-width:899px){
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .cards{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin;order:2}
+  .panel{order:1}
+  .hcard{flex:0 0 min(70%,250px);scroll-snap-align:start}
+}
+
+/* diagram */
+.bound{fill:none;stroke:var(--ncx-faint);stroke-width:1.4;stroke-dasharray:7 6}
+.door-gap{stroke:var(--ncx-white);stroke-width:5}
+.door-cap{stroke:var(--ncx-faint);stroke-width:1.4;stroke-linecap:round}
+.is-on .door-cap{stroke:var(--ncx-crimson)}
+.knock{fill:none;stroke:var(--ncx-white);stroke-width:8}
+.is-on .bound{stroke:var(--ncx-crimson);stroke-width:1.8}
+.box{fill:var(--ncx-white);stroke:var(--ncx-rule);stroke-width:1.2}
+.is-on .box{stroke:var(--ncx-crimson);stroke-width:1.8}
+.lbl{font:600 13px var(--font-display);fill:var(--ncx-ink)}
+.mono{font:500 10.5px var(--font-label);fill:var(--ncx-muted);letter-spacing:.02em}
+.chip-bg{fill:var(--ncx-paper);stroke:var(--ncx-rule)}
+.chip-t{font:500 10.5px var(--font-label);fill:var(--ncx-body)}
+.ln{fill:none;stroke:var(--ncx-wire);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.is-on .ln{stroke:var(--ncx-crimson)}
+.orch-box{fill:var(--ncx-navy);stroke:var(--ncx-navy);stroke-width:1.2}
+.is-on .orch-box{stroke:var(--ncx-crimson);stroke-width:2.4}
+.orch-t{font:600 16px var(--font-display);fill:var(--ncx-on-navy)}
+.orch-s{font:500 10.5px var(--font-label);fill:var(--ncx-on-navy);opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+.orch-d{fill:var(--ncx-on-navy);opacity:.45}
+.halo{fill:none;stroke:var(--ncx-crimson);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+.gate{fill:var(--ncx-paper);stroke:var(--ncx-wire);stroke-width:1.2}
+.is-on .gate{stroke:var(--ncx-crimson);stroke-width:1.8}
+.chk-c{fill:var(--ncx-white);stroke:var(--ncx-teal);stroke-width:1.3}
+.chk-p{fill:none;stroke:var(--ncx-teal);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.chk-f{fill:var(--ncx-teal);opacity:0;transform-box:fill-box;transform-origin:center}
+.abox{fill:var(--ncx-white);stroke:var(--ncx-rule);stroke-width:1.2}
+.is-on .abox{stroke:var(--ncx-crimson);stroke-width:1.8}
+.hbox{fill:var(--ncx-white);stroke:var(--ncx-teal);stroke-width:1.3;stroke-dasharray:4 3}
+.is-on .hbox{stroke:var(--ncx-crimson);stroke-width:1.8}
+.person{fill:none;stroke:var(--ncx-teal);stroke-width:1.5;stroke-linecap:round}
+.flash{fill:var(--ncx-teal-tint);stroke:var(--ncx-teal);stroke-width:1.4;opacity:0}
+.loop-ln{stroke:var(--ncx-teal);stroke-width:1.8}
+.is-on .loop-ln{stroke:var(--ncx-teal);stroke-width:2.6}
+.loop-t{font:500 10.5px var(--font-label);fill:var(--ncx-teal);letter-spacing:.03em}
+.loop-bg{fill:var(--ncx-teal-tint);opacity:0}
+.is-on .loop-bg{opacity:1}
+.dot-core{fill:var(--ncx-crimson)}
+.dot-halo{fill:var(--ncx-crimson);opacity:.16}
+.dot.teal .dot-core{fill:var(--ncx-teal)}
+.dot.teal .dot-halo{fill:var(--ncx-teal)}
+.pt .lbl{font-size:12px}
+.pt .chip-t{font-size:10px}
+.pt .orch-t{font-size:15px}
+[data-parts]{transition:opacity .35s ease}
+.dim{opacity:.35}
+[data-motion="off"] [data-parts],[data-motion="off"] .hcard{transition:none}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){[data-motion] .live i{animation:none}}
+</style>
+
+<div data-motion="on" data-hero="grid" data-folds="on" id="root">
+  <div class="demo">
+    <div class="wrap">
+      <span class="demo-t">Demo · Hero (harness loop) block</span>
+      <div class="ctl"><span>Version</span>
+        <div class="seg" role="group" aria-label="Hero version">
+          <button type="button" id="v-stack" data-v="stack" aria-pressed="false">1 · Left stack</button>
+          <button type="button" id="v-grid" data-v="grid" aria-pressed="true">2 · Grid</button>
+          <button type="button" id="v-label" data-v="label" aria-pressed="false">3 · With label</button>
+        </div>
+      </div>
+      <div class="ctl"><span>Motion</span>
+        <div class="seg" role="group" aria-label="Motion level">
+          <button type="button" id="m-on" data-m="on" aria-pressed="true">On</button>
+          <button type="button" id="m-red" data-m="reduced" aria-pressed="false">Reduced</button>
+          <button type="button" id="m-off" data-m="off" aria-pressed="false">Off</button>
+        </div>
+      </div>
+      <div class="ctl"><span>Fold lines</span>
+        <div class="seg" role="group" aria-label="Fold lines">
+          <button type="button" id="f-on" data-f="on" aria-pressed="true">On</button>
+          <button type="button" id="f-off" data-f="off" aria-pressed="false">Off</button>
+        </div>
+      </div>
+      <button type="button" class="ghost" id="replay">Restart autoplay</button>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="fold f1"><span>Fold on a 1366×768 laptop, about 657px visible</span></div>
+    <div class="fold f2"><span>Fold on a 1440×900 screen, about 789px visible</span></div>
+
+    <header class="site">
+      <div class="wrap">
+        <span class="logo"><i></i>NeuronCx</span>
+        <nav class="nav" aria-label="Main"><span>Platform</span><span>Industries</span><span>Integrations</span><span>Resources</span></nav>
+        <a class="btn btn-p btn-sm" href="#top">Book a demo</a>
+      </div>
+    </header>
+
+    <main class="hero" id="top">
+      <div class="wrap">
+        <div class="hero-text">
+          <p class="eyebrow"><i></i>Agentic CRM and CX platform</p>
+          <h1>An agentic rethink of CRM,<br class="br"> marketing automation and omnichannel CX.</h1>
+          <p class="passage">NeuronCx is a captive AI harness that goes beyond SaaS silos, built for customer acquisition, engagement and retention. It is grounded in your enterprise ontology, so agents act on your own locations, services and rules, and hand over to your team when a person is needed. Your data layer and custom workflows run in your own cloud and change at your own pace.</p>
+        </div>
+
+        <div class="stage" id="stage">
+          <div class="cards" role="tablist" aria-label="What the harness does" aria-orientation="vertical" id="cards">
+            <button type="button" class="hcard" role="tab" id="tab-0" aria-controls="harness-panel" aria-selected="true" tabindex="0" data-highlights="ontology">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">Grounded in your enterprise ontology</span></span>
+              <span class="hc-body">Agents read your locations, services, prices and rules from one shared model of your business, so every action matches how you actually work.</span>
+              <span class="hc-prog"></span>
+            </button>
+            <button type="button" class="hcard" role="tab" id="tab-1" aria-controls="harness-panel" aria-selected="false" tabindex="-1" data-highlights="orchestration actions">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">Orchestrated agents that act on their own</span></span>
+              <span class="hc-body">Orchestration routes each customer event to the right agent, which qualifies, books, collects payment, follows up or runs a campaign.</span>
+              <span class="hc-prog"></span>
+            </button>
+            <button type="button" class="hcard" role="tab" id="tab-2" aria-controls="harness-panel" aria-selected="false" tabindex="-1" data-highlights="guardrails policy handover">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">Guardrails and a policy framework you set</span></span>
+              <span class="hc-body">Every action passes your guardrails and policies first. Cases outside them go to your team with the full context.</span>
+              <span class="hc-prog"></span>
+            </button>
+            <button type="button" class="hcard" role="tab" id="tab-3" aria-controls="harness-panel" aria-selected="false" tabindex="-1" data-highlights="customer360">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">One Customer 360 record</span></span>
+              <span class="hc-body">Each step writes back to one customer record, so profile, history and the next step stay current for every agent and team member.</span>
+              <span class="hc-prog"></span>
+            </button>
+            <button type="button" class="hcard" role="tab" id="tab-4" aria-controls="harness-panel" aria-selected="false" tabindex="-1" data-highlights="boundary">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">Your own cloud, beyond SaaS</span></span>
+              <span class="hc-body">The data layer, agents and custom workflows run inside your own cloud account instead of a shared SaaS tenant.</span>
+              <span class="hc-prog"></span>
+            </button>
+            <button type="button" class="hcard" role="tab" id="tab-5" aria-controls="harness-panel" aria-selected="false" tabindex="-1" data-highlights="loop">
+              <span class="hc-top"><span class="hc-dot"></span><span class="hc-title">Improves at your own pace</span></span>
+              <span class="hc-body">Outcomes feed back into your ontology and policies, so the harness gets better each cycle, on a schedule your team controls.</span>
+              <span class="hc-prog"></span>
+            </button>
+          </div>
+
+          <div class="panel" id="harness-panel" role="tabpanel" aria-labelledby="tab-0">
+            <div class="panel-top">
+              <span class="live"><i></i>Live loop</span>
+              <span id="status">Starting</span>
+            </div>
+            <div class="dwrap" id="dwrap">
+              <svg id="dia" role="img" aria-label="A diagram of the NeuronCx harness: customer events flow into orchestrated agents that work from your ontology, policies and guardrails, act or hand over to your team, write to Customer 360, and learn from each outcome, all inside your own cloud."></svg>
+            </div>
+            <div class="caption" id="caption"></div>
+          </div>
+        </div>
+        <p class="note">Card text is draft copy. Fold lines are measured from the top of the site header; real browsers vary by a few dozen pixels.</p>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+const D={
+  triggerEvents:["New enquiry","Payment due","Follow-up due"],
+  boundaryLabel:"BYOC",
+  ontologyLabel:"Enterprise ontology", ontologyItems:["Locations","Services","Rules and terms"],
+  policyLabel:"Policy framework", policySub:"Set by your team",
+  guardrailsLabel:"Guardrails",
+  orchestrationLabel:"Orchestration", orchestrationSubLabel:"Agents",
+  actions:["Qualify","Book and pay","Follow up","Campaigns"],
+  handoverLabel:"Team steps in",
+  customer360Label:"Customer 360", customer360Fields:["Profile","History","Next step","Care gaps"],
+  loopLabel:"Learns from every outcome"
+};
+const NAMES={trigger:"Customer event",boundary:"BYOC",ontology:"Enterprise ontology",policy:"Policy framework",guardrails:"Guardrails",orchestration:"Orchestration",actions:"Agent actions",handover:"Team steps in",customer360:"Customer 360",loop:"Learning loop"};
+
+const INSIDE=new Set(['ontology','policy','orchestration','guardrails','actions','handover']);
+const NS="http://www.w3.org/2000/svg";
+const root=document.getElementById('root'), svg=document.getElementById('dia'), dwrap=document.getElementById('dwrap');
+const stage=document.getElementById('stage'), cardsBox=document.getElementById('cards');
+const cards=[...document.querySelectorAll('.hcard')], statusEl=document.getElementById('status'), captionEl=document.getElementById('caption');
+
+function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function txt(p,x,y,s,c,anchor){const t=el('text',{x,y,class:c},p);if(anchor)t.setAttribute('text-anchor',anchor);t.textContent=s;return t;}
+let refs, layers, portrait=false;
+function grp(p,parts){const g=el('g',{},p);g.dataset.parts=parts;refs.parts.push(g);return g;}
+function path(g,d,c){return el('path',{d,class:c||'ln'},g);}
+function chev(g,x,y,dir,c){const m={r:`M${x-6} ${y-4}L${x} ${y}L${x-6} ${y+4}`,l:`M${x+6} ${y-4}L${x} ${y}L${x+6} ${y+4}`,d:`M${x-4} ${y-6}L${x} ${y}L${x+4} ${y-6}`}[dir];return el('path',{d:m,class:c||'ln'},g);}
+function chip(p,x,y,label,h,pad){
+  const g=el('g',{},p);const r=el('rect',{x,y,height:h,rx:h/2,class:'chip-bg'},g);
+  const t=txt(g,x+pad,y+h/2+3.6,label,'chip-t');const w=Math.ceil(t.getComputedTextLength())+pad*2;r.setAttribute('width',w);
+  const f=el('rect',{x,y,width:w,height:h,rx:h/2,class:'flash'},g);g.appendChild(t);
+  return {w,flash:f};
+}
+function chipRow(p,x,y,maxW,items,h,pad,gap,flashes){
+  let cx=x,cy=y;items.forEach(s=>{const g=el('g',{},p);const c=chip(g,cx,cy,s,h,pad);
+    if(cx>x && cx+c.w>x+maxW){cx=x;cy+=h+4;g.remove();const c2=chip(p,cx,cy,s,h,pad);flashes&&flashes.push(c2.flash);cx+=c2.w+gap;}
+    else{flashes&&flashes.push(c.flash);cx+=c.w+gap;}});
+}
+function check(g,x,y){
+  const c=el('g',{},g);el('circle',{cx:x,cy:y,r:7,class:'chk-c'},c);
+  const f=el('circle',{cx:x,cy:y,r:7,class:'chk-f'},c);
+  el('path',{d:`M${x-3} ${y}l2.2 2.4L${x+3.4} ${y-2.6}`,class:'chk-p'},c);
+  refs.checks.push(f);
+}
+function action(g,x,y,w,h,label,i,pt){
+  const a=grp(g,i===4?'handover':'actions');
+  if(i===4){
+    el('rect',{x,y,width:w,height:h,rx:10,class:'hbox'},a);
+    const f=el('rect',{x,y,width:w,height:h,rx:10,class:'flash'},a);
+    const px=x+14,py=y+h/2;
+    el('circle',{cx:px,cy:py-4,r:3.2,class:'person'},a);
+    el('path',{d:`M${px-6} ${py+7}a6 6 0 0 1 12 0`,class:'person'},a);
+    txt(a,x+28,y+h/2+4.5,label,'lbl');refs.chipFlash[i]=f;
+  }else{
+    el('rect',{x,y,width:w,height:h,rx:10,class:'abox'},a);
+    const f=el('rect',{x,y,width:w,height:h,rx:10,class:'flash'},a);
+    txt(a,x+(pt?12:14),y+h/2+4.5,label,'lbl');refs.chipFlash[i]=f;
+  }
+}
+function loopLabel(g,x,y,two){
+  const lg=el('g',{transform:`translate(${x} ${y})`},g);
+  const bg=el('rect',{class:'loop-bg',rx:4},lg);
+  let lines=[D.loopLabel];
+  if(two){const w=D.loopLabel.split(' ');const h=Math.ceil(w.length/2);lines=[w.slice(0,h).join(' '),w.slice(h).join(' ')];}
+  let max=0;lines.forEach((s,i)=>{const t=txt(lg,0,i*14,s,'loop-t');max=Math.max(max,t.getComputedTextLength());});
+  bg.setAttribute('x',-6);bg.setAttribute('y',-11);bg.setAttribute('width',max+12);bg.setAttribute('height',16+(lines.length-1)*14);
+  refs.loopBg=bg;
+}
+
+/* a "door": the dashed edge opens where a line passes through, so lines never sit on the dashes */
+function door(g,x,y,o){
+  const L=9;
+  if(o==='v'){el('line',{x1:x,y1:y-L,x2:x,y2:y+L,class:'door-gap'},g);
+    el('line',{x1:x-4,y1:y-L,x2:x+4,y2:y-L,class:'door-cap'},g);el('line',{x1:x-4,y1:y+L,x2:x+4,y2:y+L,class:'door-cap'},g);}
+  else{el('line',{x1:x-L,y1:y,x2:x+L,y2:y,class:'door-gap'},g);
+    el('line',{x1:x-L,y1:y-4,x2:x-L,y2:y+4,class:'door-cap'},g);el('line',{x1:x+L,y1:y-4,x2:x+L,y2:y+4,class:'door-cap'},g);}
+}
+
+/* landscape: 760 x 380. Lanes: loop runs outside the box on the left (x 138), actions leave by one rail (x 728). */
+function drawLand(){
+  const L=layers.lines,N=layers.nodes;
+  // boundary sits under every line; doors at the three crossings
+  const gb=grp(L,'boundary');el('rect',{x:160,y:8,width:592,height:310,rx:20,class:'bound'},gb);
+  door(gb,160,201,'v');door(gb,160,70,'v');door(gb,728,318,'h');
+  const gbl=grp(N,'boundary');txt(gbl,178,24,D.boundaryLabel,'mono');
+  // learning loop, outside the box
+  const ll=grp(L,'loop');refs.pLoop=path(ll,'M176 352H138V70H177','ln loop-ln');chev(ll,177,70,'r','ln loop-ln');
+  const lgl=grp(N,'loop');loopLabel(lgl,16,266,true);
+  // customer event, hops over the loop lane
+  const gt=grp(N,'trigger');el('rect',{x:4,y:173,width:116,height:56,rx:12,class:'box'},gt);
+  txt(gt,16,194,'Customer event','mono');refs.trigText=txt(gt,16,217,D.triggerEvents[0],'lbl');
+  const lt=grp(L,'trigger');el('path',{d:'M120 201H243',class:'knock'},lt);refs.pTrig=path(lt,'M120 201H243');chev(lt,243,201,'r');
+  // ontology + policy
+  const go=grp(N,'ontology');el('rect',{x:178,y:32,width:244,height:76,rx:12,class:'box'},go);
+  txt(go,192,52,D.ontologyLabel,'lbl');chipRow(go,192,61,216,D.ontologyItems,19,7,6);
+  const gp=grp(N,'policy');el('rect',{x:436,y:32,width:160,height:76,rx:12,class:'box'},gp);
+  txt(gp,450,52,D.policyLabel,'lbl');txt(gp,450,72,D.policySub,'mono');
+  const lo=grp(L,'ontology');refs.pOnt=path(lo,'M300 108V167');chev(lo,300,167,'d');
+  const lp=grp(L,'policy');refs.pPol=path(lp,'M452 108V140H412V167');chev(lp,412,167,'d');
+  // orchestration
+  const gor=grp(N,'orchestration');el('rect',{x:244,y:168,width:196,height:66,rx:14,class:'orch-box'},gor);
+  refs.halo=el('rect',{x:244,y:168,width:196,height:66,rx:14,class:'halo'},gor);
+  txt(gor,342,197,D.orchestrationLabel,'orch-t','middle');txt(gor,342,214,D.orchestrationSubLabel,'orch-s','middle');
+  for(let k=0;k<5;k++)el('circle',{cx:318+k*12,cy:225,r:2.4,class:'orch-d'},gor);
+  // actions through the guardrails gate, then out by one rail to Customer 360
+  const ys=[132,167,202,237,272],H=28,AX=552,AW=160;
+  ys.forEach((y,i)=>{const cy=y+H/2;const la=grp(L,i===4?'handover guardrails':'actions guardrails');
+    refs.act[i]=path(la,`M440 201H458C474 201 468 ${cy} 486 ${cy}H${AX-1}`);chev(la,AX-1,cy,'r');
+    const lo2=grp(L,i===4?'handover customer360':'actions customer360');
+    refs.out[i]=path(lo2,`M${AX+AW} ${cy}H728V329`);if(i===4)chev(lo2,728,329,'d');});
+  const gg=grp(N,'guardrails');el('rect',{x:480,y:124,width:28,height:186,rx:8,class:'gate'},gg);
+  txt(gg,494,118,D.guardrailsLabel,'mono','middle');ys.forEach(y=>check(gg,494,y+H/2));
+  const ga=el('g',{},N);
+  [...D.actions,D.handoverLabel].forEach((s,i)=>action(ga,AX,ys[i],AW,H,s,i));
+  // customer 360, outside the box
+  const gc=grp(N,'customer360');el('rect',{x:176,y:330,width:560,height:44,rx:12,class:'box'},gc);
+  txt(gc,192,357,D.customer360Label,'lbl');chipRow(gc,320,341,400,D.customer360Fields,22,9,8,refs.fieldFlash);
+}
+
+/* portrait: 360 x 620. Loop lane outside the left edge (x 6), one rail down the middle (x 188). */
+function drawPortrait(){
+  const L=layers.lines,N=layers.nodes;
+  const gb=grp(L,'boundary');el('rect',{x:22,y:80,width:332,height:422,rx:20,class:'bound'},gb);
+  door(gb,188,80,'h');door(gb,22,155,'v');door(gb,188,502,'h');
+  const gbl=grp(N,'boundary');txt(gbl,36,100,D.boundaryLabel,'mono');
+  const ll=grp(L,'loop');refs.pLoop=path(ll,'M34 551H6V155H33','ln loop-ln');chev(ll,33,155,'r','ln loop-ln');
+  const lgl=grp(N,'loop');loopLabel(lgl,40,606,false);
+  const gt=grp(N,'trigger');el('rect',{x:118,y:6,width:140,height:54,rx:12,class:'box'},gt);
+  txt(gt,130,25,'Customer event','mono');refs.trigText=txt(gt,130,47,D.triggerEvents[0],'lbl');
+  const lt=grp(L,'trigger');refs.pTrig=path(lt,'M188 60V243');chev(lt,188,243,'d');
+  const go=grp(N,'ontology');el('rect',{x:34,y:112,width:148,height:86,rx:12,class:'box'},go);
+  txt(go,44,133,D.ontologyLabel,'lbl');chipRow(go,44,144,130,D.ontologyItems,20,5,4);
+  const gp=grp(N,'policy');el('rect',{x:194,y:112,width:148,height:86,rx:12,class:'box'},gp);
+  txt(gp,206,133,D.policyLabel,'lbl');txt(gp,206,155,D.policySub,'mono');
+  const lo=grp(L,'ontology');refs.pOnt=path(lo,'M108 198V243');chev(lo,108,243,'d');
+  const lp=grp(L,'policy');refs.pPol=path(lp,'M268 198V243');chev(lp,268,243,'d');
+  const gor=grp(N,'orchestration');el('rect',{x:103,y:244,width:170,height:72,rx:14,class:'orch-box'},gor);
+  refs.halo=el('rect',{x:103,y:244,width:170,height:72,rx:14,class:'halo'},gor);
+  txt(gor,188,274,D.orchestrationLabel,'orch-t','middle');txt(gor,188,292,D.orchestrationSubLabel,'orch-s','middle');
+  for(let k=0;k<5;k++)el('circle',{cx:164+k*12,cy:304,r:2.4,class:'orch-d'},gor);
+  const A=[{x:34,y:378},{x:194,y:378},{x:34,y:418},{x:194,y:418},{x:34,y:458}];
+  const actD=['M188 316V368H108V377','M188 316V368H268V377','M188 316V434H183','M188 316V434H193','M188 316V457'];
+  const actC=[[108,377,'d'],[268,377,'d'],[183,434,'l'],[193,434,'r'],[188,457,'d']];
+  const outD=['M182 394H188V515','M194 394H188V515','M182 434H188V515','M194 434H188V515','M188 490V515'];
+  A.forEach((a,i)=>{const la=grp(L,i===4?'handover guardrails':'actions guardrails');refs.act[i]=path(la,actD[i]);chev(la,...actC[i]);
+    const lo2=grp(L,i===4?'handover customer360':'actions customer360');refs.out[i]=path(lo2,outD[i]);if(i===4)chev(lo2,188,515,'d');});
+  const gg=grp(N,'guardrails');el('rect',{x:34,y:334,width:308,height:24,rx:8,class:'gate'},gg);
+  txt(gg,46,350,D.guardrailsLabel,'mono');check(gg,188,346);
+  const ga=el('g',{},N);
+  [...D.actions,D.handoverLabel].forEach((s,i)=>action(ga,A[i].x,A[i].y,i===4?308:148,32,s,i,true));
+  const gc=grp(N,'customer360');el('rect',{x:34,y:516,width:308,height:70,rx:12,class:'box'},gc);
+  txt(gc,46,538,D.customer360Label,'lbl');chipRow(gc,46,552,286,D.customer360Fields,22,8,6,refs.fieldFlash);
+}
+
+function render(){
+  stopLoop();
+  portrait=dwrap.clientWidth<480;
+  svg.innerHTML='';svg.setAttribute('class',portrait?'pt':'');
+  document.getElementById('harness-panel').classList.toggle('land',!portrait);
+  svg.setAttribute('viewBox',portrait?'0 0 360 620':'0 0 760 380');
+  refs={parts:[],act:[],out:[],chipFlash:[],fieldFlash:[],checks:[]};
+  layers={lines:el('g',{},svg),nodes:el('g',{},svg),dots:el('g',{},svg)};
+  portrait?drawPortrait():drawLand();
+  applyHighlight();
+  syncLoop();
+}
+
+/* ---------- state ---------- */
+const S={motion:matchMedia('(prefers-reduced-motion: reduce)').matches?'reduced':'on',active:0,autoplay:true,elapsed:0,dur:6000,hover:false,focus:false,inView:true};
+
+function applyHighlight(){
+  if(!refs)return;
+  const hl=S.active>=0?cards[S.active].dataset.highlights.split(' '):[];
+  const set=new Set(hl),bmode=set.has('boundary');
+  refs.parts.forEach(e=>{const ps=e.dataset.parts.split(' ');const on=ps.some(p=>set.has(p));
+    const keep=on||(bmode&&ps.some(p=>INSIDE.has(p)));
+    e.classList.toggle('is-on',hl.length>0&&on);e.classList.toggle('dim',hl.length>0&&!keep);});
+  captionEl.innerHTML='';
+  const body=document.createElement('p');body.className='cap-body';
+  const tags=document.createElement('div');tags.className='cap-tags';
+  if(!hl.length){body.textContent='Select a card to highlight that part of the harness.';captionEl.append(body);return;}
+  body.textContent=cards[S.active].querySelector('.hc-body').textContent;
+  const lab=document.createElement('span');lab.textContent=bmode?'Highlighted: everything inside the dashed line':'Highlighted:';tags.appendChild(lab);
+  if(!bmode)hl.forEach(p=>{const t=document.createElement('span');t.className='tag';t.textContent=NAMES[p];tags.appendChild(t);});
+  captionEl.append(body,tags);
+}
+
+function select(i,user){
+  S.active=i;
+  cards.forEach((c,k)=>{const on=k===i;c.setAttribute('aria-selected',on);c.tabIndex=on||(i<0&&k===0)?0:-1;c.querySelector('.hc-prog').style.transform='scaleX(0)';});
+  if(i>=0)document.getElementById('harness-panel').setAttribute('aria-labelledby','tab-'+i);
+  if(user)S.autoplay=false;
+  S.elapsed=0;applyHighlight();
+  if(i>=0&&cardsBox.scrollWidth>cardsBox.clientWidth+4){
+    const c=cards[i];cardsBox.scrollTo({left:c.offsetLeft-cardsBox.offsetLeft,behavior:S.motion==='on'?'smooth':'auto'});
+  }
+}
+cards.forEach((c,i)=>c.addEventListener('click',()=>select(i,true)));
+cardsBox.addEventListener('keydown',e=>{
+  const k=cards.indexOf(document.activeElement);if(k<0)return;
+  let n=null;
+  if(e.key==='ArrowDown'||e.key==='ArrowRight')n=(k+1)%cards.length;
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft')n=(k-1+cards.length)%cards.length;
+  if(e.key==='Home')n=0;if(e.key==='End')n=cards.length-1;
+  if(n!==null){e.preventDefault();cards.forEach(c=>c.tabIndex=-1);cards[n].tabIndex=0;cards[n].focus();}
+});
+
+let last=performance.now();
+function tick(now){
+  const dt=now-last;last=now;
+  const run=S.autoplay&&S.motion!=='off'&&!S.hover&&!S.focus&&S.inView&&!document.hidden&&S.active>=0;
+  if(run){S.elapsed+=dt;
+    const p=cards[S.active].querySelector('.hc-prog');p.style.transform=`scaleX(${Math.min(1,S.elapsed/S.dur)})`;
+    if(S.elapsed>=S.dur)select((S.active+1)%cards.length,false);}
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+stage.addEventListener('mouseenter',()=>S.hover=true);
+stage.addEventListener('mouseleave',()=>S.hover=false);
+stage.addEventListener('focusin',()=>S.focus=true);
+stage.addEventListener('focusout',e=>{if(!stage.contains(e.relatedTarget))S.focus=false;});
+
+/* ---------- loop animation ---------- */
+let token=0,loopOn=false,ev=0,ai=0,fi=0,cycle=0;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+function shouldRun(){return S.motion==='on'&&S.inView&&!document.hidden;}
+function stopLoop(){token++;loopOn=false;if(layers)layers.dots.innerHTML='';}
+function syncLoop(){if(!refs)return;if(shouldRun()){if(!loopOn)runLoop();}else{stopLoop();setStatus();}}
+function setStatus(a,b){
+  if(a===undefined){statusEl.textContent=S.motion==='off'?'Still view':S.motion==='reduced'?'Reduced motion: highlights only':'Paused';return;}
+  statusEl.innerHTML='';const x=document.createElement('b');x.textContent=a;
+  const sp=document.createElement('span');sp.className='sep';sp.textContent=' · ';
+  const d=document.createElement('span');d.textContent=b;statusEl.append(x,sp,d);
+}
+function dot(p,t,dur,teal){
+  return new Promise(res=>{
+    if(t!==token||!p)return res();
+    const len=p.getTotalLength();const g=el('g',{class:'dot'+(teal?' teal':'')},layers.dots);
+    el('circle',{r:9,class:'dot-halo'},g);el('circle',{r:4.4,class:'dot-core'},g);
+    const st=performance.now();
+    (function f(now){
+      if(t!==token){g.remove();return res();}
+      const k=Math.min(1,(now-st)/dur),pt=p.getPointAtLength(ease(k)*len);
+      g.setAttribute('transform',`translate(${pt.x} ${pt.y})`);
+      if(k<1)requestAnimationFrame(f);else{g.remove();res();}
+    })(st);
+  });
+}
+function flash(node,dur,peak){if(node&&node.animate)node.animate([{opacity:0},{opacity:peak||1,offset:.25},{opacity:peak||1,offset:.6},{opacity:0}],{duration:dur||1100,easing:'ease-out'});}
+async function swap(tok,s){
+  if(!refs||!refs.trigText||tok!==token)return;
+  const n=refs.trigText;if(n.textContent===s)return;
+  await n.animate([{opacity:1},{opacity:0}],{duration:220,fill:'forwards'}).finished.catch(()=>{});
+  n.textContent=s;n.animate([{opacity:0},{opacity:1}],{duration:260,fill:'forwards'});
+}
+async function runLoop(){
+  const t=++token;loopOn=true;
+  while(t===token){
+    const e=D.triggerEvents[ev++%D.triggerEvents.length];
+    setStatus('Event in',e);await swap(t,e);
+    await dot(refs.pTrig,t,1100);if(t!==token)break;
+    setStatus('Orchestration','Reading ontology and policy');
+    refs.halo&&refs.halo.animate([{opacity:0,transform:'scale(1)'},{opacity:.8,transform:'scale(1.02)',offset:.3},{opacity:0,transform:'scale(1.07)'}],{duration:1300,easing:'ease-out'});
+    await Promise.all([dot(refs.pOnt,t,950),dot(refs.pPol,t,1050)]);if(t!==token)break;
+    await wait(200);
+    const hand=cycle%3===2,i=hand?4:ai++%4;
+    setStatus('Guardrails',hand?'Outside policy, so your team steps in':'Passed, agent runs '+D.actions[i]);
+    const ck=refs.checks[Math.min(i,refs.checks.length-1)];
+    setTimeout(()=>{if(t===token)flash(ck,700,.9)},portrait?330:620);
+    await dot(refs.act[i],t,1200);if(t!==token)break;
+    flash(refs.chipFlash[i],1300);await wait(350);
+    const fIdx=fi++%refs.fieldFlash.length;
+    setStatus('Customer 360','Updating '+D.customer360Fields[fIdx]);
+    await dot(refs.out[i],t,1050);if(t!==token)break;
+    flash(refs.fieldFlash[fIdx],1300);await wait(250);
+    setStatus('Learning loop','Outcome feeds back into ontology and policy');
+    flash(refs.loopBg,1800);
+    await dot(refs.pLoop,t,1700,true);if(t!==token)break;
+    await wait(900);cycle++;
+  }
+}
+new IntersectionObserver(es=>{S.inView=es[0].isIntersecting;syncLoop();},{threshold:.15}).observe(stage);
+document.addEventListener('visibilitychange',syncLoop);
+
+/* ---------- demo controls ---------- */
+function setMotion(m){
+  S.motion=m;root.dataset.motion=m;
+  document.querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  if(m==='off'){S.autoplay=false;select(-1,false);}
+  else if(S.active<0){S.autoplay=true;select(0,false);}
+  syncLoop();
+}
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>setMotion(b.dataset.m)));
+document.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{
+  root.dataset.hero=b.dataset.v;document.querySelectorAll('[data-v]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  try{localStorage.setItem('hero-version-2',b.dataset.v)}catch(e){}
+}));
+document.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{
+  root.dataset.folds=b.dataset.f;document.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+}));
+document.getElementById('replay').addEventListener('click',()=>{if(S.motion==='off')setMotion('on');S.autoplay=true;select(0,false);});
+try{const v=localStorage.getItem('hero-version-2');if(v){const b=document.querySelector(`[data-v="${v}"]`);b&&b.click();}}catch(e){}
+
+/* ---------- boot ---------- */
+let lastPortrait=null;
+new ResizeObserver(()=>{const p=dwrap.clientWidth<480;if(p!==lastPortrait){lastPortrait=p;render();}}).observe(dwrap);
+render();lastPortrait=portrait;
+setMotion(S.motion);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
+})();
+</script>

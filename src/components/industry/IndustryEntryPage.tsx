@@ -132,7 +132,11 @@ export const TopicFooter = async ({ topic, draft }: { topic: IndustryTopic; draf
   return <ClusterFooter page={page} siblings={siblings} />
 }
 
-/** The hero blocks a page may start with when its Hero design is Hero block from the layout (neuroncx-cms siteBlocks.ts). */
+/**
+ * The hero blocks a page may start with when its Hero design is Hero block
+ * from the layout (neuroncx-cms siteBlocks.ts). Hero (harness loop) is not
+ * one yet: add 'heroHarness' here and in the CMS list together.
+ */
 export const LAYOUT_HERO_BLOCKS = [
   'heroCustom',
   'conversationHero',

@@ -62,6 +62,7 @@ const ON_NAVY: Record<string, string> = {
   '--ncx-rule': 'var(--ncx-on-navy-rule)',
   '--ncx-rule-soft': 'var(--ncx-on-navy-rule)',
   '--ncx-rule-strong': 'var(--ncx-on-navy-rule-strong)',
+  '--ncx-wire': 'var(--ncx-on-navy-rule-strong)',
   '--ncx-cloud': 'var(--ncx-on-navy-raise)',
   '--ncx-paper': 'var(--ncx-on-navy-raise)',
   '--ncx-white': 'var(--ncx-on-navy-raise)',

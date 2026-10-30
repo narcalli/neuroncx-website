@@ -25,6 +25,7 @@ import { HeroStackBlock } from '@/blocks/HeroStack/Component'
 import { HeroFullBackgroundBlock } from '@/blocks/HeroFullBackground/Component'
 import { HeroRightPlacementBlock } from '@/blocks/HeroRightPlacement/Component'
 import { HeroCustomBlock } from '@/blocks/HeroCustom/Component'
+import { HeroHarnessBlock } from '@/blocks/HeroHarness/Component'
 import { ComparisonTableBlock } from '@/blocks/ComparisonTable/Component'
 import { ClusterLinksBlock } from '@/blocks/ClusterLinks/Component'
 import { closingSlot } from '@/blocks/closingSlot'
@@ -86,6 +87,7 @@ const blockComponents = {
   heroFullBackground: HeroFullBackgroundBlock,
   heroRightPlacement: HeroRightPlacementBlock,
   heroCustom: HeroCustomBlock,
+  heroHarness: HeroHarnessBlock,
   comparisonTable: ComparisonTableBlock,
   clusterLinks: ClusterLinksBlock,
   audienceTabs: AudienceTabsBlock,
@@ -127,6 +129,7 @@ const noMargin = [
   'heroFullBackground',
   'heroRightPlacement',
   'heroCustom',
+  'heroHarness',
   'heroWorkforceGrid',
   'statHero',
   'closingCta',

@@ -7,8 +7,8 @@ import { safeVisualCss, safeVisualHtml } from './safety'
 
 type LinkGroup = HeroCustomProps['primaryCta']
 
-/** A button's address, or null when there is nothing to link to. */
-const hrefOf = (cta: LinkGroup | undefined): string | null => {
+/** A button's address, or null when there is nothing to link to. Hero (harness loop) buttons use the same rule. */
+export const hrefOf = (cta: LinkGroup | undefined): string | null => {
   if (!cta) return null
   if (cta.type === 'custom') return cta.url || null
   const value = cta.reference?.value

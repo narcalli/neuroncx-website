@@ -151,6 +151,7 @@
   --ncx-rule: #e2e6ef; /* was #e2e2e8 */
   --ncx-rule-soft: #edf0f6;
   --ncx-rule-strong: #c9ced8; /* hairline one step up from --ncx-rule */
+  --ncx-wire: #bcc4d4; /* connector lines in diagrams (Hero (harness loop)) */
 
   /* Brand.
      Crimson on navy is a question of AREA, not of text versus fill. At button

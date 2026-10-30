@@ -18,6 +18,7 @@ const flushFirstBlocks = [
   'heroFullBackground',
   'heroRightPlacement',
   'heroCustom',
+  'heroHarness',
   'heroWorkforceGrid',
   'statHero',
   'closingCta',
