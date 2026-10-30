@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import type { MotionSetting } from '@/motion/levels'
 import { useLoopWhileVisible } from '@/motion/useLoopWhileVisible'
@@ -42,6 +42,15 @@ const keyOf = (cls: string, size: number, text: string) => `${cls}|${size}|${tex
 
 /** The Speed switch: every duration of the loop is multiplied by this. */
 export const PACE = { slower: 1.4, normal: 1, faster: 0.75 } as const
+
+export type StatusMode = 'row' | 'corner' | 'wide'
+
+/** Where the status line goes: above a portrait drawing, in the corner of a mid-size one, above a wide one. */
+export const statusModeFor = (layout: Layout, panelWidth: number): StatusMode =>
+  layout === 'portrait' ? 'row' : panelWidth > 800 ? 'wide' : 'corner'
+
+/** The BYOC box's left edge in the landscape drawing (x of 760). */
+export const BYOC_LEFT = 160
 
 /** The status line's words while the dots do not run. */
 export const STILL_STATUS = { reduced: 'Reduced motion: highlights only', off: 'Still view' } as const
@@ -99,14 +108,41 @@ export const HarnessStage: React.FC<{
   const dwrap = useRef<HTMLDivElement>(null)
   const measureSvg = useRef<SVGSVGElement>(null)
 
-  // The drawing's own width picks the layout.
+  /* The drawing's own width picks the layout; the panel's picks where the
+     status line goes: a row above a portrait drawing, the drawing's empty
+     top-left corner on mid-size panels, a row above the drawing on panels
+     over 800px wide, lined up with the BYOC box. */
+  const [statusMode, setStatusMode] = useState<StatusMode | null>(null)
+  const [drawWidth, setDrawWidth] = useState(0)
+  const drawBox = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = dwrap.current
     if (!el || typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(() => setLayout(layoutFor(el.clientWidth)))
+    const panel = el.closest<HTMLElement>('.hh-panel')
+    const ro = new ResizeObserver(() => {
+      const next = layoutFor(el.clientWidth)
+      setLayout(next)
+      setStatusMode(statusModeFor(next, panel?.clientWidth ?? 0))
+      setDrawWidth(el.clientWidth)
+    })
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
+  // On wide panels, the status starts where the BYOC box starts: x 160 of the drawing's 760, measured as drawn.
+  useLayoutEffect(() => {
+    const d = drawBox.current
+    if (!d) return
+    if (statusMode !== 'wide') {
+      d.style.removeProperty('--hh-box-left')
+      return
+    }
+    const svg = d.querySelector<SVGSVGElement>('svg[data-layout="landscape"]')
+    const status = d.querySelector<HTMLElement>('.hh-status')
+    if (!svg || !status) return
+    const sr = svg.getBoundingClientRect()
+    const tr = status.getBoundingClientRect()
+    d.style.setProperty('--hh-box-left', `${sr.left - tr.left + (sr.width * BYOC_LEFT) / 760}px`)
+  }, [statusMode, drawWidth])
 
   // Once fonts have loaded, measure the chip and loop text for real, then lay out again once.
   const toMeasure = useMemo(() => measured(labels), [labels])
@@ -368,7 +404,7 @@ export const HarnessStage: React.FC<{
       {/* Named by the selected card's title alone; the card's own text also holds its hidden explanation.
           It holds nothing focusable, so it takes the focus stop itself, as Record anatomy's panels do. */}
       <div className="hh-panel" id={panelId} role="tabpanel" aria-labelledby={titleId(active >= 0 ? active : 0)} tabIndex={0}>
-        <div className="hh-draw" data-layout={layout ?? undefined}>
+        <div className="hh-draw" ref={drawBox} data-layout={layout ?? undefined} data-status={statusMode ?? undefined}>
           {showStatus ? (
             <div className="hh-status">
               <span className="hh-live">

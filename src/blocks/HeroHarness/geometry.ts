@@ -244,16 +244,16 @@ const actionRows = (labels: HarnessLabels) => [
    (x 138); the actions leave by one rail (x 728). */
 
 /**
- * Where the action rows sit in the gate, centred on it: the reference's 28px
- * rows 35px apart, and for 6 rows (5 actions) 26px rows 32px apart, so the
- * boxes keep 6px between them and still fit the gate. Every line, check mark
- * and box shares the row's centre.
+ * Where the action rows sit in the gate, centred on it: the reference's 26px
+ * rows 36px apart (10px between boxes), and for 6 rows (5 actions) 24px rows
+ * 34px apart, still 10px between boxes, with every check mark inside the
+ * gate. Every line, check mark and box shares the row's centre.
  */
 export const landscapeRows = (rows: number): { tops: number[]; height: number } => {
-  const height = rows > 5 ? 26 : 28
-  const pitch = rows > 5 ? 32 : 35
+  const height = rows > 5 ? 24 : 26
+  const pitch = height + 10
   const block = (rows - 1) * pitch + height
-  const top = Math.round(216 - block / 2)
+  const top = Math.round(215 - block / 2)
   return { tops: Array.from({ length: rows }, (_, i) => top + i * pitch), height }
 }
 
@@ -299,7 +299,7 @@ const drawLandscape = (labels: HarnessLabels, measure: Measure): Drawing => {
     { t: 'text', x: 450, y: 72, text: labels.policySub, cls: 'mono' },
   )
   b.line(['ontology']).push({ t: 'path', d: 'M300 108V167', cls: 'ln', k: 'ontology' }, chev(300, 167, 'd'))
-  b.line(['policy']).push({ t: 'path', d: 'M452 108V140H412V167', cls: 'ln', k: 'policy' }, chev(412, 167, 'd'))
+  b.line(['policy']).push({ t: 'path', d: 'M452 108V119H412V167', cls: 'ln', k: 'policy' }, chev(412, 167, 'd'))
 
   // Orchestration, the only navy box.
   b.node(['orchestration']).push(
@@ -328,7 +328,7 @@ const drawLandscape = (labels: HarnessLabels, measure: Measure): Drawing => {
     )
   })
   b.node(['guardrails']).push(
-    { t: 'rect', x: 480, y: 124, w: 28, h: 186, rx: 8, cls: 'gate' },
+    { t: 'rect', x: 480, y: 123, w: 28, h: 185, rx: 8, cls: 'gate' },
     { t: 'text', x: 494, y: 118, text: labels.guardrailsLabel, cls: 'mono', anchor: 'middle' },
     ...tops.map((top, i) => check(494, top + H / 2, i)),
   )
@@ -348,11 +348,12 @@ const drawLandscape = (labels: HarnessLabels, measure: Measure): Drawing => {
    rail runs down the middle (x 188). The actions sit in two columns, with
    "Team steps in" last: across the full width when it is alone on its row. */
 
-/** Where each action box sits in portrait: two columns, rows of 32px, centred under the gate. */
+/** Where each action box sits in portrait: two columns, rows of 30px 10px apart, centred under the gate. */
+export const PORTRAIT_ROW = 30
 export const portraitCells = (count: number) => {
   const rows = Math.ceil(count / 2)
-  const block = rows * 32 + (rows - 1) * 8
-  const top = Math.round(370 + (128 - block) / 2)
+  const block = rows * PORTRAIT_ROW + (rows - 1) * 10
+  const top = Math.round(433 - block / 2)
   return Array.from({ length: count }, (_, i) => {
     const row = Math.floor(i / 2)
     const full = i === count - 1 && count % 2 === 1
@@ -405,7 +406,7 @@ const drawPortrait = (labels: HarnessLabels, measure: Measure): Drawing => {
 
   const rows = actionRows(labels)
   const cells = portraitCells(rows.length)
-  const H = 32
+  const H = PORTRAIT_ROW
   rows.forEach((row, i) => {
     const c = cells[i]
     const mid = c.y + H / 2

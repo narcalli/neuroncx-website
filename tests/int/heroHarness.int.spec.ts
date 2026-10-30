@@ -4,7 +4,7 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { drawingLabels, harnessCards, HeroHarnessBlock, headlineLines, introText, shownButtons } from '@/blocks/HeroHarness/Component'
+import { drawingLabels, HEADER_EDGE_SCRIPT, harnessCards, HeroHarnessBlock, headlineLines, introText, shownButtons } from '@/blocks/HeroHarness/Component'
 import {
   buildDrawing,
   groupState,
@@ -17,7 +17,8 @@ import {
   type Shape,
 } from '@/blocks/HeroHarness/geometry'
 import { cyclePlan, STEP } from '@/blocks/HeroHarness/loop'
-import { PACE, STILL_STATUS } from '@/blocks/HeroHarness/Stage'
+import { BYOC_LEFT, PACE, STILL_STATUS, statusModeFor } from '@/blocks/HeroHarness/Stage'
+import { stageCss } from '@/blocks/HeroHarness/styles'
 import type { HeroHarnessBlock as Props } from '@/payload-types'
 
 /** Hero (harness loop): the text, the cards and the drawing (static; motion comes next). */
@@ -66,13 +67,13 @@ describe('the intro', () => {
 })
 
 describe('the layouts', () => {
-  it('carries the layout, spacing and background for the CSS, stacked and roomy by default', () => {
+  it('carries the layout, spacing and background for the CSS, centred and roomy by default', () => {
     expect(render()).toMatch(/<section class="ncx-hh" data-layout="grid" data-spacing="roomy" data-bg="cloud"/)
     expect(render({ textLayout: 'stack', spacing: 'compact', background: 'white' })).toMatch(
       /data-layout="stack" data-spacing="compact" data-bg="white"/,
     )
     expect(render({ textLayout: null, spacing: null, background: null } as unknown as Partial<Props>)).toMatch(
-      /data-layout="stack" data-spacing="roomy" data-bg="cloud"/,
+      /data-layout="centred" data-spacing="roomy" data-bg="cloud" data-width="site"/,
     )
   })
 
@@ -88,7 +89,11 @@ describe('the layouts', () => {
     expect(css).toContain('--hh-top:clamp(32px,4.5vw,64px);--hh-gap:22px;--hh-stage:clamp(32px,4vw,56px)')
     expect(css).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px')
     expect(css).toContain('grid-template-columns:minmax(0,35fr) minmax(0,65fr)')
-    expect(css).toContain('[data-layout="grid"] .hh-body{grid-column:2;max-width:760px}')
+    // Grid: the intro fills its column, so it ends where the drawing panel ends.
+    expect(css).toContain('[data-layout="grid"] .hh-body{grid-column:2;max-width:none}')
+    // Centred: title and intro centred, the intro at most 860px, the same gaps.
+    expect(css).toContain('[data-layout="centred"] .hh-text{align-items:center;text-align:center}')
+    expect(css).toContain('[data-layout="centred"] .hh-body{align-items:center;max-width:860px}')
   })
 })
 
@@ -230,7 +235,9 @@ describe('the drawing', () => {
   it('keeps the loop and the rail in their own lanes, and knocks the event arrow over the loop', () => {
     const land = buildDrawing('landscape', LABELS)
     expect(byK(land, 'loop')).toMatchObject({ d: 'M176 352H138V70H177' })
-    expect(byK(land, 'out-0')).toMatchObject({ d: 'M712 146H728V329' })
+    expect(byK(land, 'out-0')).toMatchObject({ d: 'M712 143H728V329' })
+    // The policy connector turns just under the policy box.
+    expect(byK(land, 'policy')).toMatchObject({ d: 'M452 108V119H412V167' })
     const trigger = land.lines.find((g) => g.parts.join() === 'trigger')!
     expect(trigger.items[0]).toMatchObject({ t: 'path', cls: 'knock', d: 'M120 201H243' })
     const port = buildDrawing('portrait', LABELS)
@@ -266,19 +273,22 @@ describe('the drawing', () => {
   })
 
   it("keeps the reference's rows for four actions, and spaces 2 to 5 evenly in the gate", () => {
-    expect(landscapeRowTops(5)).toEqual([132, 167, 202, 237, 272])
+    expect(landscapeRowTops(5)).toEqual([130, 166, 202, 238, 274])
     for (const rows of [3, 4, 5, 6]) {
       const { tops, height } = landscapeRows(rows)
-      expect(tops[0]).toBeGreaterThanOrEqual(122)
-      expect(tops[rows - 1] + height).toBeLessThanOrEqual(310)
+      expect(tops[0]).toBeGreaterThanOrEqual(118)
+      expect(tops[rows - 1] + height).toBeLessThanOrEqual(312)
       const gaps = tops.slice(1).map((t, i) => t - tops[i])
       expect(new Set(gaps).size).toBe(1)
-      // At least 6px between boxes.
-      expect(gaps[0] - height).toBeGreaterThanOrEqual(6)
+      // At least 10px between boxes.
+      expect(gaps[0] - height).toBeGreaterThanOrEqual(10)
+      // Every check mark (radius 7) inside the gate, y 123 to 308.
+      expect(tops[0] + height / 2 - 7).toBeGreaterThanOrEqual(123)
+      expect(tops[rows - 1] + height / 2 + 7).toBeLessThanOrEqual(308)
     }
-    // 5 actions: shorter rows, the reference's height otherwise.
-    expect(landscapeRows(6).height).toBe(26)
-    expect(landscapeRows(5).height).toBe(28)
+    // 5 actions: shorter rows, the reference's 26px otherwise.
+    expect(landscapeRows(6).height).toBe(24)
+    expect(landscapeRows(5).height).toBe(26)
     // Portrait: the reference's cells for four actions, "Team steps in" across the bottom.
     expect(portraitCells(5).map((c) => [c.x, c.y, c.w])).toEqual([
       [34, 378, 148],
@@ -290,7 +300,9 @@ describe('the drawing', () => {
     for (const count of [3, 4, 5, 6]) {
       const cells = portraitCells(count)
       expect(cells[0].y).toBeGreaterThanOrEqual(370)
-      expect(cells[count - 1].y + 32).toBeLessThanOrEqual(498)
+      expect(cells[count - 1].y + 30).toBeLessThanOrEqual(498)
+      // 10px between rows.
+      if (cells.length > 2) expect(cells[2].y - (cells[0].y + 30)).toBe(10)
     }
     // Five actions: "Team steps in" shares the last row.
     expect(portraitCells(6).at(-1)).toMatchObject({ col: 'right', x: 194, w: 148 })
@@ -422,5 +434,57 @@ describe('the motion levels', () => {
     expect(out).not.toContain('class="dim"')
     expect(out).not.toContain('class="is-on"')
     expect(out).toContain('<div class="hh-cap" data-on=""><p class="hh-cap-body">Select a card to highlight that part of the harness.</p></div>')
+  })
+})
+
+describe('the width', () => {
+  it('keeps the site column by default, with no script', () => {
+    const out = render({ cards: CARDS })
+    expect(out).toContain('data-width="site"')
+    expect(out).not.toContain('<script')
+  })
+
+  it("matches the header: reads the header bar's own side padding before the hero is drawn, from 760px up", () => {
+    const out = render({ cards: CARDS, blockWidth: 'header' })
+    expect(out).toContain('data-width="header"')
+    expect(out).toContain('<script>' + HEADER_EDGE_SCRIPT + '</script>')
+    expect(HEADER_EDGE_SCRIPT).toContain("document.querySelector('.ncx-nav__in')")
+    expect(HEADER_EDGE_SCRIPT).toContain('cs.paddingLeft')
+    expect(HEADER_EDGE_SCRIPT).toContain('cs.paddingRight')
+    expect(HEADER_EDGE_SCRIPT).toContain('@media (min-width:760px)')
+    // No gutter number of its own.
+    expect(HEADER_EDGE_SCRIPT).not.toMatch(/padding-(left|right):\d/)
+  })
+
+  it('runs the drawing the full width of its panel', () => {
+    expect(stageCss).not.toContain('max-width:880px')
+  })
+})
+
+describe('the cards beside the drawing', () => {
+  it('are as tall as the panel from 900px, sharing it evenly, titles centred, at least 48px each', () => {
+    expect(stageCss).toContain('.hh-stage[data-cards="left"]{align-items:stretch}')
+    expect(stageCss).toContain('.hh-stage[data-cards="left"] .hh-cards{height:100%}')
+    expect(stageCss).toContain('.hh-stage[data-cards="left"] .hh-card{flex:1 1 0;justify-content:center;min-height:48px}')
+  })
+})
+
+describe('the status line placement', () => {
+  it('sits above a portrait drawing, in the corner of a mid-size one, and above a wide one at the BYOC box', () => {
+    expect(statusModeFor('portrait', 1200)).toBe('row')
+    expect(statusModeFor('landscape', 800)).toBe('corner')
+    expect(statusModeFor('landscape', 801)).toBe('wide')
+    expect(BYOC_LEFT).toBe(160)
+    expect(stageCss).toContain('padding-left:var(--hh-box-left,0px)')
+    // Before the page is interactive, the same line from the drawing's width.
+    expect(stageCss).toContain('padding-left:calc(100cqw * 160 / 760)')
+  })
+})
+
+describe('the lit boxes', () => {
+  it('have a crimson 1.5px outline on the crimson tint', () => {
+    for (const cls of ['box', 'abox', 'hbox']) {
+      expect(stageCss).toContain(`.is-on .${cls}{stroke:var(--ncx-crimson);stroke-width:1.5;fill:var(--ncx-crimson-tint)}`)
+    }
   })
 })

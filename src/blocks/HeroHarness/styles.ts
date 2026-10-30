@@ -8,6 +8,12 @@
 export const stageCss = `
   .ncx-hh .hh-stage{margin-top:var(--hh-stage);display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:20px;align-items:start}
   .ncx-hh .hh-stage[data-cards="above"]{grid-template-columns:minmax(0,1fr)}
+  /* Cards on the left: the column is as tall as the drawing panel, the cards share its height, titles centred. */
+  @media (min-width:900px){
+    .ncx-hh .hh-stage[data-cards="left"]{align-items:stretch}
+    .ncx-hh .hh-stage[data-cards="left"] .hh-cards{height:100%}
+    .ncx-hh .hh-stage[data-cards="left"] .hh-card{flex:1 1 0;justify-content:center;min-height:48px}
+  }
 
   /* Cards: outlined, title only, a status dot; white with a soft shadow when selected. */
   .ncx-hh .hh-cards{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
@@ -43,21 +49,24 @@ export const stageCss = `
   .ncx-hh .hh-stage[data-level="on"] .hh-live i{animation:hh-blink 2.4s ease-in-out infinite}
   @keyframes hh-blink{0%,100%{opacity:1}50%{opacity:.3}}
   .ncx-hh .hh-dwrap svg{display:block;width:100%;height:auto;overflow:visible}
-  /* Cards above: the drawing keeps about the size it has beside the cards, centred. */
-  .ncx-hh .hh-stage[data-cards="above"] .hh-draw{max-width:880px;margin-inline:auto}
-  /* Landscape: the status sits in the empty top-left corner of the drawing, its lines stacked. */
-  .ncx-hh .hh-draw[data-layout="landscape"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
-    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;line-height:1.45}
-  .ncx-hh .hh-draw[data-layout="landscape"] .hh-status{min-height:0;line-height:1.45}
-  .ncx-hh .hh-draw[data-layout="landscape"] .hh-status-text{display:block;overflow:visible}
-  .ncx-hh .hh-draw[data-layout="landscape"] .hh-status-text b{display:block}
-  .ncx-hh .hh-draw[data-layout="landscape"] .hh-sep{display:none}
+  /* Mid-size panels: the status sits in the empty top-left corner of the drawing, its lines stacked. */
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
+    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text{display:block;overflow:visible}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text b{display:block}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-sep{display:none}
+  /* Wide panels (over 800px): one row above the drawing, starting where the BYOC box starts (Stage.tsx measures it). */
+  .ncx-hh .hh-draw[data-status="wide"] .hh-status{min-height:20px;margin-bottom:8px;align-items:center;padding-left:var(--hh-box-left,0px)}
+  .ncx-hh .hh-draw[data-status="wide"] .hh-status-text{display:block;white-space:nowrap;text-overflow:ellipsis}
   .ncx-hh .hh-draw[data-layout="landscape"] .hh-svg--portrait,.ncx-hh .hh-draw[data-layout="portrait"] .hh-svg--landscape{display:none}
-  /* Before the page is interactive: the same choice from the drawing's own width. */
+  /* Before the page is interactive: the same choices from the drawing's own width. */
   .ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:none}
   @container hhdraw (max-width:479.98px){.ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:block}.ncx-hh .hh-draw:not([data-layout]) .hh-svg--landscape{display:none}}
-  @container hhdraw (min-width:480px){.ncx-hh .hh-draw:not([data-layout]) .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
-    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;line-height:1.45}}
+  @container hhdraw (min-width:480px) and (max-width:768px){.ncx-hh .hh-draw:not([data-status]) .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
+    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
+    .ncx-hh .hh-draw:not([data-status]) .hh-sep{display:none}}
+  @container hhdraw (min-width:768.02px){.ncx-hh .hh-draw:not([data-status]) .hh-status{min-height:20px;margin-bottom:8px;align-items:center;
+    padding-left:calc(100cqw * 160 / 760)}}
 
   /* The caption: the selected card's explanation and the lit parts. */
   .ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:62px;display:grid}
@@ -76,7 +85,7 @@ export const stageCss = `
   .ncx-hh .hh-svg .knock{fill:none;stroke:var(--ncx-white);stroke-width:8}
   .ncx-hh .hh-svg .is-on .bound{stroke:var(--ncx-crimson);stroke-width:1.8}
   .ncx-hh .hh-svg .box{fill:var(--ncx-white);stroke:var(--ncx-rule);stroke-width:1.2}
-  .ncx-hh .hh-svg .is-on .box{stroke:var(--ncx-crimson);stroke-width:1.8}
+  .ncx-hh .hh-svg .is-on .box{stroke:var(--ncx-crimson);stroke-width:1.5;fill:var(--ncx-crimson-tint)}
   .ncx-hh .hh-svg .lbl{font:600 13px var(--font-display),Arial,sans-serif;fill:var(--ncx-ink)}
   .ncx-hh .hh-svg .mono{font:500 10.5px var(--font-label),ui-monospace,monospace;fill:var(--ncx-muted);letter-spacing:.02em}
   .ncx-hh .hh-svg .chip-bg{fill:var(--ncx-paper);stroke:var(--ncx-rule)}
@@ -95,9 +104,9 @@ export const stageCss = `
   .ncx-hh .hh-svg .chk-p{fill:none;stroke:var(--ncx-teal);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .ncx-hh .hh-svg .chk-f{fill:var(--ncx-teal);opacity:0;transform-box:fill-box;transform-origin:center}
   .ncx-hh .hh-svg .abox{fill:var(--ncx-white);stroke:var(--ncx-rule);stroke-width:1.2}
-  .ncx-hh .hh-svg .is-on .abox{stroke:var(--ncx-crimson);stroke-width:1.8}
+  .ncx-hh .hh-svg .is-on .abox{stroke:var(--ncx-crimson);stroke-width:1.5;fill:var(--ncx-crimson-tint)}
   .ncx-hh .hh-svg .hbox{fill:var(--ncx-white);stroke:var(--ncx-teal);stroke-width:1.3;stroke-dasharray:4 3}
-  .ncx-hh .hh-svg .is-on .hbox{stroke:var(--ncx-crimson);stroke-width:1.8}
+  .ncx-hh .hh-svg .is-on .hbox{stroke:var(--ncx-crimson);stroke-width:1.5;fill:var(--ncx-crimson-tint)}
   .ncx-hh .hh-svg .person{fill:none;stroke:var(--ncx-teal);stroke-width:1.5;stroke-linecap:round}
   .ncx-hh .hh-svg .flash{fill:var(--ncx-teal-tint);stroke:var(--ncx-teal);stroke-width:1.4;opacity:0}
   .ncx-hh .hh-svg .loop-ln{stroke:var(--ncx-teal);stroke-width:1.8}

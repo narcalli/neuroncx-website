@@ -75,15 +75,38 @@ export const harnessCards = (cards: HeroHarnessProps['cards'] | null | undefined
 const DESCRIPTION_DEFAULT =
   'A diagram of the NeuronCx harness: customer events flow into orchestrated agents that work from your ontology, policies and guardrails, act or hand over to your team, write to Customer 360, and learn from each outcome. The agents run in your own cloud (BYOC).'
 
+/**
+ * Width "Match the header": the block reads the header bar's own side
+ * padding (.ncx-nav__in) as it is drawn, so the title, cards and drawing
+ * start under the logo and end under the last header button, at every
+ * width the header's padding takes. It runs in the page as it loads, before
+ * the hero is drawn, so the hero never jumps sideways, and again on resize.
+ * The rule it writes applies from 760px up; below that the normal phone
+ * margins stay. Without the header (or without scripts) the block keeps the
+ * site column. The header itself is not touched.
+ */
+export const HEADER_EDGE_SCRIPT = `(function(){
+var id='hh-header-edge';
+function set(){
+var bar=document.querySelector('.ncx-nav__in');if(!bar)return;
+var cs=getComputedStyle(bar),s=document.getElementById(id);
+if(!s){s=document.createElement('style');s.id=id;document.head.appendChild(s);}
+s.textContent='@media (min-width:760px){.ncx-hh[data-width="header"] .ncx-container{max-width:none;padding-left:'+cs.paddingLeft+';padding-right:'+cs.paddingRight+'}}';
+}
+set();
+if(!window.__hhHeaderEdge){window.__hhHeaderEdge=1;addEventListener('resize',set);}
+})();`
+
 const clamp = (n: number | null | undefined, min: number, max: number, fallback: number) =>
   typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback
 
 /**
  * Hero (harness loop), from the approved design
  * (docs/reference/harness-hero-demo.html). The title (the page's one H1) and
- * the intro sit above everything, left aligned, in one of three layouts:
- * stacked, a grid whose intro starts where the drawing starts (35fr and
- * 65fr, as the cards and drawing below), or stacked with a small label.
+ * the intro sit above everything, in one of four layouts: centred (the
+ * default), stacked, a grid whose intro runs from where the drawing starts to
+ * its right edge (35fr and 65fr, as the cards and drawing below), or stacked
+ * with a small label.
  * Light theme only; all text is drawn on the server.
  *
  * Below the text: the cards, which act as tabs, and the drawing of the
@@ -102,7 +125,8 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
   leading,
   ...rest
 }) => {
-  const layout = textLayout || 'stack'
+  const layout = textLayout || 'centred'
+  const width = rest.blockWidth === 'header' ? 'header' : 'site'
   const lines = headlineLines(headline)
   const paragraph = introText(intro)
   const shown = shownButtons(buttons)
@@ -118,10 +142,12 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       data-layout={layout}
       data-spacing={spacing || 'roomy'}
       data-bg={background || 'cloud'}
+      data-width={width}
       data-lead={leading ? '' : undefined}
       style={vars}
     >
       <style>{heroCss + stageCss}</style>
+      {width === 'header' ? <script dangerouslySetInnerHTML={{ __html: HEADER_EDGE_SCRIPT }} /> : null}
       {leading ? (
         <div className="hh-lead">
           <div className="ncx-container">{leading}</div>
@@ -210,7 +236,11 @@ const heroCss = `
   /* Grid: the title spans both columns; the intro starts where the drawing starts. */
   .ncx-hh[data-layout="grid"] .hh-text{display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:var(--hh-gap) 20px}
   .ncx-hh[data-layout="grid"] h1{grid-column:1 / -1}
-  .ncx-hh[data-layout="grid"] .hh-body{grid-column:2;max-width:760px}
+  .ncx-hh[data-layout="grid"] .hh-body{grid-column:2;max-width:none}
+  /* Centred: the title and the intro centred above the cards and drawing. */
+  .ncx-hh[data-layout="centred"] .hh-text{align-items:center;text-align:center}
+  .ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:860px}
+  .ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}
 
   .ncx-hh .hh-cta{display:flex;flex-wrap:wrap;gap:12px}
   .ncx-hh .hh-btn{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;display:inline-flex;align-items:center;
