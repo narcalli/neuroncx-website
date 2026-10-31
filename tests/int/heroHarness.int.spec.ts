@@ -4,7 +4,8 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { drawingLabels, HEADER_EDGE_SCRIPT, harnessCards, HeroHarnessBlock, headlineLines, introText, shownButtons } from '@/blocks/HeroHarness/Component'
+import { drawingLabels, harnessCards, HeroHarnessBlock, headlineLines, introText, shownButtons } from '@/blocks/HeroHarness/Component'
+import { HEADER_EDGE_SCRIPT } from '@/blocks/HeroHarness/HeaderEdge'
 import {
   buildDrawing,
   groupState,
@@ -458,6 +459,13 @@ describe('the width', () => {
     expect(HEADER_EDGE_SCRIPT).toContain('@media (min-width:760px)')
     // No gutter number of its own.
     expect(HEADER_EDGE_SCRIPT).not.toMatch(/padding-(left|right):\d/)
+  })
+
+  it('gives the dots their own layer above the drawing, outside the SVG', () => {
+    const out = render({ cards: CARDS })
+    expect(out).toContain('<div class="hh-dots" aria-hidden="true"></div>')
+    expect(out).not.toContain('<g class="hh-dots"')
+    expect(stageCss).toContain('.hh-dot{position:absolute;left:0;top:0;border-radius:50%;will-change:transform')
   })
 
   it('runs the drawing the full width of its panel', () => {

@@ -40,8 +40,8 @@ const layer = (groups: Group[], lit: Part[]) =>
   })
 
 /**
- * The harness drawing as SVG: the box and lines, then the boxes and labels,
- * then an empty layer for the moving dots (motion step). `lit` is the
+ * The harness drawing as SVG: the box and lines, then the boxes and labels.
+ * The moving dots sit on their own layer above it (Stage.tsx). `lit` is the
  * selected card's parts; none lights nothing and dims nothing.
  */
 export const HarnessDrawing: React.FC<{ drawing: Drawing; lit: Part[]; label: string; hidden?: boolean }> = ({
@@ -60,6 +60,5 @@ export const HarnessDrawing: React.FC<{ drawing: Drawing; lit: Part[]; label: st
   >
     <g className="hh-lines">{layer(drawing.lines, lit)}</g>
     <g className="hh-nodes">{layer(drawing.nodes, lit)}</g>
-    <g className="hh-dots" />
   </svg>
 )

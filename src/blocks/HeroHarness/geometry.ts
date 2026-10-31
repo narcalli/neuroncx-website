@@ -14,7 +14,7 @@
  * box (landscape x 138, portrait x 6), and the actions leave by one rail
  * (landscape x 728, portrait x 188). Where a line crosses the edge, the
  * dashes open in a "door". Draw order: the box and its doors, then lines,
- * then boxes and labels; moving dots go on a layer above (Stage.tsx).
+ * then boxes and labels; moving dots go on a layer above the SVG (Stage.tsx).
  *
  * The CMS checks the chip and loop label lengths with the same numbers
  * (neuroncx-cms src/blocks/HeroHarness/fit.ts).

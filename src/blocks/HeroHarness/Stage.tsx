@@ -104,6 +104,7 @@ export const HarnessStage: React.FC<{
   const stage = useRef<HTMLDivElement>(null)
   const cardsBox = useRef<HTMLDivElement>(null)
   const statusText = useRef<HTMLSpanElement>(null)
+  const dotsLayer = useRef<HTMLDivElement>(null)
   const [layout, setLayout] = useState<Layout | null>(null)
   const [widths, setWidths] = useState<Map<string, number> | null>(null)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
@@ -261,40 +262,33 @@ export const HarnessStage: React.FC<{
       resync.current = () => {}
       return
     }
-    const duration = Math.max(1, autoplaySeconds) * 1000
-    let elapsed = 0
-    let frame = 0
-    let last = 0
-    const free = () => !paused.current.hover && !paused.current.focus && !paused.current.offscreen && !document.hidden
-    const tick = (now: number) => {
-      elapsed += Math.min(now - last, 100)
-      last = now
-      prog.style.transform = `scaleX(${Math.min(1, elapsed / duration)})`
-      if (elapsed >= duration) {
-        frame = 0
-        const next = (active + 1) % cards.length
-        setActive(next)
-        setFocusable(next)
-        showCard(next)
-        return
-      }
-      frame = requestAnimationFrame(tick)
+    // The browser runs the line itself, off the main thread, so autoplay needs no frames of its own.
+    const line = prog.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], {
+      duration: Math.max(1, autoplaySeconds) * 1000,
+      easing: 'linear',
+      fill: 'forwards',
+    })
+    let done = false
+    line.onfinish = () => {
+      done = true
+      const next = (active + 1) % cards.length
+      setActive(next)
+      setFocusable(next)
+      showCard(next)
     }
     const sync = () => {
-      if (free() && !frame) {
-        last = performance.now()
-        frame = requestAnimationFrame(tick)
-      } else if (!free() && frame) {
-        cancelAnimationFrame(frame)
-        frame = 0
-      }
+      if (done) return
+      const free = !paused.current.hover && !paused.current.focus && !paused.current.offscreen && !document.hidden
+      if (free) line.play()
+      else line.pause()
     }
     resync.current = sync
     sync()
     return () => {
-      cancelAnimationFrame(frame)
+      done = true
+      line.onfinish = null
+      line.cancel()
       resync.current = () => {}
-      prog.style.transform = ''
     }
   }, [active, autoplay, stopped, level, cards.length, autoplaySeconds, showCard])
 
@@ -305,7 +299,8 @@ export const HarnessStage: React.FC<{
   const [harness, setHarness] = useState<HarnessLoop | null>(null)
   useEffect(() => {
     const svg = layout ? dwrap.current?.querySelector<SVGSVGElement>(`svg[data-layout="${layout}"]`) : null
-    if (level !== 'on' || !svg) {
+    const dots = dotsLayer.current
+    if (level !== 'on' || !svg || !dots) {
       setHarness(null)
       return
     }
@@ -321,7 +316,7 @@ export const HarnessStage: React.FC<{
       d.textContent = detail
       el.replaceChildren(b, sep, d)
     }
-    const run = new HarnessLoop(svg, { events, actions, fields }, { pace: PACE[speed] ?? 1, repeat: loop, status: write })
+    const run = new HarnessLoop(svg, dots, { events, actions, fields }, { pace: PACE[speed] ?? 1, repeat: loop, status: write })
     setHarness(run)
     return () => {
       run.destroy()
@@ -421,6 +416,7 @@ export const HarnessStage: React.FC<{
           <div className="hh-dwrap" ref={dwrap}>
             <HarnessDrawing drawing={landscape} lit={lit} label={description} hidden={layout === 'portrait'} />
             <HarnessDrawing drawing={portrait} lit={lit} label={description} hidden={layout === 'landscape'} />
+            <div className="hh-dots" ref={dotsLayer} aria-hidden="true" />
           </div>
         </div>
         {showCaption ? (

@@ -29,7 +29,7 @@ export const stageCss = `
   .ncx-hh .hh-card[aria-selected="true"] .hh-card-dot{background:var(--ncx-crimson);border-color:var(--ncx-crimson)}
   .ncx-hh .hh-card-title{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:14.5px;line-height:1.35;color:var(--ncx-ink)}
   /* Room for the progress line (motion step): 2px at the bottom, empty until then. */
-  .ncx-hh .hh-card-prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--ncx-crimson);transform-origin:0 50%;transform:scaleX(0)}
+  .ncx-hh .hh-card-prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--ncx-crimson);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
   .ncx-hh .hh-card[aria-selected="false"] .hh-card-prog{visibility:hidden}
   .ncx-hh .hh-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
@@ -42,6 +42,8 @@ export const stageCss = `
     font:500 12px var(--font-label),ui-monospace,monospace;color:var(--ncx-muted)}
   .ncx-hh .hh-live{display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.07em;color:var(--ncx-ink)}
   .ncx-hh .hh-live i{width:7px;height:7px;border-radius:50%;background:var(--ncx-teal)}
+  /* Its text changes every second or so: keep the browser from re-checking the rest of the page each time. */
+  .ncx-hh .hh-status{contain:layout style}
   .ncx-hh .hh-live{flex:none}
   .ncx-hh .hh-status-text{min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
   .ncx-hh .hh-status-text:empty{display:none}
@@ -129,10 +131,18 @@ export const stageCss = `
   /* Reduced: a short fade between highlights. Off: none. */
   .ncx-hh .hh-stage[data-level="reduced"] .hh-svg [data-parts]{transition-duration:.2s}
   .ncx-hh .hh-stage[data-level="off"] .hh-svg [data-parts],.ncx-hh .hh-stage[data-level="off"] .hh-card{transition:none}
-  /* The moving dots (loop.ts). */
-  .ncx-hh .hh-svg .dot-core{fill:var(--ncx-crimson)}
-  .ncx-hh .hh-svg .dot-halo{fill:var(--ncx-crimson);opacity:.16}
-  .ncx-hh .hh-svg .dot.teal .dot-core,.ncx-hh .hh-svg .dot.teal .dot-halo{fill:var(--ncx-teal)}
+  /* The moving dots (loop.ts): their own layer above the drawing, same place and size. */
+  .ncx-hh .hh-dwrap{position:relative}
+  .ncx-hh .hh-dots{position:absolute;inset:0;pointer-events:none;contain:layout style}
+  .ncx-hh .hh-dot{position:absolute;left:0;top:0;border-radius:50%;will-change:transform;--hh-dot-colour:var(--ncx-crimson);
+    background:var(--hh-dot-colour);box-shadow:0 0 0 var(--hh-dot-ring,4px) color-mix(in srgb,var(--hh-dot-colour) 16%,transparent)}
+  .ncx-hh .hh-dot.teal{--hh-dot-colour:var(--ncx-teal)}
+  /* Flashes and the glow: the same layer, laid exactly over their part. The tint is see-through, so labels still read. */
+  .ncx-hh .hh-flash,.ncx-hh .hh-glow{position:absolute;box-sizing:border-box;opacity:0;will-change:opacity,transform}
+  .ncx-hh .hh-flash--box{background:color-mix(in srgb,var(--ncx-teal) 12%,transparent);border:1.2px solid var(--ncx-teal)}
+  .ncx-hh .hh-flash--loop{background:color-mix(in srgb,var(--ncx-teal) 12%,transparent)}
+  .ncx-hh .hh-flash--check{background:var(--ncx-teal)}
+  .ncx-hh .hh-glow{border:2px solid var(--ncx-crimson)}
   /* The hidden SVG the browser measures chip text in once fonts load. */
   .ncx-hh .hh-measure{position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none}
 
