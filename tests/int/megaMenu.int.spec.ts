@@ -2,6 +2,7 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
+import { headerCss } from '@/Header/headerStyles'
 import { MegaPanel } from '@/Header/MegaMenu'
 import { menuKind, panelLayout, panelLeft, type MenuGroup, type NavItem } from '@/Header/megaMenuLayout'
 
@@ -166,5 +167,14 @@ describe('the panel', () => {
     expect(out).toContain('ncx-mega__list is-grid')
     expect(out.indexOf('ncx-mega__feature')).toBeGreaterThan(out.lastIndexOf('ncx-mega__group'))
     expect(out).toContain('Learn more')
+  })
+})
+
+describe('the way from a trigger to its panel', () => {
+  it('bridges the gap with a strip inside the hidden panel, and leaves the triggers their height', () => {
+    expect(headerCss).toContain('.ncx-mega::before{content:"";position:absolute;left:-1px;right:-1px;bottom:100%;height:21px}')
+    expect(headerCss).toContain('.ncx-navitem{position:static}')
+    expect(headerCss).toContain('.ncx-mega{')
+    expect(headerCss).toContain('opacity:0;visibility:hidden;')
   })
 })

@@ -192,6 +192,10 @@ export const headerCss = `
   transition:opacity .15s ease,transform .15s ease,visibility .15s;
 }
 .ncx-navitem.is-open .ncx-mega{opacity:1;visibility:visible;transform:none}
+/* An invisible bridge from the bottom of the triggers (52px) to the panel, as
+   wide as the panel, so a mouse heading down never lands on the scrim. It
+   shares the panel's visibility, so it catches nothing while the menu is closed. */
+.ncx-mega::before{content:"";position:absolute;left:-1px;right:-1px;bottom:100%;height:21px}
 /* Each group a column as wide as its content; a hairline between columns.
    When the panel hits its cap, the widest group wraps first: none goes
    narrower than its longest word. */

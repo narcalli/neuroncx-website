@@ -76,6 +76,8 @@ export const HeaderClient: React.FC<{
   // edges, measured from the site's own CSS rather than copied from it.
   const frameRef = useRef<HTMLDivElement | null>(null)
   const closeTimer = useRef<number | null>(null)
+  const switchTimer = useRef<number | null>(null)
+  const pointerY = useRef(0)
   const panels = useRef(new Map<number, HTMLDivElement | null>())
   const triggers = useRef(new Map<number, HTMLButtonElement | null>())
   // The pointer that pressed a dropdown trigger ("mouse", "touch", "pen"),
@@ -421,6 +423,7 @@ export const HeaderClient: React.FC<{
   useEffect(
     () => () => {
       if (closeTimer.current) window.clearTimeout(closeTimer.current)
+      if (switchTimer.current) window.clearTimeout(switchTimer.current)
     },
     [],
   )
@@ -436,7 +439,25 @@ export const HeaderClient: React.FC<{
   // triggers does not flicker the panel shut.
   const closeSoon = () => {
     hold()
-    closeTimer.current = window.setTimeout(() => setOpen(null), 120)
+    closeTimer.current = window.setTimeout(() => setOpen(null), 200)
+  }
+
+  const holdSwitch = () => {
+    if (switchTimer.current) {
+      window.clearTimeout(switchTimer.current)
+      switchTimer.current = null
+    }
+  }
+
+  // With a panel open, a mouse has to pause on another trigger before it takes
+  // over, so crossing one on the way to the open panel does not swap panels.
+  // If the panel has closed in the meantime (Escape), it stays closed.
+  const switchSoon = (i: number) => {
+    holdSwitch()
+    switchTimer.current = window.setTimeout(() => {
+      switchTimer.current = null
+      setOpen((cur) => (cur === null ? null : i))
+    }, 150)
   }
 
   const signInHref = data.signInHref || 'https://dash.neuroncx.in'
@@ -466,13 +487,13 @@ export const HeaderClient: React.FC<{
         />
       ) : null}
 
-      {/* Behind an open dropdown: a mouse moving onto it, or a tap on it,
-          closes the dropdown. */}
+      {/* Behind an open dropdown: a mouse moving onto it closes the dropdown
+          after the same grace as leaving the nav; a tap on it closes it at once. */}
       <div
         className="ncx-scrim"
         aria-hidden="true"
         onPointerEnter={(e) => {
-          if (e.pointerType === 'mouse') setOpen(null)
+          if (e.pointerType === 'mouse') closeSoon()
         }}
         onClick={() => setOpen(null)}
       />
@@ -550,8 +571,21 @@ export const HeaderClient: React.FC<{
                   onPointerEnter={(e) => {
                     if (e.pointerType !== 'mouse') return
                     hold()
-                    setOpen(i)
+                    holdSwitch()
                     setHovered(i)
+                    pointerY.current = e.clientY
+                    if (open === null || open === i) setOpen(i)
+                    else switchSoon(i)
+                  }}
+                  onPointerMove={(e) => {
+                    if (e.pointerType !== 'mouse') return
+                    // Panels sit below the bar: still moving down means still
+                    // heading for the open one, so the wait starts again.
+                    if (switchTimer.current && e.clientY > pointerY.current) switchSoon(i)
+                    pointerY.current = e.clientY
+                  }}
+                  onPointerLeave={(e) => {
+                    if (e.pointerType === 'mouse') holdSwitch()
                   }}
                 >
                   <span className="ncx-navslot">
