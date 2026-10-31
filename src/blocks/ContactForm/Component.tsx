@@ -1,8 +1,17 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useRef, useState } from 'react'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
+
+// Move to a CMS field later (contact-form-fix-prompts.md, prompt 3).
+const CONSENT_NOTICE = {
+  before: 'By submitting this form, you agree that NeuronCx may use your details to reply to your enquiry, as described in our ',
+  linkLabel: 'Privacy Policy',
+  linkHref: '/privacy-policy',
+  after: '.',
+}
 
 type Props = {
   label?: string | null
@@ -116,6 +125,9 @@ export const ContactFormBlock: React.FC<Props> = ({
           font-weight:500;padding:13px 24px;border-radius:8px;border:0;cursor:pointer;
           background:var(--ncx-navy);color:var(--ncx-on-navy);margin-top:4px}
         .ncx-contact button[disabled]{opacity:.6;cursor:default}
+        .ncx-contact .consent{color:var(--ncx-muted);font-size:13px;line-height:1.5;margin:12px 0 0}
+        .ncx-contact .consent a{color:var(--ncx-link);text-decoration:underline}
+        .ncx-contact .consent a:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
         .ncx-contact .err{color:var(--ncx-crimson-ink);font-size:15px;margin:12px 0 0}
         .ncx-contact .err:empty{margin:0}
         .ncx-contact .done{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:17px;
@@ -233,9 +245,15 @@ export const ContactFormBlock: React.FC<Props> = ({
                   />
                 </div>
 
-                <button type="submit" disabled={status === 'sending'}>
+                <button type="submit" disabled={status === 'sending'} aria-describedby="ncx-contact-consent">
                   {status === 'sending' ? 'Sending…' : buttonLabel || 'Submit enquiry'}
                 </button>
+
+                <p id="ncx-contact-consent" className="consent">
+                  {CONSENT_NOTICE.before}
+                  <Link href={CONSENT_NOTICE.linkHref}>{CONSENT_NOTICE.linkLabel}</Link>
+                  {CONSENT_NOTICE.after}
+                </p>
 
                 {/* Always in the page, so the alert is announced when its text arrives. */}
                 <p id="ncx-contact-error" className="err" role="alert">
