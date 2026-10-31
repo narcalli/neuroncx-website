@@ -174,7 +174,9 @@ describe('the cards', () => {
 describe('the status and caption', () => {
   it('show the live status line and the selected card\'s caption with its lit parts', () => {
     const out = render({ cards: CARDS })
-    expect(out).toContain('<span class="hh-live"><i aria-hidden="true" data-loop=""></i>Live loop</span>')
+    // The status line: a dot hidden from screen readers, then the step. No label.
+    expect(out).toContain('<div class="hh-status"><i class="hh-status-dot" aria-hidden="true" data-loop=""></i><span class="hh-status-text"></span></div>')
+    expect(out).not.toContain('Live loop')
     expect(out).toContain(
       '<div class="hh-cap" data-on=""><p class="hh-cap-body">Agents read your locations, services, prices and rules.</p><ul class="hh-cap-tags"><li>Highlighted:</li><li class="hh-tag">Enterprise ontology</li></ul></div>',
     )
@@ -516,11 +518,17 @@ describe('below 900px', () => {
     expect(phone(stageCss)).toContain('.hh-panel{order:1;padding:12px 12px 10px}')
   })
 
-  it('gives the portrait status two rows of fixed height, the step on one line', () => {
-    expect(stageCss).toContain('[data-status="row"] .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}')
-    expect(stageCss).toContain(
-      '[data-status="row"] .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}',
-    )
+  it('gives the portrait status one row of fixed height, the step on one line, cut off with an ellipsis', () => {
+    expect(stageCss).toContain('.hh-status{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;min-height:17px;')
+    expect(stageCss).toContain('.hh-status-text{min-width:0;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}')
+    expect(stageCss).toContain('[data-status="row"] .hh-status-text{font-size:11px;line-height:15px}')
+  })
+
+  it('sits the dot beside the first line in the corner of mid-size panels, with the text wrapping beside it', () => {
+    expect(stageCss).toContain('[data-status="corner"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;align-items:flex-start;')
+    expect(stageCss).toContain('[data-status="corner"] .hh-status-dot{margin-top:4.5px}')
+    expect(stageCss).toContain('[data-status="corner"] .hh-status-text{white-space:normal;overflow:visible}')
+    expect(stageCss).toContain('@container hhdraw (min-width:480px) and (max-width:540px){.ncx-hh .hh-draw:is([data-status="corner"],:not([data-status])) .hh-status{line-height:1.3}')
   })
 
   it('sets the portrait label sizes, chips staying at 10px', () => {

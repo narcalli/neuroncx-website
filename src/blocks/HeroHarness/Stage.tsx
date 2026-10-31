@@ -404,10 +404,7 @@ export const HarnessStage: React.FC<{
         <div className="hh-draw" ref={drawBox} data-layout={layout ?? undefined} data-status={statusMode ?? undefined}>
           {showStatus ? (
             <div className="hh-status">
-              <span className="hh-live">
-                <i aria-hidden="true" data-loop="" />
-                Live loop
-              </span>
+              <i className="hh-status-dot" aria-hidden="true" data-loop="" />
               {/* Not live for screen readers: it changes every second or so; the drawing's description covers it. */}
               {level === 'on' ? null : <span className="hh-status-text">{STILL_STATUS[level]}</span>}
               <span className="hh-status-text" ref={statusText} />

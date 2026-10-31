@@ -37,44 +37,45 @@ export const stageCss = `
   .ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:12px 16px 10px;min-width:0}
   .ncx-hh .hh-panel:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
   .ncx-hh .hh-draw{position:relative;container:hhdraw / inline-size}
-  /* Portrait: one row above the drawing, two lines kept for the text so the row never changes height. */
-  .ncx-hh .hh-status{display:flex;align-items:flex-start;gap:10px;flex-wrap:nowrap;min-height:34px;margin-bottom:6px;line-height:17px;
+  /* The status line: a small dot, then the step. The dot keeps the row's height while there is no text yet. */
+  .ncx-hh .hh-status{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;min-height:17px;margin-bottom:6px;
     font:500 12px var(--font-label),ui-monospace,monospace;color:var(--ncx-muted)}
-  .ncx-hh .hh-live{display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.07em;color:var(--ncx-ink)}
-  .ncx-hh .hh-live i{width:7px;height:7px;border-radius:50%;background:var(--ncx-teal)}
+  .ncx-hh .hh-status-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--ncx-teal)}
   /* Its text changes every second or so: keep the browser from re-checking the rest of the page each time. */
   .ncx-hh .hh-status{contain:layout style}
-  .ncx-hh .hh-live{flex:none}
-  .ncx-hh .hh-status-text{min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+  .ncx-hh .hh-status-text{min-width:0;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ncx-hh .hh-status-text:empty{display:none}
   .ncx-hh .hh-status-text b{font-weight:500;color:var(--ncx-ink)}
-  .ncx-hh .hh-stage[data-level="on"] .hh-live i{animation:hh-blink 2.4s ease-in-out infinite}
+  .ncx-hh .hh-stage[data-level="on"] .hh-status-dot{animation:hh-blink 2.4s ease-in-out infinite}
   @keyframes hh-blink{0%,100%{opacity:1}50%{opacity:.3}}
   .ncx-hh .hh-dwrap svg{display:block;width:100%;height:auto;overflow:visible}
-  /* Portrait: two rows above the drawing, the dot and "Live loop", then the step on one line. Their height is
-     kept, so the drawing never moves when the text changes. */
-  .ncx-hh .hh-draw[data-status="row"] .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}
-  .ncx-hh .hh-draw[data-status="row"] .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}
-  /* Mid-size panels: the status sits in the empty top-left corner of the drawing, its lines stacked. */
-  .ncx-hh .hh-draw[data-status="corner"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
-    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
-  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text{display:block;overflow:visible}
-  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text b{display:block}
+  /* Portrait: one row above the drawing, the step on one line, cut off with an ellipsis. Its height is fixed, so the
+     drawing never moves when the text changes. */
+  .ncx-hh .hh-draw[data-status="row"] .hh-status-text{font-size:11px;line-height:15px}
+  /* Mid-size panels: the status sits in the empty top-left corner of the drawing, the dot beside the first line and
+     the text wrapping beside it. It floats over the drawing, so it moves nothing. */
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;align-items:flex-start;gap:6px;font-size:11px;min-height:0;line-height:1.45}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status-dot{margin-top:4.5px}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text{white-space:normal;overflow:visible}
   .ncx-hh .hh-draw[data-status="corner"] .hh-sep{display:none}
+  .ncx-hh .hh-draw[data-status="corner"] .hh-status-text b{display:block}
   /* Wide panels (over 800px): one row above the drawing, starting where the BYOC box starts (Stage.tsx measures it). */
-  .ncx-hh .hh-draw[data-status="wide"] .hh-status{min-height:20px;margin-bottom:8px;align-items:center;padding-left:var(--hh-box-left,0px)}
-  .ncx-hh .hh-draw[data-status="wide"] .hh-status-text{display:block;white-space:nowrap;text-overflow:ellipsis}
+  .ncx-hh .hh-draw[data-status="wide"] .hh-status{min-height:20px;margin-bottom:8px;padding-left:var(--hh-box-left,0px)}
   .ncx-hh .hh-draw[data-layout="landscape"] .hh-svg--portrait,.ncx-hh .hh-draw[data-layout="portrait"] .hh-svg--landscape{display:none}
   /* Before the page is interactive: the same choices from the drawing's own width. */
   .ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:none}
   @container hhdraw (max-width:479.98px){.ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:block}.ncx-hh .hh-draw:not([data-layout]) .hh-svg--landscape{display:none}
-    .ncx-hh .hh-draw:not([data-status]) .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}
-    .ncx-hh .hh-draw:not([data-status]) .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}}
-  @container hhdraw (min-width:480px) and (max-width:768px){.ncx-hh .hh-draw:not([data-status]) .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
-    flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
-    .ncx-hh .hh-draw:not([data-status]) .hh-sep{display:none}}
-  @container hhdraw (min-width:768.02px){.ncx-hh .hh-draw:not([data-status]) .hh-status{min-height:20px;margin-bottom:8px;align-items:center;
+    .ncx-hh .hh-draw:not([data-status]) .hh-status-text{font-size:11px;line-height:15px}}
+  @container hhdraw (min-width:480px) and (max-width:768px){.ncx-hh .hh-draw:not([data-status]) .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;align-items:flex-start;gap:6px;font-size:11px;min-height:0;line-height:1.45}
+    .ncx-hh .hh-draw:not([data-status]) .hh-status-dot{margin-top:4.5px}
+    .ncx-hh .hh-draw:not([data-status]) .hh-status-text{white-space:normal;overflow:visible}
+    .ncx-hh .hh-draw:not([data-status]) .hh-sep{display:none}
+    .ncx-hh .hh-draw:not([data-status]) .hh-status-text b{display:block}}
+  @container hhdraw (min-width:768.02px){.ncx-hh .hh-draw:not([data-status]) .hh-status{min-height:20px;margin-bottom:8px;
     padding-left:calc(100cqw * 160 / 760)}}
+  /* The narrowest corner: the longest step wraps to seven lines. Tighter lines keep it clear of the customer event card. */
+  @container hhdraw (min-width:480px) and (max-width:540px){.ncx-hh .hh-draw:is([data-status="corner"],:not([data-status])) .hh-status{line-height:1.3}
+    .ncx-hh .hh-draw:is([data-status="corner"],:not([data-status])) .hh-status-dot{margin-top:3.6px}}
 
   /* The caption: the selected card's explanation and the lit parts. */
   .ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:62px;display:grid}
@@ -146,7 +147,7 @@ export const stageCss = `
   /* The hidden SVG the browser measures chip text in once fonts load. */
   .ncx-hh .hh-measure{position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none}
 
-  @media (prefers-reduced-motion:reduce){.ncx-hh .hh-card,.ncx-hh .hh-svg [data-parts]{transition:none}.ncx-hh .hh-live i{animation:none}}
+  @media (prefers-reduced-motion:reduce){.ncx-hh .hh-card,.ncx-hh .hh-svg [data-parts]{transition:none}.ncx-hh .hh-status-dot{animation:none}}
 
   /* Phones and small tablets: the drawing first, then the cards in one row that scrolls sideways. */
   @media (max-width:899.98px){
