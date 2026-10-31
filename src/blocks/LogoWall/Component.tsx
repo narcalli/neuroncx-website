@@ -63,11 +63,10 @@ export const LogoWallBlock: React.FC<Props> = ({ label, heading, intro, display,
         .ncx-logowall a.cell:hover img{filter:none;opacity:1}
         .ncx-logowall img{width:auto;max-width:100%;object-fit:contain;display:block;
           filter:grayscale(1);opacity:.7;mix-blend-mode:multiply;transition:opacity .2s,filter .2s}
-        .ncx-logowall img:hover{filter:none;opacity:1}
         .ncx-logowall .wordmark{font-family:var(--font-display),Arial,sans-serif;
           font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--ncx-muted);
           white-space:nowrap;transition:color .2s}
-        .ncx-logowall .cell:hover .wordmark{color:var(--ncx-body)}
+        .ncx-logowall a.cell:hover .wordmark{color:var(--ncx-body)}
         @media(max-width:900px){.ncx-logowall{padding:40px 0}
           
           .ncx-logowall .grid{flex-wrap:wrap;justify-content:center;gap:26px 20px}

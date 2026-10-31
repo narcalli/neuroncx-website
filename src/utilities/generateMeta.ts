@@ -4,7 +4,7 @@ import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { absoluteMediaUrl } from './media'
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, siteUrlFor } from './siteDefaults'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, readableTitle, SITE_NAME, siteUrlFor } from './siteDefaults'
 import { getSiteSettings, siteFileUrl } from './siteSettings'
 
 // Share tags take full addresses only: Next would resolve a relative one
@@ -37,7 +37,7 @@ export const generateMeta = async (args: {
   // With no SEO title, the page's own title and the site name (SEO titles
   // carry the brand themselves), so pages do not all share the site's; the
   // home page keeps the site title.
-  const pageTitle = !doc?.meta?.title && doc?.slug && doc.slug !== 'home' && doc.title ? doc.title : null
+  const pageTitle = !doc?.meta?.title && doc?.slug && doc.slug !== 'home' && doc.title ? readableTitle(doc.title) : null
   const title = doc?.meta?.title
     ? doc.meta.title + suffix
     : pageTitle

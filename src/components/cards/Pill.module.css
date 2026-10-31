@@ -29,8 +29,10 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #1a2035;
-  color: #fff;
+  box-sizing: border-box;
+  background: var(--ncx-cloud);
+  border: 1px solid var(--ncx-rule);
+  color: var(--ncx-muted);
   display: flex;
   align-items: center;
   justify-content: center;

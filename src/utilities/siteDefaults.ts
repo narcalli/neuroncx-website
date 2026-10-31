@@ -37,6 +37,16 @@ export const defaultShareImage = () => {
     : null
 }
 
+/**
+ * A page's title field as a visitor should read it. One that holds a slug
+ * (lowercase with hyphens) becomes words in sentence case: knowledge-base reads
+ * Knowledge base. Anything else is left as typed.
+ */
+export const readableTitle = (title: string): string =>
+  /^[a-z0-9]+(-[a-z0-9]+)*$/.test(title)
+    ? `${title.charAt(0).toUpperCase()}${title.slice(1).replace(/-/g, ' ')}`
+    : title
+
 /** A path on this site as a full address, or undefined when the site's address is not set. */
 export const siteUrlFor = (path: string): string | undefined => {
   const site = getServerSideURL()

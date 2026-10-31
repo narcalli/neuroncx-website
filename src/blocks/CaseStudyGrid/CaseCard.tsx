@@ -94,7 +94,7 @@ export const CaseCard = ({
 
   if (!href) {
     return (
-      <CardMotion index={index} motion={motion} tilt={tilt}>
+      <CardMotion index={index} motion={motion} tilt={false}>
         <div className="ncx-cs__card ncx-cs__card--static">{inner}</div>
       </CardMotion>
     )

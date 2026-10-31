@@ -4,6 +4,7 @@ import React from 'react'
 import { CardFlag } from '@/components/cards/Flag'
 import { CardMotion } from '@/components/cards/CardMotion'
 import { KeyPointList } from '@/components/cards/KeyPoints'
+import { initialOf } from '@/components/cards/types'
 import type { MotionSetting } from '@/motion/levels'
 
 /** One related integration, as plain values from the page. */
@@ -39,16 +40,24 @@ const GridIcon = () => (
 
 const Body: React.FC<{
   icon: React.ReactNode
+  /** No logo file: the tile shows the initial, in a neutral colour, and carries the name. */
+  lettered?: boolean
   name: string
   text: string | null
   flag?: string | null
   keyPoints?: string[] | null
   fullText?: boolean
-}> = ({ icon, name, text, flag, keyPoints, fullText }) => (
+}> = ({ icon, lettered, name, text, flag, keyPoints, fullText }) => (
   <>
-    <span className="ncx-irel__tile" aria-hidden="true">
-      {icon}
-    </span>
+    {lettered ? (
+      <span className="ncx-irel__tile is-letter" role="img" aria-label={name}>
+        {icon}
+      </span>
+    ) : (
+      <span className="ncx-irel__tile" aria-hidden="true">
+        {icon}
+      </span>
+    )}
     <span className="ncx-irel__name">
       {name}
       <CardFlag text={flag} />
@@ -88,6 +97,7 @@ export const RelatedCards: React.FC<{
       .ncx-irel__tile{flex:none;width:56px;height:56px;border-radius:14px;background:var(--ncx-crimson-tint);
         color:var(--ncx-crimson-ink);display:flex;align-items:center;justify-content:center;overflow:hidden}
       .ncx-irel__tile img{max-width:36px;max-height:36px;width:auto;height:auto;object-fit:contain}
+      .ncx-irel__tile.is-letter{background:var(--ncx-cloud);color:var(--ncx-muted)}
       .ncx-irel__letter{font-family:var(--font-display),Arial,sans-serif;font-size:22px;font-weight:600}
       .ncx-irel__name{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:18px;
         line-height:1.3;color:var(--ncx-ink)}
@@ -122,18 +132,18 @@ export const RelatedCards: React.FC<{
           // eslint-disable-next-line @next/next/no-img-element
           <img src={c.logoSrc} alt="" loading="lazy" />
         ) : (
-          <span className="ncx-irel__letter">{c.name.charAt(0)}</span>
+          <span className="ncx-irel__letter">{initialOf(c.name)}</span>
         )
         return (
           <li key={c.id}>
-            <CardMotion index={i} motion={motion}>
+            <CardMotion index={i} motion={motion} tilt={Boolean(c.href)}>
               {c.href ? (
                 <Link className="ncx-irel__card" href={c.href}>
-                  <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
+                  <Body icon={icon} lettered={!c.logoSrc} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
                 </Link>
               ) : (
                 <div className="ncx-irel__card">
-                  <Body icon={icon} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
+                  <Body icon={icon} lettered={!c.logoSrc} name={c.name} text={c.text} flag={c.flag} keyPoints={c.keyPoints} fullText={fullText} />
                 </div>
               )}
             </CardMotion>

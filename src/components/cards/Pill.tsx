@@ -34,7 +34,7 @@ export const Pill: React.FC<{
         <Image src={logo.src} alt="" fill sizes="36px" unoptimized={logo.unoptimized} />
       </span>
     ) : (
-      <span className={styles.monogram} aria-hidden="true">
+      <span className={styles.monogram} role="img" aria-label={name}>
         {initial}
       </span>
     )}

@@ -74,5 +74,5 @@ export type CardLayoutProps = {
 
 export type CardDesignProps = { items: CardItem[] } & CardLayoutProps
 
-/** The first letter of a title, or "?" when there is none. */
-export const initialOf = (title?: string | null): string => (title || '').trim().charAt(0) || '?'
+/** The first letter of a title as a capital, or "?" when there is none. */
+export const initialOf = (title?: string | null): string => (title || '').trim().charAt(0).toUpperCase() || '?'

@@ -1,3 +1,4 @@
+import { siteUrlFor } from '@/utilities/siteDefaults'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -67,9 +68,11 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const c = await loadCustomer(slug)
   if (!c) return {}
+  const canonical = siteUrlFor(`/customers/${slug}`)
   return {
     title: c.heroHeading || c.name,
     description: c.summary,
+    ...(canonical ? { alternates: { canonical } } : {}),
   }
 }
 

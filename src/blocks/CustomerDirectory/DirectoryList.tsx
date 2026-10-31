@@ -87,7 +87,7 @@ export const DirectoryList: React.FC<Props> = ({
         >
           {visible.map((r, i) => (
             <li key={r.id}>
-              <CardMotion index={i} motion={motion}>
+              <CardMotion index={i} motion={motion} tilt={Boolean(r.href)}>
                 <div className="ncx-dir__card">
                   <Name row={r} />
                   <p className="ncx-dir__summary">{r.summary}</p>

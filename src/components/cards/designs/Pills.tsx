@@ -39,7 +39,7 @@ export const CardPills: React.FC<CardDesignProps> = ({ items, motion }) => {
           )
           return (
             <li key={it.id}>
-              <CardMotion index={i} motion={motion}>
+              <CardMotion index={i} motion={motion} tilt={Boolean(it.href)}>
                 {it.href ? <Link href={it.href}>{pill}</Link> : pill}
               </CardMotion>
             </li>

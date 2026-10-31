@@ -48,11 +48,8 @@ export const ProblemStatementBlock: React.FC<Props> = ({
           margin:0;max-width:var(--ncx-heading-max)}
         .ncx-prob .intro{color:var(--ncx-muted);margin:16px 0 0;font-size:1.02rem;line-height:1.6;max-width:52ch}
         .ncx-prob .list{display:flex;flex-direction:column;gap:14px;margin-top:26px}
-        .ncx-prob .item{display:flex;gap:14px;align-items:flex-start;background:var(--ncx-white);
+        .ncx-prob .item{background:var(--ncx-white);
           border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-card);padding:16px 18px}
-        .ncx-prob .mark{flex:0 0 26px;width:26px;height:26px;border-radius:8px;
-          background:var(--ncx-crimson-tint);color:var(--ncx-crimson);display:flex;align-items:center;
-          justify-content:center;font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:.9rem}
         .ncx-prob .item p{margin:0;font-size:.98rem;line-height:1.55;color:var(--ncx-muted)}
         .ncx-prob .item b{color:var(--ncx-body);font-weight:600}
         .ncx-prob .note{margin:16px 0 0;font-size:.86rem;color:var(--ncx-muted);font-style:italic}
@@ -92,9 +89,6 @@ export const ProblemStatementBlock: React.FC<Props> = ({
               <div className="list">
                 {items.map((p, i) => (
                   <div className="item" key={p.id || i}>
-                    <span className="mark" aria-hidden="true">
-                      !
-                    </span>
                     <p>
                       <b>{p.title}</b> {p.description}
                     </p>

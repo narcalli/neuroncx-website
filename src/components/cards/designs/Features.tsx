@@ -49,7 +49,7 @@ export const CardFeatures: React.FC<CardDesignProps> = ({ items, columns = 3, lo
           }
           return (
             <li key={it.id}>
-              <CardMotion index={i} motion={motion}>
+              <CardMotion index={i} motion={motion} tilt={Boolean(it.href)}>
                 <OptionCard
                   options={options}
                   number={null}

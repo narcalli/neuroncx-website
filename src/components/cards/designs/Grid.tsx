@@ -71,7 +71,9 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={it.logo.src} alt="" loading="lazy" />
                 ) : (
-                  <span className="ncx-cgrid__initial">{it.initial}</span>
+                  <span className="ncx-cgrid__initial" role="img" aria-label={it.title}>
+                    {it.initial}
+                  </span>
                 )}
               </div>
               <div>
@@ -88,7 +90,7 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
             : undefined
           // An item with its own page links to it; the rest are plain cells.
           return (
-            <CardMotion key={it.id} index={i} motion={motion} style={style}>
+            <CardMotion key={it.id} index={i} motion={motion} style={style} tilt={Boolean(it.href)}>
               {it.href ? (
                 <Link className="ncx-cgrid__cell" href={it.href}>
                   {body}

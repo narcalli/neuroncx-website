@@ -1,3 +1,4 @@
+import { siteUrlFor } from '@/utilities/siteDefaults'
 import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
@@ -63,7 +64,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { pageNumber } = await paramsPromise
+  const canonical = siteUrlFor(`/posts/page/${pageNumber}`)
   return {
     title: `Blog Posts Page ${pageNumber || ''}`,
+    ...(canonical ? { alternates: { canonical } } : {}),
   }
 }
