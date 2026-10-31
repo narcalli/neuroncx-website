@@ -5,7 +5,8 @@
  * the server and the browser lay it out the same way, and tests can check it.
  *
  * Landscape is 760 x 380, for a drawing 480px wide or more; portrait is
- * 360 x 620, below that. Inside the dashed BYOC box: ontology, policy,
+ * 376 x 620, below that, which gives the BYOC box (x 22 to 354) the same
+ * space on both sides, with the loop lane in the left margin. Inside the dashed BYOC box: ontology, policy,
  * orchestration, the guardrails gate, the actions and "Team steps in".
  * Outside: the customer event, Customer 360 and the learning loop.
  *
@@ -219,11 +220,11 @@ const actionBox = (b: Builder, x: number, y: number, w: number, h: number, label
 }
 
 /** The loop label with its flash background: one line, or the words split over two (loopLabel() in the reference). */
-const loopLabel = (b: Builder, x: number, y: number, label: string, two: boolean): Shape => {
+const loopLabel = (b: Builder, x: number, y: number, label: string, two: boolean, fontSize: number): Shape => {
   const words = label.trim().split(/\s+/).filter(Boolean)
   const half = Math.ceil(words.length / 2)
   const lines = two ? [words.slice(0, half).join(' '), words.slice(half).join(' ')].filter(Boolean) : [label.trim()]
-  const widest = Math.max(0, ...lines.map((l) => b.measure(l, 'loop-t', 10.5)))
+  const widest = Math.max(0, ...lines.map((l) => b.measure(l, 'loop-t', fontSize)))
   return {
     t: 'g',
     transform: `translate(${x} ${y})`,
@@ -273,7 +274,7 @@ const drawLandscape = (labels: HarnessLabels, measure: Measure): Drawing => {
 
   // The learning loop, outside the box.
   b.line(['loop']).push({ t: 'path', d: 'M176 352H138V70H177', cls: 'ln loop-ln', k: 'loop' }, chev(177, 70, 'r', 'ln loop-ln'))
-  b.node(['loop']).push(loopLabel(b, 16, 266, labels.loopLabel, true))
+  b.node(['loop']).push(loopLabel(b, 16, 266, labels.loopLabel, true, 10.5))
 
   // The customer event; its arrow hops over the loop lane.
   b.node(['trigger']).push(
@@ -344,7 +345,7 @@ const drawLandscape = (labels: HarnessLabels, measure: Measure): Drawing => {
   return { layout: 'landscape', width: 760, height: 380, lines: b.lines, nodes: b.nodes }
 }
 
-/* Portrait, 360 x 620. The loop lane runs outside the left edge (x 6); one
+/* Portrait, 376 x 620. The loop lane runs outside the left edge (x 6); one
    rail runs down the middle (x 188). The actions sit in two columns, with
    "Team steps in" last: across the full width when it is alone on its row. */
 
@@ -374,7 +375,7 @@ const drawPortrait = (labels: HarnessLabels, measure: Measure): Drawing => {
   b.node(['boundary']).push({ t: 'text', x: 36, y: 100, text: labels.boundaryLabel, cls: 'mono' })
 
   b.line(['loop']).push({ t: 'path', d: 'M34 551H6V155H33', cls: 'ln loop-ln', k: 'loop' }, chev(33, 155, 'r', 'ln loop-ln'))
-  b.node(['loop']).push(loopLabel(b, 40, 606, labels.loopLabel, false))
+  b.node(['loop']).push(loopLabel(b, 40, 606, labels.loopLabel, false, 11))
 
   b.node(['trigger']).push(
     { t: 'rect', x: 118, y: 6, w: 140, h: 54, rx: 12, cls: 'box' },
@@ -441,7 +442,7 @@ const drawPortrait = (labels: HarnessLabels, measure: Measure): Drawing => {
     ...chipRow(b, 46, 552, 286, labels.customer360Fields, 22, 8, 6, 10, 'field'),
   )
 
-  return { layout: 'portrait', width: 360, height: 620, lines: b.lines, nodes: b.nodes }
+  return { layout: 'portrait', width: 376, height: 620, lines: b.lines, nodes: b.nodes }
 }
 
 export const buildDrawing = (layout: Layout, labels: HarnessLabels, measure: Measure = monoMeasure): Drawing =>

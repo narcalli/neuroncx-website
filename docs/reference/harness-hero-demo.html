@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Harness Loop Hero</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +49,8 @@ button{font:inherit;color:inherit}
 [data-header="full"] .site .wrap{max-width:none;padding-left:max(36px,env(safe-area-inset-left,0px));padding-right:max(36px,env(safe-area-inset-right,0px))}
 /* hero width "Match header": the block widens itself to the header's edges, nothing outside the block changes */
 [data-width="header"] .hero > .wrap{max-width:none;padding-left:max(36px,env(safe-area-inset-left,0px));padding-right:max(36px,env(safe-area-inset-right,0px))}
-@media (max-width:760px){[data-header="full"] .site .wrap,[data-width="header"] .hero > .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+@media (max-width:760px){[data-header="full"] .site .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .hero > .wrap,[data-width="header"] .hero > .wrap{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}}
 .logo{font:600 19px var(--font-display);color:var(--ncx-ink);letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
 .logo i{width:8px;height:8px;border-radius:50%;background:var(--ncx-crimson)}
 .nav{display:flex;gap:22px;font:500 14px var(--font-display);color:var(--ncx-muted);margin-right:auto}
@@ -81,6 +81,10 @@ h1{font:600 clamp(28px,3.1vw,44px)/1.12 var(--font-display);letter-spacing:-.022
 [data-hero="grid"] h1{grid-column:1 / -1}
 [data-hero="grid"] .passage{grid-column:2;max-width:none}
 @media (max-width:899px){
+  [data-hero="centred"] .hero-text{align-items:flex-start;text-align:left;gap:16px}
+  [data-hero="centred"] .passage{max-width:none}
+  h1{font-size:30px;line-height:1.15}
+  .passage{font-size:16px;line-height:1.6}
   [data-hero="grid"] .hero-text{grid-template-columns:minmax(0,1fr)}
   [data-hero="grid"] .passage{grid-column:1}
   h1 .br{display:none}
@@ -125,7 +129,9 @@ h1{font:600 clamp(28px,3.1vw,44px)/1.12 var(--font-display);letter-spacing:-.022
 @media (max-width:899px){
   .stage{grid-template-columns:minmax(0,1fr)}
   .cards{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin;order:2}
-  .panel{order:1}
+  .panel{order:1;padding:12px 12px 10px}
+  .panel.port .panel-top{flex-direction:column;align-items:flex-start;gap:3px}
+  .panel.port #status{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
   .hcard{flex:0 0 min(70%,250px);scroll-snap-align:start}
 }
 
@@ -170,8 +176,9 @@ h1{font:600 clamp(28px,3.1vw,44px)/1.12 var(--font-display);letter-spacing:-.022
 .dot-halo{fill:var(--ncx-crimson);opacity:.16}
 .dot.teal .dot-core{fill:var(--ncx-teal)}
 .dot.teal .dot-halo{fill:var(--ncx-teal)}
-.pt .lbl{font-size:12px}
+.pt .lbl{font-size:12.5px}
 .pt .chip-t{font-size:10px}
+.pt .mono{font-size:11px}
 .pt .orch-t{font-size:15px}
 [data-parts]{transition:opacity .35s ease}
 .dim{opacity:.35}
@@ -446,7 +453,7 @@ function drawPortrait(){
 function placeStatus(){
   const panel=document.getElementById('harness-panel'),w=panel.clientWidth;
   const wide=!portrait&&w>800;
-  panel.classList.toggle('land',!portrait&&!wide);panel.classList.toggle('wide',wide);
+  panel.classList.toggle('land',!portrait&&!wide);panel.classList.toggle('wide',wide);panel.classList.toggle('port',portrait);
   let off=0;
   if(wide){const sr=svg.getBoundingClientRect(),tr=panel.querySelector('.panel-top').getBoundingClientRect();off=(sr.left-tr.left)+sr.width*160/760;}
   panel.style.setProperty('--box-left',off+'px');
@@ -457,7 +464,7 @@ function render(){
   portrait=dwrap.clientWidth<480;
   svg.innerHTML='';svg.setAttribute('class',portrait?'pt':'');
   placeStatus();
-  svg.setAttribute('viewBox',portrait?'0 0 360 620':'0 0 760 380');
+  svg.setAttribute('viewBox',portrait?'0 0 376 620':'0 0 760 380');
   refs={parts:[],act:[],out:[],chipFlash:[],fieldFlash:[],checks:[]};
   layers={lines:el('g',{},svg),nodes:el('g',{},svg),dots:el('g',{},svg)};
   portrait?drawPortrait():drawLand();
@@ -616,5 +623,3 @@ setMotion(S.motion);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
 })();
 </script>
-
-</body></html>

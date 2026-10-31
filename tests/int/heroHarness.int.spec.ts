@@ -213,7 +213,11 @@ describe('the drawing', () => {
     expect(layoutFor(480)).toBe('landscape')
     const land = buildDrawing('landscape', LABELS)
     const port = buildDrawing('portrait', LABELS)
-    expect([land.width, land.height, port.width, port.height]).toEqual([760, 380, 360, 620])
+    expect([land.width, land.height, port.width, port.height]).toEqual([760, 380, 376, 620])
+    // The BYOC box has the same space on both sides of the portrait drawing, the coordinates unchanged.
+    const box = port.lines[0].items[0] as Extract<Shape, { t: 'rect' }>
+    expect([box.x, box.x + box.w]).toEqual([22, 354])
+    expect(port.width - (box.x + box.w)).toBe(box.x)
   })
 
   it('draws the box and its three doors first, then the lines, then the boxes and labels', () => {
@@ -486,5 +490,37 @@ describe('the lit boxes', () => {
     for (const cls of ['box', 'abox', 'hbox']) {
       expect(stageCss).toContain(`.is-on .${cls}{stroke:var(--ncx-crimson);stroke-width:1.5;fill:var(--ncx-crimson-tint)}`)
     }
+  })
+})
+
+describe('below 900px', () => {
+  const phone = (css: string) => css.slice(css.indexOf('@media (max-width:899.98px)'))
+
+  it('left aligns centred text, at the integration page hero sizes, 16px apart', () => {
+    const css = phone(render())
+    expect(css).toContain('.ncx-hh h1{font-size:38px;line-height:1.06}')
+    expect(css).toContain('.ncx-hh .hh-intro{font-size:19px;line-height:1.65}')
+    expect(css).toContain('[data-layout="centred"] .hh-text{align-items:flex-start;text-align:left;gap:16px}')
+    expect(css).toContain('[data-layout="centred"] .hh-body{align-items:flex-start;max-width:none}')
+  })
+
+  it('pads the drawing panel 12px, 12px and 10px', () => {
+    expect(phone(stageCss)).toContain('.hh-panel{order:1;padding:12px 12px 10px}')
+  })
+
+  it('gives the portrait status two rows of fixed height, the step on one line', () => {
+    expect(stageCss).toContain('[data-status="row"] .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}')
+    expect(stageCss).toContain(
+      '[data-status="row"] .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}',
+    )
+  })
+
+  it('sets the portrait label sizes, chips staying at 10px', () => {
+    expect(stageCss).toContain('.hh-svg--portrait .lbl{font-size:12.5px}')
+    expect(stageCss).toContain('.hh-svg--portrait .mono,.ncx-hh .hh-svg--portrait .loop-t{font-size:11px}')
+    expect(stageCss).toContain('.hh-svg--portrait .chip-t{font-size:10px}')
+    // The default ontology chips: Locations and Services together, Rules and terms below.
+    const chips = shapes(buildDrawing('portrait', LABELS)).filter((s): s is Extract<Shape, { t: 'rect' }> => s.t === 'rect' && s.cls === 'chip-bg')
+    expect(chips.slice(0, 3).map((c) => c.y)).toEqual([144, 144, 168])
   })
 })

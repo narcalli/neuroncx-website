@@ -252,9 +252,15 @@ const heroCss = `
   .ncx-hh .hh-btn:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
   @media (prefers-reduced-motion:reduce){.ncx-hh .hh-btn{transition:none}}
-  /* Phones and small tablets: one column; typed line breaks give way to natural wrapping. */
+  /* Phones and small tablets: one column; typed line breaks give way to natural wrapping.
+     Title and intro sizes match the integration page hero (/integrations/abdm). Centred text goes left aligned. */
   @media (max-width:899.98px){
     .ncx-hh h1 .br{display:none}
+    .ncx-hh h1{font-size:38px;line-height:1.06}
+    .ncx-hh .hh-intro{font-size:19px;line-height:1.65}
+    .ncx-hh[data-layout="centred"] .hh-text{align-items:flex-start;text-align:left;gap:16px}
+    .ncx-hh[data-layout="centred"] .hh-body{align-items:flex-start;max-width:none}
+    .ncx-hh[data-layout="centred"] .hh-cta{justify-content:flex-start}
     .ncx-hh[data-layout="grid"] .hh-text{grid-template-columns:minmax(0,1fr)}
     .ncx-hh[data-layout="grid"] .hh-body{grid-column:1}
   }

@@ -49,6 +49,10 @@ export const stageCss = `
   .ncx-hh .hh-stage[data-level="on"] .hh-live i{animation:hh-blink 2.4s ease-in-out infinite}
   @keyframes hh-blink{0%,100%{opacity:1}50%{opacity:.3}}
   .ncx-hh .hh-dwrap svg{display:block;width:100%;height:auto;overflow:visible}
+  /* Portrait: two rows above the drawing, the dot and "Live loop", then the step on one line. Their height is
+     kept, so the drawing never moves when the text changes. */
+  .ncx-hh .hh-draw[data-status="row"] .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}
+  .ncx-hh .hh-draw[data-status="row"] .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}
   /* Mid-size panels: the status sits in the empty top-left corner of the drawing, its lines stacked. */
   .ncx-hh .hh-draw[data-status="corner"] .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
     flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
@@ -61,7 +65,9 @@ export const stageCss = `
   .ncx-hh .hh-draw[data-layout="landscape"] .hh-svg--portrait,.ncx-hh .hh-draw[data-layout="portrait"] .hh-svg--landscape{display:none}
   /* Before the page is interactive: the same choices from the drawing's own width. */
   .ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:none}
-  @container hhdraw (max-width:479.98px){.ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:block}.ncx-hh .hh-draw:not([data-layout]) .hh-svg--landscape{display:none}}
+  @container hhdraw (max-width:479.98px){.ncx-hh .hh-draw:not([data-layout]) .hh-svg--portrait{display:block}.ncx-hh .hh-draw:not([data-layout]) .hh-svg--landscape{display:none}
+    .ncx-hh .hh-draw:not([data-status]) .hh-status{flex-direction:column;align-items:flex-start;gap:3px;min-height:35px}
+    .ncx-hh .hh-draw:not([data-status]) .hh-status-text{display:block;max-width:100%;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:15px}}
   @container hhdraw (min-width:480px) and (max-width:768px){.ncx-hh .hh-draw:not([data-status]) .hh-status{position:absolute;top:2px;left:0;width:17%;z-index:2;margin:0;
     flex-direction:column;align-items:flex-start;gap:5px;font-size:11px;min-height:0;line-height:1.45}
     .ncx-hh .hh-draw:not([data-status]) .hh-sep{display:none}}
@@ -114,7 +120,8 @@ export const stageCss = `
   .ncx-hh .hh-svg .loop-t{font:500 10.5px var(--font-label),ui-monospace,monospace;fill:var(--ncx-teal);letter-spacing:.03em}
   .ncx-hh .hh-svg .loop-bg{fill:var(--ncx-teal-tint);opacity:0}
   .ncx-hh .hh-svg .is-on .loop-bg{opacity:1}
-  .ncx-hh .hh-svg--portrait .lbl{font-size:12px}
+  .ncx-hh .hh-svg--portrait .lbl{font-size:12.5px}
+  .ncx-hh .hh-svg--portrait .mono,.ncx-hh .hh-svg--portrait .loop-t{font-size:11px}
   .ncx-hh .hh-svg--portrait .chip-t{font-size:10px}
   .ncx-hh .hh-svg--portrait .orch-t{font-size:15px}
   .ncx-hh .hh-svg [data-parts]{transition:opacity .35s ease}
@@ -134,7 +141,7 @@ export const stageCss = `
   /* Phones and small tablets: the drawing first, then the cards in one row that scrolls sideways. */
   @media (max-width:899.98px){
     .ncx-hh .hh-stage,.ncx-hh .hh-stage[data-cards="above"]{grid-template-columns:minmax(0,1fr)}
-    .ncx-hh .hh-panel{order:1}
+    .ncx-hh .hh-panel{order:1;padding:12px 12px 10px}
     .ncx-hh .hh-cards,.ncx-hh .hh-stage[data-cards="above"] .hh-cards{order:2;display:flex;flex-direction:row;overflow-x:auto;
       scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
     .ncx-hh .hh-card{flex:0 0 min(70%,250px);scroll-snap-align:start}

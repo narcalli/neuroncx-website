@@ -31,10 +31,12 @@ const measured = (labels: HarnessLabels): { cls: 'chip-t' | 'loop-t'; size: numb
   const chips = [...labels.ontologyItems, ...labels.customer360Fields]
   const words = labels.loopLabel.trim().split(/\s+/)
   const half = Math.ceil(words.length / 2)
-  const loop = [labels.loopLabel.trim(), words.slice(0, half).join(' '), words.slice(half).join(' ')]
+  // Two lines at 10.5px in landscape, one line at 11px in portrait.
+  const halves = [words.slice(0, half).join(' '), words.slice(half).join(' ')]
   return [
     ...chips.flatMap((text) => [10.5, 10].map((size) => ({ cls: 'chip-t' as const, size, text }))),
-    ...loop.filter(Boolean).map((text) => ({ cls: 'loop-t' as const, size: 10.5, text })),
+    ...halves.filter(Boolean).map((text) => ({ cls: 'loop-t' as const, size: 10.5, text })),
+    { cls: 'loop-t' as const, size: 11, text: labels.loopLabel.trim() },
   ]
 }
 
