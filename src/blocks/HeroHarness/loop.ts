@@ -58,7 +58,7 @@ export const STEP = {
   passed: (a: string) => ['Guardrails', `Passed, agent runs ${a}`] as const,
   handover: ['Guardrails', 'Outside policy, so your team steps in'] as const,
   record: (f: string) => ['Customer 360', `Updating ${f}`] as const,
-  learning: ['Learning loop', 'Outcome feeds back into ontology and policy'] as const,
+  learning: ['Learning loop', 'Updates ontology and policy'] as const,
 }
 
 /** What one cycle does: its event, whether it hands over, its action and its chip. */

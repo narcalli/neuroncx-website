@@ -410,7 +410,7 @@ describe('the live loop', () => {
     expect(STEP.passed('Qualify')).toEqual(['Guardrails', 'Passed, agent runs Qualify'])
     expect(STEP.handover).toEqual(['Guardrails', 'Outside policy, so your team steps in'])
     expect(STEP.record('Profile')).toEqual(['Customer 360', 'Updating Profile'])
-    expect(STEP.learning).toEqual(['Learning loop', 'Outcome feeds back into ontology and policy'])
+    expect(STEP.learning).toEqual(['Learning loop', 'Updates ontology and policy'])
   })
 
   it('scales every duration with the Speed switch', () => {
