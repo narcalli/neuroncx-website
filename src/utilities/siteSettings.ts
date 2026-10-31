@@ -16,6 +16,10 @@ export const getSiteSettings = async (): Promise<SiteSettingsType> => {
   return data ?? ({} as SiteSettingsType)
 }
 
+/** Whether the site-wide WhatsApp button is on: switched on, and with a number to call. */
+export const whatsappButtonOn = (settings: SiteSettingsType): boolean =>
+  Boolean(settings.whatsappButton?.enabled && settings.whatsappButton.phone?.trim())
+
 /** The absolute URL of an uploaded icon or image, or null when none is set. */
 export const siteFileUrl = (file: MediaValue): string | null => {
   if (!file || typeof file !== 'object' || !('url' in file)) return null
