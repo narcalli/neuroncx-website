@@ -24,8 +24,8 @@ const formatDate = (iso: string) => {
 
 /**
  * Content block, Legal document layout (terms, privacy). The title, date and
- * contents list share the breadcrumb's left edge; the text runs at about 85
- * characters a line, wider than the 52ch article column but still easy to follow.
+ * contents list share the breadcrumb's left edge. On wide screens the text is
+ * 18px at about 95 characters a line: the most that stays easy to follow.
  */
 export const LegalDocument: React.FC<Props> = ({ columns, lastUpdated, title }) => {
   const cols = (columns || []).filter((c) => c.richText)
@@ -52,15 +52,16 @@ export const LegalDocument: React.FC<Props> = ({ columns, lastUpdated, title }) 
         .ncx-legal__toc-mobile summary:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
         .ncx-legal__toc-mobile .ncx-legal__list{margin-bottom:14px}
         @media (min-width:1024px){
-          /* The rule under the title stops where the text does: 240px + 72px + 70ch. */
-          .ncx-legal__head{max-width:calc(312px + 70ch)}
-          .ncx-legal__grid{grid-template-columns:240px minmax(0,70ch);gap:72px;align-items:start}
-          .ncx-legal__grid--plain{grid-template-columns:minmax(0,70ch)}
+          /* The rule under the title stops where the text does: 240px + 72px + 80ch. */
+          .ncx-legal__head{max-width:calc(312px + 80ch)}
+          .ncx-legal__grid{grid-template-columns:240px minmax(0,80ch);gap:72px;align-items:start}
+          .ncx-legal__grid--plain{grid-template-columns:minmax(0,80ch)}
           .ncx-legal__toc{display:block;position:sticky;top:104px;max-height:calc(100vh - 128px);overflow-y:auto;overscroll-behavior:contain;padding-right:8px}
           .ncx-legal__toc-mobile{display:none}
         }
         /* Beats the 52ch article measure in globals.css and the prose plugin's sizes. */
         .ncx-legal__body .payload-richtext{font-size:1.0625rem;line-height:1.75}
+        @media (min-width:1024px){.ncx-legal__body .payload-richtext{font-size:1.125rem}}
         .ncx-legal__body .payload-richtext > :where(p,ul,ol,blockquote,dl){max-width:none}
         .ncx-legal__body .payload-richtext > :first-child{margin-top:0}
         .ncx-legal__body h2{margin:48px 0 12px;font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:1.375rem;line-height:1.3;color:var(--ncx-ink);scroll-margin-top:112px}
