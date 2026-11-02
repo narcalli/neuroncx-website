@@ -17,7 +17,8 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
   const level = useMotionLevel()
   if (!list.length) return null
 
-  const caption = active !== null ? list[active].caption : 'Hover or select a role to see where it sits.'
+  const hint = 'Hover or select a role to see where it sits.'
+  const caption = active !== null ? list[active].caption : hint
   const hold = active !== null || paused
 
   return (
@@ -31,7 +32,8 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         .ncx-orbit .rel{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;margin-top:40px}
         .ncx-orbit ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--ncx-rule)}
         .ncx-orbit li{padding:14px 12px;border-bottom:1px solid var(--ncx-rule);font-weight:500;border-left:4px solid transparent;transition:background .25s,border-color .25s}
-        .ncx-orbit li.hl{background:var(--ncx-white);border-left-color:var(--ncx-crimson);padding-left:18px}
+        /* Colour only: moving the text here would slide it out from under the cursor and end the hover. */
+        .ncx-orbit li.hl{background:var(--ncx-white);border-left-color:var(--ncx-crimson)}
         .ncx-orbit .role{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
         .ncx-orbit .role:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:4px;border-radius:4px}
         .ncx-orbit .toggle{display:block;margin:10px auto 0;padding:6px 12px;border:1px solid var(--ncx-rule);border-radius:999px;
@@ -63,7 +65,12 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
         @container (max-width:419px){
           .ncx-orbit .on-node{white-space:normal;max-width:120px;text-align:center;line-height:1.25;padding:6px 10px}
         }
-        .ncx-orbit .cap{margin:16px auto 0;text-align:center;font-size:.95rem;color:var(--ncx-muted);min-height:1.6em;max-width:36ch}
+        /* Every caption shares one grid cell, so the area always fits the longest.
+           If it changed height on hover, the centred list would move out from
+           under the cursor, end the hover and move back, over and over. */
+        .ncx-orbit .cap{display:grid;margin:16px auto 0;text-align:center;font-size:.95rem;color:var(--ncx-muted);max-width:36ch}
+        .ncx-orbit .cap>*{grid-area:1/1;margin:0}
+        .ncx-orbit .cap-size{visibility:hidden}
         @media (max-width:860px){.ncx-orbit .rel{grid-template-columns:1fr;gap:28px}}
         @media (prefers-reduced-motion:reduce){.ncx-orbit .spin{animation:none}}
       `}</style>
@@ -122,9 +129,14 @@ export const AgenticOrbitBlock: React.FC<AgenticOrbitProps> = ({ heading, intro,
                 )
               })}
             </div>
-            <p className="cap" aria-live="polite">
-              {caption}
-            </p>
+            <div className="cap">
+              {[hint, ...list.map((r) => r.caption)].map((text, i) => (
+                <span key={i} className="cap-size" aria-hidden="true">
+                  {text}
+                </span>
+              ))}
+              <p aria-live="polite">{caption}</p>
+            </div>
             {level === 'on' ? (
               <button type="button" className="toggle" onClick={() => setPaused((p) => !p)}>
                 {paused ? 'Play the orbit' : 'Pause the orbit'}
