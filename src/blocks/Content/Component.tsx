@@ -5,9 +5,12 @@ import RichText from '@/components/RichText'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 
 import { CMSLink } from '../../components/Link'
+import { LegalDocument } from './LegalDocument'
 
-export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
-  const { columns } = props
+export const ContentBlock: React.FC<ContentBlockProps & { pageTitle?: string | null }> = (props) => {
+  const { columns, documentStyle, lastUpdated, pageTitle } = props
+
+  if (documentStyle === 'legal') return <LegalDocument columns={columns} lastUpdated={lastUpdated} title={pageTitle} />
 
   const colsSpanClasses = {
     full: '12',

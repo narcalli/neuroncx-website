@@ -48,10 +48,16 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
 
-  // With no hero, a contact form that opens the page carries its one H1.
+  // With no hero, a contact form that opens the page carries its one H1, and
+  // so does a legal document, as the page title.
   const headedLayout =
-    heroDisabled && firstBlockType === 'contactForm' && Array.isArray(layout)
-      ? layout.map((b: any) => (b === firstBlock ? { ...b, headingLevel: 'h1' } : b))
+    heroDisabled && Array.isArray(layout)
+      ? layout.map((b: any) => {
+          if (b !== firstBlock) return b
+          if (firstBlockType === 'contactForm') return { ...b, headingLevel: 'h1' }
+          if (firstBlockType === 'content' && b.documentStyle === 'legal') return { ...b, pageTitle: page.title }
+          return b
+        })
       : layout
 
   // The breadcrumbs go inside whatever renders first: the configured hero,

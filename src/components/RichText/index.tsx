@@ -38,6 +38,11 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  // As the default, plus the anchor id the legal document layout gives its sections (blocks/Content/legalOutline.ts).
+  heading: ({ node, nodesToJSX }) => {
+    const Tag = node.tag
+    return <Tag id={(node as { anchorId?: string }).anchorId}>{nodesToJSX({ nodes: node.children })}</Tag>
+  },
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
