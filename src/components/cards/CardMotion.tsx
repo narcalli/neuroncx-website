@@ -18,8 +18,8 @@ import { isPastStart, onceInView } from '@/motion/useOnceInView'
  *  - entrance: once a row comes into view, each card tips up from 16deg and
  *    rises into place, `index` apart by 90ms;
  *  - hover: TiltCard, plus the first icon or logo inside turning and
- *    growing on a spring, and the card's own ring turning navy. Mouse only:
- *    touch gets the entrance alone.
+ *    growing on a spring, and the card lifting on a soft shadow. Mouse
+ *    only: touch gets the entrance alone.
  *
  * The server HTML is the settled card; nothing here hides it before the
  * entrance plays, and a card already in view when the script loads is left
@@ -117,10 +117,16 @@ export const CardMotion: React.FC<{
   )
 }
 
+/* The hover lift sits on the card itself (TiltCard's first child), so it tilts
+   with the card and follows the card's own corners; a ring on this wrapper
+   stayed flat, at a fixed 12px radius, and showed as a dark frame. A filter
+   rather than box-shadow, so the card keeps any shadow of its own. A design
+   whose cards should not lift sets --ncx-card-lift:none. */
 const cardMotionCss = `
-.ncx-card-motion{height:100%;box-shadow:inset 0 0 0 0 transparent;border-radius:var(--ncx-r-card);transition:box-shadow .25s ease}
-.ncx-card-motion:hover{box-shadow:inset 0 0 0 1.5px var(--ncx-navy)}
-.ncx-card-motion.is-still:hover{box-shadow:none}
+.ncx-card-motion{height:100%}
+.ncx-card-motion > div > :first-child{transition:filter .25s ease}
+.ncx-card-motion:not(.is-still):hover > div > :first-child{
+  filter:var(--ncx-card-lift,drop-shadow(0 2px 4px rgba(20,26,45,.06)) drop-shadow(0 14px 22px rgba(20,26,45,.14)))}
 .ncx-card-motion svg,.ncx-card-motion img{transform-origin:50% 50%}
-@media(prefers-reduced-motion:reduce){.ncx-card-motion{transition:none}}
+@media(prefers-reduced-motion:reduce){.ncx-card-motion > div > :first-child{transition:none}}
 `

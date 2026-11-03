@@ -37,7 +37,9 @@ export const CardGrid: React.FC<CardDesignProps & { className?: string }> = ({
         .ncx-cgrid{display:grid;
           grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;
           background:var(--ncx-rule);border:1px solid var(--ncx-rule);border-radius:12px;overflow:hidden;
-          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body);
+          /* Joined cells: a lift would spill onto the next cell. The hover tint is the feedback. */
+          --ncx-card-lift:none}
         /* height:100% fills the row through CardMotion's wrappers (each 100%
            tall), so no grey from the grid's hairline background shows below a
            short cell. */

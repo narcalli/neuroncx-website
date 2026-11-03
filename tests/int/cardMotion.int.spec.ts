@@ -25,7 +25,7 @@ describe('CardMotion', () => {
     expect(html).not.toContain('display:none')
   })
 
-  it('carries its class for the entrance and the hover ring', () => {
+  it('carries its class for the entrance and the hover lift', () => {
     const html = renderToStaticMarkup(React.createElement(CardMotion, { children: 'x' }))
     expect(html).toContain('class="ncx-card-motion"')
   })

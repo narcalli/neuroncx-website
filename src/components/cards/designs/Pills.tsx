@@ -19,8 +19,8 @@ export const CardPills: React.FC<CardDesignProps> = ({ items, motion }) => {
       <style>{`
         .ncx-cpills{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px}
         .ncx-cpills > li{max-width:100%}
-        .ncx-cpills .ncx-card-motion{box-shadow:none;border-radius:999px}
-        .ncx-cpills .ncx-card-motion:hover{box-shadow:none}
+        /* The pill's own hover shadow is enough. */
+        .ncx-cpills{--ncx-card-lift:none}
         .ncx-cpills a{display:block;border-radius:999px;text-decoration:none;transition:box-shadow .18s ease}
         .ncx-cpills a:hover{box-shadow:var(--ncx-shadow)}
         .ncx-cpills a:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
