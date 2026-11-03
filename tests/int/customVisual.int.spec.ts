@@ -117,6 +117,25 @@ describe('layout none', () => {
   })
 })
 
+describe('a block with no eyebrow, heading or intro', () => {
+  const bare = html(block({ eyebrow: null, heading: null, intro: null }))
+
+  it('draws nothing for them, and the diagram comes first', () => {
+    expect(bare).not.toMatch(/<h2|ncx-customvisual__eyebrow"|ncx-customvisual__intro"/)
+    expect(bare).toMatch(/<div class="ncx-container"><div class="ncx-customvisual__stage/)
+  })
+
+  it('drops the gap meant to sit under a heading', () => {
+    expect(render(block())).toContain('.ncx-customvisual .ncx-container > :first-child{margin-top:0}')
+  })
+
+  it('does the same for layout none, starting with the visual', () => {
+    expect(html(block({ eyebrow: null, heading: null, intro: null, layout: 'none' }))).toMatch(
+      /<div class="ncx-container"><div class="ncx-customvisual__frame"/,
+    )
+  })
+})
+
 describe('an empty block', () => {
   it('draws nothing', () => {
     expect(html({ blockType: 'customVisual', layout: 'none' } as Props)).toBe('')

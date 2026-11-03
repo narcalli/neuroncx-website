@@ -153,6 +153,9 @@ const css_ = `
   .ncx-customvisual h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
     font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin:0;max-width:var(--ncx-heading-max)}
   .ncx-customvisual__intro{color:var(--ncx-muted);margin:14px 0 0;max-width:62ch;font-size:16.5px;line-height:1.65}
+  /* No eyebrow, heading or intro: nothing is drawn for them, so the diagram, visual or grid
+     starts the block without the gap that would sit under a heading. */
+  .ncx-customvisual .ncx-container > :first-child{margin-top:0}
 
   /* The diagram: the hub and cards sit on the layout's points, the visual fills it behind them. */
   .ncx-customvisual__stage{position:relative;margin:40px auto 0;width:100%;aspect-ratio:var(--cv-aspect,1/1)}
