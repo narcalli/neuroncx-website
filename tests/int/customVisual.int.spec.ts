@@ -110,6 +110,12 @@ describe('layout none', () => {
     expect(out).toMatch(/ncx-customvisual__grid [^"]*tokens/)
   })
 
+  it('lets the visual grow past its Shape below 860px, keeping the Shape as its least height', () => {
+    expect(render(block({ layout: 'none' }))).toMatch(
+      /@media \(max-width:859\.98px\)\{[\s\S]*\.ncx-customvisual__frame > \.hcx-visual\{height:auto;min-height:100%\}/,
+    )
+  })
+
   it('puts the visual full width under the heading, before the cards', () => {
     expect(out).not.toContain('ncx-customvisual__overlay')
     expect(out.indexOf('ncx-customvisual__frame')).toBeGreaterThan(out.indexOf('How it fits'))

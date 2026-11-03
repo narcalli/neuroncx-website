@@ -190,5 +190,9 @@ const css_ = `
     .ncx-customvisual__slot--hub{align-self:center;width:auto;display:flex;flex-direction:column;align-items:center}
     .ncx-customvisual__hub-text{position:static;transform:none;margin-top:12px;max-width:260px}
     .ncx-customvisual__frame,.ncx-customvisual__grid{margin-top:28px}
+    /* Layout none: the editor's Shape becomes a minimum, not a fixed height. A visual whose
+       CSS stacks its content on a phone grows to fit instead of being clipped by the sealed
+       box; one drawn only with absolute positioning still gets the full Shape. */
+    .ncx-customvisual__frame > .hcx-visual{height:auto;min-height:100%}
   }
 `
