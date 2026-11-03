@@ -43,6 +43,7 @@ import { IntegrationsBlock } from '@/blocks/Integrations/Component'
 import { IntegrationsLandingBlock } from '@/blocks/IntegrationsLanding/Component'
 import { ProductSuiteBlock } from '@/blocks/ProductSuite/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
+import { CustomVisualBlock } from '@/blocks/CustomVisual/Component'
 import { ProductInActionBlock } from '@/blocks/ProductInAction/Component'
 import { TestimonialBlock } from '@/blocks/Testimonial/Component'
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
@@ -103,6 +104,7 @@ const blockComponents = {
   partnerStrip: PartnerStripBlock,
   productSuite: ProductSuiteBlock,
   productSuite2: ProductSuite2Block,
+  customVisual: CustomVisualBlock,
   productInAction: ProductInActionBlock,
   testimonial: TestimonialBlock,
   caseStudyGrid: CaseStudyGridBlock,
