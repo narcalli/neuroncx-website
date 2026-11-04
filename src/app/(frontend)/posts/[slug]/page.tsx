@@ -9,6 +9,9 @@ import RichText from '@/components/RichText'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getBySlug, CMS_TAG } from '@/utilities/cms'
+import { getServerSideURL } from '@/utilities/getURL'
+import { blogPosting, jsonLdHtml } from '@/utilities/jsonLd'
+import { pickMedia, type MediaValue } from '@/utilities/media'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
@@ -31,9 +34,21 @@ export default async function Post({ params: paramsPromise }: Args) {
   const related = Array.isArray(post.relatedPosts)
     ? post.relatedPosts.filter((p: any) => typeof p === 'object')
     : []
+  // The post for search engines (utilities/jsonLd.ts); left out until the site's address is set.
+  const posting = blogPosting({
+    siteUrl: getServerSideURL(),
+    path: url,
+    headline: post.title,
+    description: post.meta?.description,
+    image: pickMedia((post.meta?.image || post.heroImage) as MediaValue)?.src,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt,
+    authors: (post.populatedAuthors || []).map((a: { name?: string | null }) => a?.name),
+  })
 
   return (
     <article className="pt-16 pb-16">
+      {posting ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(posting)} /> : null}
       <PayloadRedirects disableNotFound url={url} />
       {draft && <LivePreviewListener />}
       <PostHero post={post} />

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
+import { robotsFor } from './searchVisibility'
 import { absoluteMediaUrl } from './media'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, readableTitle, SITE_NAME, siteUrlFor } from './siteDefaults'
 import { getSiteSettings, siteFileUrl } from './siteSettings'
@@ -54,6 +55,8 @@ export const generateMeta = async (args: {
   return {
     title,
     description,
+    // Hide from search engines (utilities/searchVisibility.ts).
+    ...robotsFor(doc),
     // The page's own full address, such as /higher-education/fees for a
     // cluster page. Left out when the site's address is not set.
     ...(url ? { alternates: { canonical: url } } : {}),

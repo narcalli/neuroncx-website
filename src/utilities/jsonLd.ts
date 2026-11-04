@@ -71,6 +71,9 @@ export const faqPage = (items: { question: string; answer: string }[]) => ({
   })),
 })
 
+/** The @id of the site's Organization (siteIdentity), so other data can name it as maker or publisher. */
+const organizationId = (base: URL): string => `${base.origin}/#organization`
+
 /**
  * Who runs the site, for search engines: an Organization and the WebSite it
  * publishes, linked by @id, on every page (app/(frontend)/layout.tsx). The
@@ -104,7 +107,7 @@ export const siteIdentity = (args: {
 
   const organization = {
     '@type': 'Organization',
-    '@id': `${url}#organization`,
+    '@id': organizationId(base),
     name: args.name,
     url,
     ...(args.legalName?.trim() ? { legalName: args.legalName.trim() } : {}),
@@ -120,4 +123,84 @@ export const siteIdentity = (args: {
     publisher: { '@id': organization['@id'] },
   }
   return { '@context': 'https://schema.org', '@graph': [organization, webSite] }
+}
+
+const absoluteSite = (siteUrl: string): URL | null => {
+  try {
+    return new URL(siteUrl)
+  } catch {
+    return null
+  }
+}
+
+const plain = (v?: string | null): string | undefined => (v?.trim() ? v.trim() : undefined)
+
+/**
+ * An integration or agent page as software (schema.org SoftwareApplication),
+ * made by NeuronCx. Google shows a special result for software only with a
+ * price or ratings, so this describes the page rather than changing how it
+ * looks in results. Null when siteUrl is not absolute or there is no name.
+ */
+export const softwareApplication = (args: {
+  siteUrl: string
+  path: string
+  name?: string | null
+  description?: string | null
+  image?: string | null
+}) => {
+  const base = absoluteSite(args.siteUrl)
+  const name = plain(args.name)
+  if (!base || !name) return null
+  const image = args.image ? resolve(args.image, base) : null
+  const description = plain(args.description)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name,
+    url: resolve(args.path, base),
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    ...(description ? { description } : {}),
+    ...(image ? { image } : {}),
+    publisher: { '@id': organizationId(base) },
+  }
+}
+
+/**
+ * A post (schema.org BlogPosting): headline, dates, authors by name (else
+ * NeuronCx), and NeuronCx as publisher. Null when siteUrl is not absolute or
+ * there is no headline.
+ */
+export const blogPosting = (args: {
+  siteUrl: string
+  path: string
+  headline?: string | null
+  description?: string | null
+  image?: string | null
+  datePublished?: string | null
+  dateModified?: string | null
+  authors?: (string | null | undefined)[] | null
+}) => {
+  const base = absoluteSite(args.siteUrl)
+  const headline = plain(args.headline)
+  if (!base || !headline) return null
+  const url = resolve(args.path, base)
+  const image = args.image ? resolve(args.image, base) : null
+  const description = plain(args.description)
+  const authors = (args.authors || []).map((a) => plain(a)).filter((a): a is string => Boolean(a))
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline,
+    url,
+    mainEntityOfPage: url,
+    ...(description ? { description } : {}),
+    ...(image ? { image } : {}),
+    ...(args.datePublished ? { datePublished: args.datePublished } : {}),
+    ...(args.dateModified ? { dateModified: args.dateModified } : {}),
+    author: authors.length
+      ? authors.map((name) => ({ '@type': 'Person', name }))
+      : { '@id': organizationId(base) },
+    publisher: { '@id': organizationId(base) },
+  }
 }

@@ -11,6 +11,7 @@ import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { isLocalHost, showsClosing, siteOrigin } from '@/utilities/content'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { robotsFor } from '@/utilities/searchVisibility'
 
 import { HubGroupings } from './HubGroupings'
 import { groupingsPlaced } from './hubGroupingsPlacement'
@@ -105,6 +106,7 @@ export const hubMetadata = (hub: Hub, collection: ContentCollectionSlug): Metada
   return {
     title,
     description,
+    ...robotsFor(hub),
     ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: mergeOpenGraph({
       title,

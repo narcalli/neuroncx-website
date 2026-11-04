@@ -13,9 +13,12 @@ import { SetupLanes, type SetupRow } from '@/components/integrations/SetupLanes'
 import { StatusFlow, type FlowRow } from '@/components/integrations/StatusFlow'
 import { CMS_TAG, getGlobal, getMany } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
+import { getServerSideURL } from '@/utilities/getURL'
 import { integrationHref } from '@/utilities/integrations'
+import { jsonLdHtml, softwareApplication } from '@/utilities/jsonLd'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { robotsFor } from '@/utilities/searchVisibility'
 import { defaultShareImage } from '@/utilities/siteDefaults'
 import { previewedVersionOf } from '@/utilities/versionPreview'
 import type {
@@ -148,6 +151,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return {
     title,
     description,
+    ...robotsFor(d),
     ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: mergeOpenGraph({
       title,
@@ -227,8 +231,18 @@ export default async function IntegrationPage({ params }: Args) {
     logoSrc: pickMedia(r.logo as MediaValue)?.src || null,
   }))
 
+  // The page as software for search engines (utilities/jsonLd.ts); left out until the site's address is set.
+  const software = softwareApplication({
+    siteUrl: getServerSideURL(),
+    path: `/integrations/${slug}`,
+    name: `${d.name} integration`,
+    description: d.meta?.description || d.summary,
+    image: pickMedia(d.logo as MediaValue)?.src,
+  })
+
   return (
     <article className="ncx-iitem">
+      {software ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(software)} /> : null}
       <style>{`
         .ncx-iitem{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
 

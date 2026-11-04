@@ -4,6 +4,8 @@ import { cache } from 'react'
 import type { Page } from '@/payload-types'
 import { CMS_TAG, getBySlug, getMany } from '@/utilities/cms'
 
+import { hiddenFromSearch } from './searchVisibility'
+
 /**
  * CMS pages and their addresses. A page without a parent lives at /{slug}
  * (the home page at /). A cluster page sits under its pillar page at
@@ -77,13 +79,13 @@ const shadowed = (path: string): boolean => {
   return rest.length ? OWN_SECOND_LEVEL.includes(first) : OWN_FIRST_LEVEL.includes(first)
 }
 
-/** Sitemap entries for published pages, each at its full path. */
+/** Sitemap entries for published pages, each at its full path. Hidden from search engines: left out. */
 export const pageSitemapEntries = (
-  pages: (PathPage & { updatedAt?: string | null })[],
+  pages: (PathPage & Pick<Page, 'meta'> & { updatedAt?: string | null })[],
   origin: string,
 ): { loc: string; lastmod?: string }[] =>
   pages.flatMap((p) => {
     const path = pagePathOf(p)
-    if (!path || shadowed(path)) return []
+    if (!path || shadowed(path) || hiddenFromSearch(p)) return []
     return [{ loc: path === '/' ? `${origin}/` : `${origin}${path}`, ...(p.updatedAt ? { lastmod: p.updatedAt } : {}) }]
   })

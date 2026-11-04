@@ -15,6 +15,7 @@ import { isLocalHost, showsClosing, siteOrigin } from '@/utilities/content'
 import { getIndustryTopicPages, industryHref, type IndustryCollection } from '@/utilities/industries'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { robotsFor } from '@/utilities/searchVisibility'
 import { defaultShareImage } from '@/utilities/siteDefaults'
 import { MotionPage } from '@/motion/MotionProvider'
 
@@ -69,6 +70,7 @@ export const entryMetadata = (doc: Entry): Metadata => {
   return {
     title,
     description,
+    ...robotsFor(doc),
     ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: mergeOpenGraph({
       title,

@@ -10,6 +10,8 @@ import { heroDesignOf } from '@/components/sections/entryHeroAdapters'
 import { RenderSections, type SectionContext } from '@/components/sections/RenderSections'
 import { CONTENT_COLLECTIONS, fillHeading, SECTION_HEADINGS, sectionKeyOf } from '@/content/registry'
 import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
+import { getServerSideURL } from '@/utilities/getURL'
+import { jsonLdHtml, softwareApplication } from '@/utilities/jsonLd'
 import {
   effectiveLayout,
   getEntries,
@@ -24,6 +26,7 @@ import {
 } from '@/utilities/content'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { robotsFor } from '@/utilities/searchVisibility'
 import { defaultShareImage } from '@/utilities/siteDefaults'
 import { MotionPage } from '@/motion/MotionProvider'
 
@@ -72,6 +75,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return {
     title,
     description,
+    ...robotsFor(d),
     ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: mergeOpenGraph({
       title,
@@ -139,11 +143,19 @@ export default async function AgentPage({ params }: Args) {
   // The hero no longer shows what the customer sees, so the panel always may.
   const ctx: SectionContext = { collection: COLLECTION, hub, entry: d, tokens, customerSeesInHero: false, closing, draft }
   const closingInLayout = layout.some((b) => sectionKeyOf(b.blockType) === 'closing')
+  // The agent as software for search engines (utilities/jsonLd.ts); left out until the site's address is set.
+  const software = softwareApplication({
+    siteUrl: getServerSideURL(),
+    path: `${route}/${slug}`,
+    name: d.name,
+    description: d.meta?.description || d.summary,
+  })
 
   return (
     <MotionPage page={d.pageMotion}>
       <article className="ncx-agent">
         {draft ? <LivePreviewListener /> : null}
+        {software ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(software)} /> : null}
         <style>{`
           /* Without the closing panel the footer follows the last section, which keeps its own bottom padding. */
           .ncx-agent{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}

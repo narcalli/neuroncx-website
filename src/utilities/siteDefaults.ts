@@ -10,8 +10,9 @@ export const SITE_NAME = 'NeuronCx'
 
 export const DEFAULT_TITLE = 'NeuronCx'
 
+/** Used only by pages with no description of their own or in Site Settings; under the CMS's 155-character limit. */
 export const DEFAULT_DESCRIPTION =
-  'NeuronCx is a CRM and omnichannel customer experience platform that brings every customer conversation and record into one place, for businesses in any industry.'
+  'NeuronCx is a CRM and omnichannel customer experience platform that brings every customer conversation and record into one place.'
 
 /** The logo in this site's public folder (142 x 141 pixels), for search engines when Site Settings has none. */
 export const DEFAULT_LOGO_PATH = '/ncx-logo.png'
