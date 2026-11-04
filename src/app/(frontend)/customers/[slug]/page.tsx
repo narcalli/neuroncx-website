@@ -19,6 +19,7 @@ import {
   sectorIds,
 } from '@/utilities/customers'
 import { pickMedia, type MediaValue } from '@/utilities/media'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { previewedVersionOf } from '@/utilities/versionPreview'
 import type { Customer, Integration, Product, Sector } from '@/payload-types'
 
@@ -73,10 +74,17 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const c = await loadCustomer(slug)
   if (!c) return {}
   const canonical = siteUrlFor(`/customers/${slug}`)
+  const title = c.heroHeading || c.name
   return {
-    title: c.heroHeading || c.name,
+    title,
     description: c.summary,
     ...(canonical ? { alternates: { canonical } } : {}),
+    // No share image of its own: the drawn card with the customer's title.
+    openGraph: mergeOpenGraph({
+      title,
+      ...(c.summary ? { description: c.summary } : {}),
+      ...(canonical ? { url: canonical } : {}),
+    }),
   }
 }
 

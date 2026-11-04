@@ -13,29 +13,48 @@ export const DEFAULT_TITLE = 'NeuronCx'
 export const DEFAULT_DESCRIPTION =
   'NeuronCx is a CRM and omnichannel customer experience platform that brings every customer conversation and record into one place, for businesses in any industry.'
 
-/** The default share image, served from this site's public folder: 1200 x 630 pixels. */
-export const DEFAULT_OG_IMAGE = {
-  path: '/og-default.webp',
+/** The logo in this site's public folder (142 x 141 pixels), for search engines when Site Settings has none. */
+export const DEFAULT_LOGO_PATH = '/ncx-logo.png'
+
+/** The drawn share card (app/(frontend)/og/route.tsx): 1200 x 630 pixels. */
+export const SHARE_CARD = {
+  path: '/og',
   width: 1200,
   height: 630,
-  alt: 'NeuronCx',
+}
+
+/** The longest title the share card draws; longer ones are cut with an ellipsis. */
+export const SHARE_CARD_TITLE_MAX = 110
+
+/**
+ * A title as the share card shows it: without the " | NeuronCx" style suffix
+ * (the card carries the brand itself), and cut to SHARE_CARD_TITLE_MAX.
+ */
+export const shareCardTitle = (title?: string | null): string => {
+  const plain = (title || '').replace(/\s*\|[^|]*$/, '').replace(/\s+/g, ' ').trim()
+  return plain.length > SHARE_CARD_TITLE_MAX ? `${plain.slice(0, SHARE_CARD_TITLE_MAX - 1).trimEnd()}…` : plain
 }
 
 /**
- * The default share image as a full address on this site, or null when the
- * site's address (NEXT_PUBLIC_SERVER_URL) is not set.
+ * The share card for a page as a full address on this site, drawn with the
+ * page's title, or null when the site's address (NEXT_PUBLIC_SERVER_URL) is
+ * not set. Used when a page has no share image of its own.
  */
-export const defaultShareImage = () => {
+export const shareCard = (title?: string | null) => {
   const site = getServerSideURL()
-  return site
-    ? {
-        url: `${site}${DEFAULT_OG_IMAGE.path}`,
-        width: DEFAULT_OG_IMAGE.width,
-        height: DEFAULT_OG_IMAGE.height,
-        alt: DEFAULT_OG_IMAGE.alt,
-      }
-    : null
+  if (!site) return null
+  // The site name alone is no title: the card already shows it.
+  const text = shareCardTitle(title) === SITE_NAME ? '' : shareCardTitle(title)
+  return {
+    url: `${site}${SHARE_CARD.path}${text ? `?title=${encodeURIComponent(text)}` : ''}`,
+    width: SHARE_CARD.width,
+    height: SHARE_CARD.height,
+    alt: text || SITE_NAME,
+  }
 }
+
+/** The site-wide share image: the card with no page title. */
+export const defaultShareImage = () => shareCard()
 
 /**
  * A page's title field as a visitor should read it. One that holds a slug

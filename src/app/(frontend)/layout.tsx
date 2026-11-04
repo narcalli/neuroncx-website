@@ -12,7 +12,8 @@ import { SiteWhatsappButton } from '@/components/SiteWhatsappButton'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/utilities/siteDefaults'
+import { jsonLdHtml, siteIdentity } from '@/utilities/jsonLd'
+import { DEFAULT_DESCRIPTION, DEFAULT_LOGO_PATH, DEFAULT_TITLE, SITE_NAME } from '@/utilities/siteDefaults'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
@@ -58,6 +59,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const appleTouchIcon = siteFileUrl(settings.appleTouchIcon)
   // Site Settings, Animations: on until set. In the server HTML, so CSS holds before any script runs.
   const animations = settings.animations || 'on'
+  // Who runs the site, for search engines (utilities/jsonLd.ts). Left out until the site's address is set.
+  const identity = siteIdentity({
+    siteUrl: getServerSideURL(),
+    name: settings.siteName || SITE_NAME,
+    legalName: settings.organisation?.legalName,
+    description: settings.defaultDescription || DEFAULT_DESCRIPTION,
+    logo: siteFileUrl(settings.organisation?.logo) || DEFAULT_LOGO_PATH,
+    profiles: settings.organisation?.profiles?.map((p) => p.url),
+  })
 
   return (
     <html
@@ -79,6 +89,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {appleTouchIcon ? <link href={appleTouchIcon} rel="apple-touch-icon" sizes="180x180" /> : null}
         <link href="/manifest.webmanifest" rel="manifest" />
         {settings.themeColor ? <meta name="theme-color" content={settings.themeColor} /> : null}
+        {identity ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(identity)} /> : null}
       </head>
       <body>
         {/* <AdminBar

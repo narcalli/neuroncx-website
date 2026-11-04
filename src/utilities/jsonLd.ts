@@ -70,3 +70,54 @@ export const faqPage = (items: { question: string; answer: string }[]) => ({
     acceptedAnswer: { '@type': 'Answer', text: item.answer },
   })),
 })
+
+/**
+ * Who runs the site, for search engines: an Organization and the WebSite it
+ * publishes, linked by @id, on every page (app/(frontend)/layout.tsx). The
+ * values come from the CMS Site Settings (Site identity and Organisation).
+ * Only full https profile links are kept, and a relative logo resolves against
+ * siteUrl.
+ *
+ * Null when siteUrl is not an absolute address.
+ */
+export const siteIdentity = (args: {
+  siteUrl: string
+  name: string
+  legalName?: string | null
+  description?: string | null
+  logo?: string | null
+  profiles?: (string | null | undefined)[] | null
+}) => {
+  let base: URL
+  try {
+    base = new URL(args.siteUrl)
+  } catch {
+    return null
+  }
+  const url = base.toString()
+  const logo = args.logo ? resolve(args.logo, base) : null
+  const sameAs = [
+    ...new Set(
+      (args.profiles || []).filter((p): p is string => typeof p === 'string' && /^https:\/\/\S+$/.test(p.trim())),
+    ),
+  ].map((p) => p.trim())
+
+  const organization = {
+    '@type': 'Organization',
+    '@id': `${url}#organization`,
+    name: args.name,
+    url,
+    ...(args.legalName?.trim() ? { legalName: args.legalName.trim() } : {}),
+    ...(logo ? { logo } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
+  }
+  const webSite = {
+    '@type': 'WebSite',
+    '@id': `${url}#website`,
+    name: args.name,
+    url,
+    ...(args.description?.trim() ? { description: args.description.trim() } : {}),
+    publisher: { '@id': organization['@id'] },
+  }
+  return { '@context': 'https://schema.org', '@graph': [organization, webSite] }
+}

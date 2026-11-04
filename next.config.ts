@@ -4,6 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { redirects } from './redirects'
+import { securityHeaders } from './securityHeaders'
 
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
@@ -119,6 +120,22 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         headers: [{ key: 'Cache-Control', value: 'no-store, must-revalidate' }],
+      },
+      // The share card (app/(frontend)/og/route.tsx) changes only with a title,
+      // so it is kept for a day, over the 60 second page rule above.
+      {
+        source: '/og',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // Every response (securityHeaders.ts).
+      {
+        source: '/:path*',
+        headers: securityHeaders({ cmsUrls: PAYLOAD_URLS, isDev }),
       },
     ]
   },

@@ -1,25 +1,27 @@
 import type { Metadata } from 'next'
 
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, defaultShareImage } from './siteDefaults'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, shareCard } from './siteDefaults'
 
-// The site-wide Open Graph defaults. A page's own values replace them; the
-// default image is left out when the site's address is not set.
-const defaultOpenGraph = (): Metadata['openGraph'] => {
-  const image = defaultShareImage()
-  return {
-    type: 'website',
-    siteName: SITE_NAME,
-    title: DEFAULT_TITLE,
-    description: DEFAULT_DESCRIPTION,
-    ...(image ? { images: [image] } : {}),
-  }
-}
+type OpenGraph = NonNullable<Metadata['openGraph']>
 
+// The site-wide Open Graph defaults. A page's own values replace them.
+const defaultOpenGraph = (): OpenGraph => ({
+  type: 'website',
+  siteName: SITE_NAME,
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+})
+
+/**
+ * A page's Open Graph values over the defaults. With no image of its own the
+ * page shares the drawn card with its title (siteDefaults.ts shareCard); the
+ * card is left out when the site's address is not set.
+ */
 export const mergeOpenGraph = (og?: Metadata['openGraph']): Metadata['openGraph'] => {
-  const defaults = defaultOpenGraph()
+  const merged = { ...defaultOpenGraph(), ...og }
+  const card = shareCard(typeof merged.title === 'string' ? merged.title : null)
   return {
-    ...defaults,
-    ...og,
-    images: og?.images ? og.images : defaults?.images,
+    ...merged,
+    images: og?.images ? og.images : card ? [card] : undefined,
   }
 }

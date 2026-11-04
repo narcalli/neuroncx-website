@@ -5,6 +5,11 @@ import React, { useRef, useState } from 'react'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
 
+import { Turnstile, TURNSTILE_SITE_KEY } from './Turnstile'
+
+const SEND_FAILED = 'Something went wrong. Please email team@neuroncx.in instead.'
+const ROBOT_CHECK_PENDING = "We're still checking you're not a robot. Please try again in a moment."
+
 // Move to a CMS field later (contact-form-fix-prompts.md, prompt 3).
 const CONSENT_NOTICE = {
   before: 'By submitting this form, you agree that NeuronCx may use your details to reply to your enquiry, as described in our ',
@@ -48,6 +53,10 @@ export const ContactFormBlock: React.FC<Props> = ({
     website: '', // honeypot — real people never fill this
   })
 
+  // The Turnstile answer, and a count that asks the widget for a fresh one.
+  const [token, setToken] = useState('')
+  const [round, setRound] = useState(0)
+
   const set = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }))
 
   const submit = async () => {
@@ -69,6 +78,13 @@ export const ContactFormBlock: React.FC<Props> = ({
       return
     }
 
+    // Turnstile (./Turnstile.tsx) answers on its own within a moment of the page loading.
+    if (TURNSTILE_SITE_KEY && !token) {
+      setError(ROBOT_CHECK_PENDING)
+      setStatus('error')
+      return
+    }
+
     setStatus('sending')
     setError('')
 
@@ -83,14 +99,28 @@ export const ContactFormBlock: React.FC<Props> = ({
           mobile: values.mobile,
           message: values.message,
           sourcePage: typeof window !== 'undefined' ? window.location.pathname : '',
+          ...(TURNSTILE_SITE_KEY ? { turnstileToken: token } : {}),
         }),
       })
 
-      if (!res.ok) throw new Error(`Request failed (${res.status})`)
+      if (!res.ok) {
+        // The robot check's own message (403, 503); anything else gets the general one.
+        const data = (await res.json().catch(() => null)) as { error?: string } | null
+        const own = res.status === 403 || res.status === 503 ? data?.error : null
+        setError(own || SEND_FAILED)
+        setStatus('error')
+        return
+      }
       setStatus('done')
-    } catch (e) {
-      setError('Something went wrong. Please email team@neuroncx.in instead.')
+    } catch {
+      setError(SEND_FAILED)
       setStatus('error')
+    } finally {
+      // A Turnstile answer is good for one enquiry: ask for a new one.
+      if (TURNSTILE_SITE_KEY) {
+        setToken('')
+        setRound((r) => r + 1)
+      }
     }
   }
 
@@ -121,6 +151,7 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact input:focus,.ncx-contact textarea:focus{outline:2px solid var(--ncx-focus);
           outline-offset:1px;background:var(--ncx-white)}
         .ncx-contact .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+        .ncx-contact .turnstile:not(:empty){margin-bottom:16px}
         .ncx-contact button{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:15px;
           font-weight:500;padding:13px 24px;border-radius:8px;border:0;cursor:pointer;
           background:var(--ncx-navy);color:var(--ncx-on-navy);margin-top:4px}
@@ -244,6 +275,8 @@ export const ContactFormBlock: React.FC<Props> = ({
                     onChange={(e) => set('website', e.target.value)}
                   />
                 </div>
+
+                {TURNSTILE_SITE_KEY ? <Turnstile onToken={setToken} round={round} /> : null}
 
                 <button type="submit" disabled={status === 'sending'} aria-describedby="ncx-contact-consent">
                   {status === 'sending' ? 'Sending…' : buttonLabel || 'Submit enquiry'}
