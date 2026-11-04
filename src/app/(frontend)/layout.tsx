@@ -21,6 +21,7 @@ import { LoopWatch } from '@/motion/LoopWatch'
 import { ReadingProgress } from '@/motion/ReadingProgress'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
+import { currentVersionTarget } from '@/utilities/versionCookie'
 
 // The site's three faces, self-hosted at build time. Every block reads these
 // variables instead of importing from Google itself, so swapping a face is a
@@ -47,6 +48,7 @@ const labelFont = IBM_Plex_Mono({
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const version = isEnabled ? await currentVersionTarget() : null
   const settings = await getSiteSettings()
 
   // Each icon falls back to the file shipped in public/ when the CMS field is empty.
@@ -100,7 +102,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SiteWhatsappButton />
         </MotionProvider>
         {/* Every page, while draft mode is on: a preview is never mistaken for the live site. */}
-        {isEnabled ? <DraftBanner /> : null}
+        {isEnabled ? <DraftBanner version={version ? { at: version.at } : null} /> : null}
       </body>
     </html>
   )

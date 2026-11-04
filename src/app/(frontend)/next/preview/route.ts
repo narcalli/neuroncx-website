@@ -1,6 +1,8 @@
-import { draftMode } from 'next/headers'
+import { cookies, draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { NextRequest } from 'next/server'
+
+import { encodeVersionTarget, parseVersionParam, VERSION_COOKIE } from '@/utilities/versionCookie'
 
 export type PreviewSearchParams = {
   path: string
@@ -42,6 +44,21 @@ export async function GET(req: NextRequest): Promise<Response> {
 
   const draft = await draftMode()
   draft.enable()
+
+  // From the CMS History tab: show one entry as it was in an earlier version
+  // (utilities/versionCookie.ts). Any other preview link clears it.
+  const jar = await cookies()
+  const version = parseVersionParam(searchParams.get('version'), searchParams.get('versionAt'))
+  if (version) {
+    jar.set(VERSION_COOKIE, encodeVersionTarget(version), {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    })
+  } else {
+    jar.delete(VERSION_COOKIE)
+  }
 
   redirect(path)
 }

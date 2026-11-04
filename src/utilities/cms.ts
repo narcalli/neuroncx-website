@@ -6,7 +6,10 @@
  * imported into a 'use client' component.
  */
 
+import { cache } from 'react'
+
 import { getPayloadURL } from './getURL'
+import { currentVersionTarget } from './versionCookie'
 
 type Query = Record<string, string | number | boolean | undefined>
 
@@ -56,10 +59,60 @@ const request = async <T>(path: string, query?: Query, opts: FetchOptions = {}):
       return null
     }
 
-    return (await res.json()) as T
+    const data = (await res.json()) as T
+    return draft ? withPreviewedVersion(path, query, data) : data
   } catch (err) {
     console.error(`CMS request failed for ${path}:`, err)
     return null
+  }
+}
+
+type VersionDoc = { parent: string; doc: Record<string, unknown> }
+
+/**
+ * One version of an entry, as the CMS History tab's Preview shows it: its
+ * content at that point, populated to the same depth as the page asks for.
+ * Needs the preview API key, like any draft. Fetched once per request.
+ */
+export const getVersion = cache(
+  async (collection: string, versionId: string, depth: number): Promise<VersionDoc | null> => {
+    if (!PREVIEW_API_KEY) return null
+    try {
+      const res = await fetch(buildUrl(`/api/${collection}/versions/${versionId}`, { depth }), {
+        headers: { 'Content-Type': 'application/json', Authorization: `users API-Key ${PREVIEW_API_KEY}` },
+        cache: 'no-store',
+      })
+      if (!res.ok) {
+        console.error(`CMS ${res.status} for version ${versionId} of ${collection}`)
+        return null
+      }
+      const json = (await res.json()) as { parent?: unknown; version?: Record<string, unknown> }
+      const parent = typeof json.parent === 'object' && json.parent ? (json.parent as { id?: unknown }).id : json.parent
+      return parent && json.version ? { parent: String(parent), doc: json.version } : null
+    } catch (err) {
+      console.error(`CMS request failed for version ${versionId} of ${collection}:`, err)
+      return null
+    }
+  },
+)
+
+/**
+ * In an old-version preview (utilities/versionCookie.ts), the previewed entry
+ * in a draft list from its collection becomes that version, keeping its id.
+ * Every other entry, and every other request, is left as it was.
+ */
+const withPreviewedVersion = async <T>(path: string, query: Query | undefined, data: T): Promise<T> => {
+  const docs = (data as { docs?: unknown })?.docs
+  if (!Array.isArray(docs)) return data
+  const target = await currentVersionTarget()
+  if (!target || path.replace(/^\//, '') !== `api/${target.collection}`) return data
+  const version = await getVersion(target.collection, target.id, Number(query?.depth ?? 2))
+  if (!version) return data
+  return {
+    ...data,
+    docs: docs.map((d: { id?: unknown }) =>
+      String(d?.id) === version.parent ? { ...version.doc, id: d.id } : d,
+    ),
   }
 }
 

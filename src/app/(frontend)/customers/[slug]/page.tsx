@@ -19,6 +19,7 @@ import {
   sectorIds,
 } from '@/utilities/customers'
 import { pickMedia, type MediaValue } from '@/utilities/media'
+import { previewedVersionOf } from '@/utilities/versionPreview'
 import type { Customer, Integration, Product, Sector } from '@/payload-types'
 
 type Args = { params: Promise<{ slug: string }> }
@@ -30,6 +31,9 @@ type Args = { params: Promise<{ slug: string }> }
  * so every result and quote that arrives here may be shown.
  */
 const loadCustomer = async (slug: string): Promise<(Customer & { slug: string }) | null> => {
+  // An old version opened from the CMS History tab, whatever its status.
+  const previewed = await previewedVersionOf<Customer & { slug: string }>('customers', slug)
+  if (previewed) return previewed
   const docs = await getMany<Customer>(
     'customers',
     {

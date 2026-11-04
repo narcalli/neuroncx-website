@@ -17,6 +17,7 @@ import { integrationHref } from '@/utilities/integrations'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { defaultShareImage } from '@/utilities/siteDefaults'
+import { previewedVersionOf } from '@/utilities/versionPreview'
 import type {
   ConnectionType,
   Header,
@@ -42,6 +43,9 @@ const publicItem = {
 }
 
 const loadItem = async (slug: string): Promise<Integration | null> => {
+  // An old version opened from the CMS History tab, whatever its status.
+  const previewed = await previewedVersionOf<Integration>('integrations', slug)
+  if (previewed) return previewed
   const docs = await getMany<Integration>(
     'integrations',
     {
