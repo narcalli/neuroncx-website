@@ -25,12 +25,22 @@ export const introText = (intro: string | null | undefined): string =>
     .join(' ')
     .trim()
 
-/** The buttons that can be drawn: a label and somewhere to go. */
-export const shownButtons = (buttons: HeroHarnessProps['buttons']): (Button & { href: string })[] =>
+type Look = 'primary' | 'secondary'
+
+/**
+ * The buttons that can be drawn: a label and somewhere to go, each with its
+ * look. A button's own Style wins; left empty, the first drawn is primary and
+ * the second secondary.
+ */
+export const shownButtons = (buttons: HeroHarnessProps['buttons']): (Button & { href: string; look: Look })[] =>
   (buttons ?? [])
     .map((b) => ({ ...b, href: hrefOf(b) ?? '' }))
     .filter((b) => b.label && b.href)
     .slice(0, 2)
+    .map((b, i) => ({
+      ...b,
+      look: b.appearance === 'primary' || b.appearance === 'secondary' ? b.appearance : i === 0 ? 'primary' : 'secondary',
+    }))
 
 /** Text, else the design's default. */
 const or = (v: string | null | undefined, fallback: string) => (typeof v === 'string' && v.trim() ? v.trim() : fallback)
@@ -152,7 +162,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       ) : null}
       <div className="ncx-container">
         <div className="hh-text">
-          {layout === 'stackWithLabel' && eyebrow ? <p className="hh-eyebrow">{eyebrow}</p> : null}
+          {eyebrow?.trim() ? <p className="hh-eyebrow hh-tag">{eyebrow.trim()}</p> : null}
           <h1 data-breaks={lines.length > 1 ? '' : undefined}>
             {lines.map((line, i) => (
               <React.Fragment key={i}>
@@ -172,7 +182,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
                 {shown.map((b, i) => (
                   <a
                     key={b.id ?? i}
-                    className={`hh-btn hh-btn--${i === 0 ? 'primary' : 'ghost'}`}
+                    className={`hh-btn hh-btn--${b.look}`}
                     href={b.href}
                     {...(b.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
@@ -210,11 +220,11 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
  * sits flush under the fixed 64px header, so its top padding adds that.
  */
 const heroCss = `
-  .ncx-hh{--hh-bg:var(--ncx-cloud);--hh-top:clamp(32px,4.5vw,64px);--hh-gap:22px;--hh-stage:clamp(32px,4vw,56px);--hh-label-pull:-6px;
+  .ncx-hh{--hh-bg:var(--ncx-cloud);--hh-top:clamp(32px,4.5vw,64px);--hh-gap:22px;--hh-stage:clamp(32px,4vw,56px);
     background:var(--hh-bg);color:var(--ncx-body);font-family:var(--font-body),Arial,sans-serif;position:relative;
     padding:calc(64px + var(--hh-top)) 0 clamp(40px,5vw,64px)}
   .ncx-hh[data-bg="white"]{--hh-bg:var(--ncx-white)}
-  .ncx-hh[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px;--hh-label-pull:0px}
+  .ncx-hh[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}
   /* Room for the breadcrumbs, 28px under the header, as on the other heroes. */
   .ncx-hh[data-lead]{padding-top:calc(64px + 48px + var(--hh-top))}
   .ncx-hh .hh-lead{position:absolute;top:64px;left:0;right:0;z-index:3;--crumb-top:28px;pointer-events:none}
@@ -223,8 +233,11 @@ const heroCss = `
   .ncx-hh h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(28px,3.1vw,var(--hh-h));line-height:1.12;
     letter-spacing:-.022em;color:var(--ncx-ink);margin:0;text-wrap:balance}
   .ncx-hh .hh-intro{font-size:clamp(15px,1.2vw,17px);line-height:1.7;color:var(--ncx-muted);margin:0;text-wrap:pretty}
-  .ncx-hh .hh-eyebrow{display:flex;align-items:center;gap:8px;margin:0 0 var(--hh-label-pull);
-    font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ncx-muted)}
+  /* The small label: this block's own caption tag (.hh-tag, styles.ts: crimson-tint pill, crimson-ink text), sized
+     up for the top of the hero, with the red dot. 22px under it to the title: the text column's gap plus the rest. */
+  .ncx-hh .hh-eyebrow.hh-tag{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 14px 6px 12px;
+    margin:0 0 calc(22px - var(--hh-gap));font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;
+    line-height:1.4;letter-spacing:.08em;text-transform:uppercase}
   .ncx-hh .hh-eyebrow::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
 
   /* Stacked, with or without the small label: one column, left aligned. */
@@ -232,10 +245,12 @@ const heroCss = `
   .ncx-hh .hh-body{display:flex;flex-direction:column;align-items:flex-start;gap:var(--hh-gap);max-width:var(--hh-intro-w)}
   /* Grid: the title spans both columns; the intro starts where the drawing starts. */
   .ncx-hh[data-layout="grid"] .hh-text{display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:var(--hh-gap) 20px}
-  .ncx-hh[data-layout="grid"] h1{grid-column:1 / -1}
+  .ncx-hh[data-layout="grid"] h1,.ncx-hh[data-layout="grid"] .hh-eyebrow{grid-column:1 / -1}
+  .ncx-hh[data-layout="grid"] .hh-eyebrow{justify-self:start}
   .ncx-hh[data-layout="grid"] .hh-body{grid-column:2;max-width:none}
   /* Centred: the title and the intro centred above the cards and drawing. */
   .ncx-hh[data-layout="centred"] .hh-text{align-items:center;text-align:center}
+  .ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:center}
   .ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}
   .ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}
 
@@ -248,13 +263,18 @@ const heroCss = `
     .ncx-hh[data-spacing="roomy"]{--hh-gap:20px;--hh-stage:64px}
   }
 
-  .ncx-hh .hh-cta{display:flex;flex-wrap:wrap;gap:12px}
-  .ncx-hh .hh-btn{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;display:inline-flex;align-items:center;
-    padding:11px 20px;border-radius:12px;text-decoration:none;border:1px solid transparent;transition:transform .15s ease,background .15s ease}
+  /* The buttons: 28px under the intro (the intro column's gap plus the rest), 12px apart, wrapping onto a new row
+     rather than shrinking. Pills at least 44px tall, so the tap target holds at every width. */
+  .ncx-hh .hh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:calc(28px - var(--hh-gap))}
+  .ncx-hh .hh-btn{flex:none;max-width:100%;box-sizing:border-box;min-height:44px;font-family:var(--font-display),Arial,sans-serif;
+    font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;text-align:center;
+    padding:10px 22px;border-radius:999px;text-decoration:none;border:1px solid transparent;transition:transform .15s ease,background .15s ease}
+  /* Primary: the header's Book a demo fill (#C62828, hover #A81F1F), which are these two tokens. */
   .ncx-hh .hh-btn--primary{background:var(--ncx-crimson);color:var(--ncx-on-navy)}
   .ncx-hh .hh-btn--primary:hover{background:var(--ncx-crimson-hover);transform:translateY(-1px)}
-  .ncx-hh .hh-btn--ghost{background:var(--ncx-white);color:var(--ncx-ink);border-color:var(--ncx-rule)}
-  .ncx-hh .hh-btn--ghost:hover{background:var(--ncx-paper)}
+  /* Secondary: a neutral chip, dark text. */
+  .ncx-hh .hh-btn--secondary{background:var(--ncx-rule-soft);color:var(--ncx-ink)}
+  .ncx-hh .hh-btn--secondary:hover{background:var(--ncx-rule)}
   .ncx-hh .hh-btn:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
   @media (prefers-reduced-motion:reduce){.ncx-hh .hh-btn{transition:none}}
@@ -265,6 +285,7 @@ const heroCss = `
     .ncx-hh h1{font-size:38px;line-height:1.06}
     .ncx-hh .hh-intro{font-size:19px;line-height:1.65}
     .ncx-hh[data-layout="centred"] .hh-text{align-items:flex-start;text-align:left;gap:16px}
+    .ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:flex-start;margin-bottom:6px}
     .ncx-hh[data-layout="centred"] .hh-body{align-items:flex-start;max-width:none}
     .ncx-hh[data-layout="centred"] .hh-cta{justify-content:flex-start}
     .ncx-hh[data-layout="grid"] .hh-text{grid-template-columns:minmax(0,1fr)}

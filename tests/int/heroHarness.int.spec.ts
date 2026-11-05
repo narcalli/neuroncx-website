@@ -106,10 +106,30 @@ describe('the layouts', () => {
     )
   })
 
-  it('shows the small label only in the stacked layout with a label', () => {
-    expect(render()).not.toContain('hh-eyebrow">')
-    expect(render({ textLayout: 'stack' })).not.toContain('hh-eyebrow">')
-    expect(render({ textLayout: 'stackWithLabel' })).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1 data-breaks="">')
+  it('shows the small label, as a pill above the title, in every layout when it has text', () => {
+    for (const textLayout of ['centred', 'stack', 'grid', 'stackWithLabel'] as const) {
+      expect(render({ textLayout }), textLayout).toContain('<p class="hh-eyebrow hh-tag">Agentic CRM and CX platform</p><h1 data-breaks="">')
+    }
+  })
+
+  it('shows no small label when it is empty or only spaces', () => {
+    for (const eyebrow of ['', '   ', null]) {
+      expect(render({ eyebrow, textLayout: 'centred' } as Partial<Props>)).not.toContain('class="hh-eyebrow')
+    }
+  })
+
+  it('styles the small label as the caption tag, 22px above the title, centred only in the centred layout', () => {
+    const css = render()
+    // .hh-tag (styles.ts) gives the pill, crimson-tint fill and crimson-ink text.
+    expect(css).toContain('.ncx-hh .hh-tag{background:var(--ncx-crimson-tint);color:var(--ncx-crimson-ink);border-radius:999px;')
+    expect(css).toContain('.ncx-hh .hh-eyebrow.hh-tag{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;')
+    expect(css).toContain('margin:0 0 calc(22px - var(--hh-gap))')
+    expect(css).toContain('.ncx-hh .hh-eyebrow::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}')
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:center}')
+    expect(css).toContain('.ncx-hh[data-layout="grid"] .hh-eyebrow{justify-self:start}')
+    // Below 900px the centred layout goes left, with the 16px column gap topped up to 22px.
+    const phone = css.slice(css.indexOf('@media (max-width:899.98px)'))
+    expect(phone).toContain('.ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:flex-start;margin-bottom:6px}')
   })
 
   it('sets the intro width for the stacked layouts, and the design spacing values', () => {
@@ -152,7 +172,7 @@ describe('the buttons', () => {
       ],
     })
     expect(html).toContain('<a class="hh-btn hh-btn--primary" href="/contact">Book a demo</a>')
-    expect(html).toContain('<a class="hh-btn hh-btn--ghost" href="/platform" target="_blank" rel="noopener noreferrer">See the platform</a>')
+    expect(html).toContain('<a class="hh-btn hh-btn--secondary" href="/platform" target="_blank" rel="noopener noreferrer">See the platform</a>')
     expect(html).not.toContain('No address')
     expect(
       shownButtons([
@@ -161,6 +181,35 @@ describe('the buttons', () => {
         { type: 'custom', url: '/b', label: 'B' },
       ]).map((b) => b.href),
     ).toEqual(['/', '/a'])
+  })
+
+  it('take their Style, or follow their place when it is empty: first primary, second secondary', () => {
+    const looks = (buttons: Props['buttons']) => shownButtons(buttons).map((b) => b.look)
+    expect(looks([{ type: 'custom', url: '/a', label: 'A' }, { type: 'custom', url: '/b', label: 'B' }])).toEqual(['primary', 'secondary'])
+    expect(
+      looks([
+        { type: 'custom', url: '/a', label: 'A', appearance: 'secondary' },
+        { type: 'custom', url: '/b', label: 'B', appearance: 'primary' },
+      ]),
+    ).toEqual(['secondary', 'primary'])
+    // A button with no address is not drawn, so the next one takes the first place.
+    expect(looks([{ type: 'custom', url: '', label: 'Gone' }, { type: 'custom', url: '/b', label: 'B' }])).toEqual(['primary'])
+  })
+
+  it('fill the primary with the header button crimson and the secondary as a neutral chip, both pills', () => {
+    const css = render()
+    expect(css).toContain('.ncx-hh .hh-btn--primary{background:var(--ncx-crimson);color:var(--ncx-on-navy)}')
+    expect(css).toContain('.ncx-hh .hh-btn--primary:hover{background:var(--ncx-crimson-hover);')
+    expect(css).toContain('.ncx-hh .hh-btn--secondary{background:var(--ncx-rule-soft);color:var(--ncx-ink)}')
+    expect(css).toMatch(/\.ncx-hh \.hh-btn\{flex:none;max-width:100%;box-sizing:border-box;min-height:44px;[^}]*border-radius:999px/)
+  })
+
+  it('sit 28px under the intro, 12px apart, wrapping, centred only in the centred layout', () => {
+    const css = render()
+    expect(css).toContain('.ncx-hh .hh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:calc(28px - var(--hh-gap))}')
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}')
+    const phone = css.slice(css.indexOf('@media (max-width:899.98px)'))
+    expect(phone).toContain('.ncx-hh[data-layout="centred"] .hh-cta{justify-content:flex-start}')
   })
 })
 
