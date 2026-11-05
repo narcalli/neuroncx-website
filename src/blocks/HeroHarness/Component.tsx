@@ -79,6 +79,20 @@ const DESCRIPTION_DEFAULT =
 const clamp = (n: number | null | undefined, min: number, max: number, fallback: number) =>
   typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback
 
+/** The widths the centred intro can take; 620 keeps a line near 69 characters. */
+const INTRO_MAX_WIDTHS = ['620', '720', '860'] as const
+
+/** The centred intro's max-width in px: the editor's choice, else 620. */
+export const introMaxWidth = (value: string | null | undefined): number =>
+  Number((INTRO_MAX_WIDTHS as readonly string[]).includes(value ?? '') ? value : '620')
+
+/**
+ * How fast the title shrinks with the screen (900px and wider), in vw. The
+ * design's 3.1vw, or faster for sizes over 44px, so that every size is
+ * reached by 1440px.
+ */
+export const headingSlope = (px: number): string => `${Math.max(3.1, Math.ceil((px / 14.4) * 10000) / 10000)}vw`
+
 /**
  * Hero (harness loop), from the approved design
  * (docs/reference/harness-hero-demo.html). The title (the page's one H1) and
@@ -100,6 +114,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
   headingSize,
   spacing,
   introWidth,
+  introMaxWidth: introMax,
   background,
   leading,
   ...rest
@@ -110,9 +125,12 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
   const paragraph = introText(intro)
   const shown = shownButtons(buttons)
   const cards = harnessCards(rest.cards)
+  const size = clamp(headingSize, 32, 56, 44)
   const vars = {
-    '--hh-h': `${clamp(headingSize, 32, 56, 44)}px`,
+    '--hh-h': `${size}px`,
+    '--hh-h-vw': headingSlope(size),
     '--hh-intro-w': `${clamp(introWidth, 560, 900, 720)}px`,
+    '--hh-intro-max': `${introMaxWidth(introMax)}px`,
   } as React.CSSProperties
 
   return (
@@ -135,7 +153,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       <div className="ncx-container">
         <div className="hh-text">
           {layout === 'stackWithLabel' && eyebrow ? <p className="hh-eyebrow">{eyebrow}</p> : null}
-          <h1>
+          <h1 data-breaks={lines.length > 1 ? '' : undefined}>
             {lines.map((line, i) => (
               <React.Fragment key={i}>
                 {i > 0 ? (
@@ -218,8 +236,17 @@ const heroCss = `
   .ncx-hh[data-layout="grid"] .hh-body{grid-column:2;max-width:none}
   /* Centred: the title and the intro centred above the cards and drawing. */
   .ncx-hh[data-layout="centred"] .hh-text{align-items:center;text-align:center}
-  .ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:860px}
+  .ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}
   .ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}
+
+  /* Laptops and desktops: the title reaches its set size by 1440px; a centred title with no typed break settles on
+     two balanced lines within 740px (typed breaks keep the editor's lines); roomy spacing is 20px under the title
+     and 64px above the cards and drawing. */
+  @media (min-width:900px){
+    .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
+    .ncx-hh[data-layout="centred"] h1:not([data-breaks]){max-width:740px}
+    .ncx-hh[data-spacing="roomy"]{--hh-gap:20px;--hh-stage:64px}
+  }
 
   .ncx-hh .hh-cta{display:flex;flex-wrap:wrap;gap:12px}
   .ncx-hh .hh-btn{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;display:inline-flex;align-items:center;

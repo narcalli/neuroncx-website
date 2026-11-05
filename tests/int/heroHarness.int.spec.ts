@@ -4,7 +4,16 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { drawingLabels, harnessCards, HeroHarnessBlock, headlineLines, introText, shownButtons } from '@/blocks/HeroHarness/Component'
+import {
+  drawingLabels,
+  harnessCards,
+  headingSlope,
+  HeroHarnessBlock,
+  headlineLines,
+  introMaxWidth,
+  introText,
+  shownButtons,
+} from '@/blocks/HeroHarness/Component'
 import { HEADER_EDGE_SCRIPT } from '@/blocks/HeroHarness/HeaderEdge'
 import {
   buildDrawing,
@@ -48,8 +57,9 @@ describe('the title', () => {
   it('is the one H1, with each typed line break as a desktop-only break', () => {
     const html = render()
     expect(html.match(/<h1/g)).toHaveLength(1)
-    expect(html).toContain('<h1>An agentic rethink of CRM,<br class="br"/> marketing automation and omnichannel CX.</h1>')
+    expect(html).toContain('<h1 data-breaks="">An agentic rethink of CRM,<br class="br"/> marketing automation and omnichannel CX.</h1>')
     expect(headlineLines('One\r\n\n  Two  ')).toEqual(['One', 'Two'])
+    expect(render({ headline: 'AI Harness for CRM, CX and Automations' })).toContain('<h1>AI Harness for CRM, CX and Automations</h1>')
   })
 
   it('takes its size from the CMS, capped to the allowed range', () => {
@@ -57,6 +67,24 @@ describe('the title', () => {
     expect(render({ headingSize: 52 })).toContain('--hh-h:52px')
     expect(render({ headingSize: 90 })).toContain('--hh-h:56px')
     expect(render()).toContain('font-size:clamp(28px,3.1vw,var(--hh-h))')
+  })
+
+  it('reaches its size by 1440px on laptops and desktops, keeping the 3.1vw slope up to 44px', () => {
+    expect(headingSlope(44)).toBe('3.1vw')
+    expect(headingSlope(32)).toBe('3.1vw')
+    // Rounded up, so 1440px lands on the size itself and the cap holds it there.
+    expect(headingSlope(52)).toBe('3.6112vw')
+    expect(render({ headingSize: 52 })).toContain('--hh-h-vw:3.6112vw')
+    const desktop = render().slice(render().indexOf('@media (min-width:900px)'))
+    expect(desktop).toContain('.ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}')
+    // Line height and letter spacing stay the design's at every size.
+    expect(render()).toContain('line-height:1.12;\n    letter-spacing:-.022em')
+  })
+
+  it('settles a centred title with no typed break on balanced lines within 740px', () => {
+    const desktop = render().slice(render().indexOf('@media (min-width:900px)'))
+    expect(desktop).toContain('.ncx-hh[data-layout="centred"] h1:not([data-breaks]){max-width:740px}')
+    expect(render()).toContain('text-wrap:balance')
   })
 })
 
@@ -81,7 +109,7 @@ describe('the layouts', () => {
   it('shows the small label only in the stacked layout with a label', () => {
     expect(render()).not.toContain('hh-eyebrow">')
     expect(render({ textLayout: 'stack' })).not.toContain('hh-eyebrow">')
-    expect(render({ textLayout: 'stackWithLabel' })).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1>')
+    expect(render({ textLayout: 'stackWithLabel' })).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1 data-breaks="">')
   })
 
   it('sets the intro width for the stacked layouts, and the design spacing values', () => {
@@ -92,9 +120,24 @@ describe('the layouts', () => {
     expect(css).toContain('grid-template-columns:minmax(0,35fr) minmax(0,65fr)')
     // Grid: the intro fills its column, so it ends where the drawing panel ends.
     expect(css).toContain('[data-layout="grid"] .hh-body{grid-column:2;max-width:none}')
-    // Centred: title and intro centred, the intro at most 860px, the same gaps.
+    // Centred: title and intro centred, the intro as wide as the editor chose.
     expect(css).toContain('[data-layout="centred"] .hh-text{align-items:center;text-align:center}')
-    expect(css).toContain('[data-layout="centred"] .hh-body{align-items:center;max-width:860px}')
+    expect(css).toContain('[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}')
+  })
+
+  it('gives the centred intro 620, 720 or 860px, 620 when unset or unknown', () => {
+    expect(introMaxWidth('720')).toBe(720)
+    expect(introMaxWidth('860')).toBe(860)
+    expect(introMaxWidth(null)).toBe(620)
+    expect(introMaxWidth('900')).toBe(620)
+    expect(render({ introMaxWidth: '860' })).toContain('--hh-intro-max:860px')
+    expect(render()).toContain('--hh-intro-max:620px')
+  })
+
+  it('spaces roomy text 20px under the title and 64px above the cards and drawing, from 900px', () => {
+    const desktop = render().slice(render().indexOf('@media (min-width:900px)'))
+    expect(desktop).toContain('.ncx-hh[data-spacing="roomy"]{--hh-gap:20px;--hh-stage:64px}')
+    expect(desktop.indexOf('[data-spacing="roomy"]')).toBeLessThan(desktop.indexOf('@media (max-width:899.98px)'))
   })
 })
 
