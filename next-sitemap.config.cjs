@@ -1,35 +1,29 @@
-// The public site address for robots.txt and the sitemap. localhost only while
-// developing; a production build without NEXT_PUBLIC_SERVER_URL warns and uses
-// a placeholder that clearly is not the site.
-const isDev = process.env.NODE_ENV === 'development'
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-  (isDev ? 'http://localhost:3000' : 'https://example.com')
+// robots.txt and the sitemap index use the same address as the rest of the site.
+// siteUrl() stops the build when it is missing.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { siteUrl } = require('./scripts/site-url.cjs')
 
-if (!process.env.NEXT_PUBLIC_SERVER_URL && !process.env.VERCEL_PROJECT_PRODUCTION_URL && !isDev) {
-  console.warn(
-    '\n[site URL] NEXT_PUBLIC_SERVER_URL is not set, so robots.txt and the sitemap use https://example.com. Set it to the public site address.\n',
-  )
-}
+const SITE_URL = siteUrl()
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: SITE_URL,
   generateRobotsTxt: true,
-  exclude: ['/posts-sitemap.xml', '/pages-sitemap.xml', '/*', '/posts/*'],
+  exclude: ['/pages-sitemap.xml', '/*', '/posts/*'],
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
-        disallow: '/admin/*',
+        // Preview and API addresses are never pages. /og (the share card) stays open for social sites.
+        disallow: ['/admin/*', '/next/', '/api/'],
       },
     ],
     additionalSitemaps: [
       `${SITE_URL}/pages-sitemap.xml`,
-      `${SITE_URL}/posts-sitemap.xml`,
       // Content collection entry pages and hubs (src/app/(frontend)/content-sitemap.xml).
       `${SITE_URL}/content-sitemap.xml`,
     ],
+    // The generator always writes a Host line, which search engines no longer use.
+    transformRobotsTxt: async (_, robotsTxt) => robotsTxt.replace(/# Host\r?\nHost: .*\r?\n\r?\n?/, ''),
   },
 }
