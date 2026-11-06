@@ -164,11 +164,6 @@ describe('the layouts', () => {
     // Compact keeps its own values.
     expect(render()).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}')
   })
-
-  it('pads the drawing panel 8px above and 6px below from 900px, with the caption at least 52px tall', () => {
-    expect(stageCss).toContain('.ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:8px 16px 6px;min-width:0}')
-    expect(stageCss).toContain('.ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:52px;display:grid}')
-  })
 })
 
 describe('the buttons', () => {

@@ -34,7 +34,7 @@ export const stageCss = `
   .ncx-hh .hh-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* The drawing panel. */
-  .ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:8px 16px 6px;min-width:0}
+  .ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:12px 16px 10px;min-width:0}
   .ncx-hh .hh-panel:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
   .ncx-hh .hh-draw{position:relative;container:hhdraw / inline-size}
   /* The status line: a small dot, then the step. The dot keeps the row's height while there is no text yet. */
@@ -78,7 +78,7 @@ export const stageCss = `
     .ncx-hh .hh-draw:is([data-status="corner"],:not([data-status])) .hh-status-dot{margin-top:3.6px}}
 
   /* The caption: the selected card's explanation and the lit parts. */
-  .ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:52px;display:grid}
+  .ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:62px;display:grid}
   .ncx-hh .hh-cap{grid-area:1 / 1;display:flex;flex-direction:column;gap:6px;visibility:hidden}
   .ncx-hh .hh-cap[data-on]{visibility:visible}
   .ncx-hh .hh-cap-body{margin:0;font-size:14px;line-height:1.5;color:var(--ncx-body)}
