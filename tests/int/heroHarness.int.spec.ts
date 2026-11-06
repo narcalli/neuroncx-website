@@ -172,6 +172,33 @@ describe('the layouts', () => {
   })
 })
 
+describe('the frame', () => {
+  it('marks the hero plain by default, or framed', () => {
+    expect(render()).toMatch(/<section class="ncx-hh"[^>]* data-frame="plain"/)
+    expect(render({ frame: 'framed' })).toMatch(/<section class="ncx-hh"[^>]* data-frame="framed"/)
+    expect(render({ frame: null } as unknown as Partial<Props>)).toContain('data-frame="plain"')
+  })
+
+  it('framed: one panel round the cards and the drawing, the raised surface and a hairline, no shadow', () => {
+    expect(stageCss).toContain(
+      '.ncx-hh[data-frame="framed"] .hh-stage{background:var(--ncx-raised);border:1px solid var(--ncx-rule-strong);\n    border-radius:var(--ncx-r-section);padding:12px}',
+    )
+    expect(stageCss).not.toMatch(/data-frame="framed"\][^{]*\{[^}]*box-shadow/)
+    // The drawing panel's own edge goes inside it; the cards keep theirs.
+    expect(stageCss).toContain('.ncx-hh[data-frame="framed"] .hh-panel{border:0;border-radius:0;padding:0}')
+    expect(stageCss).not.toMatch(/data-frame="framed"\] \.hh-card/)
+    // Phones: the same panel, padded 12px.
+    const phone = stageCss.slice(stageCss.indexOf('@media (max-width:899.98px)'))
+    expect(phone).toContain('.ncx-hh[data-frame="framed"] .hh-stage{padding:12px}')
+  })
+
+  it('rounds the cards and the drawing panel with the shared radius tokens', () => {
+    expect(stageCss).toContain('border-radius:var(--ncx-r-card);padding:11px 14px 13px;')
+    expect(stageCss).toContain('border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);padding:12px 16px 10px;min-width:0}')
+    expect(stageCss).not.toMatch(/border-radius:(12|20)px/)
+  })
+})
+
 describe('the buttons', () => {
   it('draw none by default, and only those with a label and an address, up to two', () => {
     expect(render()).not.toContain('class="hh-cta"')

@@ -19,7 +19,7 @@ export const stageCss = `
   .ncx-hh .hh-cards{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
   .ncx-hh .hh-stage[data-cards="above"] .hh-cards{display:grid;grid-template-columns:repeat(var(--hh-cards),minmax(0,1fr));gap:8px}
   .ncx-hh .hh-card{position:relative;overflow:hidden;text-align:left;cursor:pointer;background:transparent;border:1px solid var(--ncx-rule);
-    border-radius:12px;padding:11px 14px 13px;display:flex;flex-direction:column;gap:6px;color:inherit;font:inherit;
+    border-radius:var(--ncx-r-card);padding:11px 14px 13px;display:flex;flex-direction:column;gap:6px;color:inherit;font:inherit;
     transition:background .25s,border-color .25s,box-shadow .25s}
   .ncx-hh .hh-card:hover{background:var(--ncx-white)}
   .ncx-hh .hh-card[aria-selected="true"]{background:var(--ncx-white);border-color:var(--ncx-wire);box-shadow:var(--ncx-shadow)}
@@ -34,7 +34,14 @@ export const stageCss = `
   .ncx-hh .hh-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* The drawing panel. */
-  .ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:12px 16px 10px;min-width:0}
+  .ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);padding:12px 16px 10px;min-width:0}
+  /* Framed (data-frame on .ncx-hh): the stage is the one bordered panel round the cards and the drawing. The raised
+     surface and a hairline, no shadow (globals.css: elevation comes from the raised surface and the hairline). The
+     drawing panel drops its own border, radius and padding inside it, so the edges do not double up; the cards keep
+     their own borders. */
+  .ncx-hh[data-frame="framed"] .hh-stage{background:var(--ncx-raised);border:1px solid var(--ncx-rule-strong);
+    border-radius:var(--ncx-r-section);padding:12px}
+  .ncx-hh[data-frame="framed"] .hh-panel{border:0;border-radius:0;padding:0}
   .ncx-hh .hh-panel:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
   .ncx-hh .hh-draw{position:relative;container:hhdraw / inline-size}
   /* The status line: a small dot, then the step. The dot keeps the row's height while there is no text yet. */
@@ -156,5 +163,7 @@ export const stageCss = `
     .ncx-hh .hh-cards,.ncx-hh .hh-stage[data-cards="above"] .hh-cards{order:2;display:flex;flex-direction:row;overflow-x:auto;
       scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
     .ncx-hh .hh-card{flex:0 0 min(70%,250px);scroll-snap-align:start}
+    /* Framed: the drawing first and the cards beneath, inside the one border, padded 12px. */
+    .ncx-hh[data-frame="framed"] .hh-stage{padding:12px}
   }
 `

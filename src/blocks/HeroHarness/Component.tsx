@@ -150,6 +150,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       data-spacing={spacing || 'roomy'}
       data-bg={background || 'cloud'}
       data-width={width}
+      data-frame={rest.frame === 'framed' ? 'framed' : 'plain'}
       data-lead={leading ? '' : undefined}
       style={vars}
     >
