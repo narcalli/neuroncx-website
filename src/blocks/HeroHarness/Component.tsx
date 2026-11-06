@@ -89,8 +89,8 @@ const DESCRIPTION_DEFAULT =
 const clamp = (n: number | null | undefined, min: number, max: number, fallback: number) =>
   typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback
 
-/** The widths the centred intro can take; 620 keeps a line near 69 characters. */
-const INTRO_MAX_WIDTHS = ['620', '720', '860'] as const
+/** The widths the centred intro can take; 620 keeps a line near 69 characters, 1020 is the widest on purpose. */
+const INTRO_MAX_WIDTHS = ['620', '720', '860', '1020'] as const
 
 /** The centred intro's max-width in px: the editor's choice, else 620. */
 export const introMaxWidth = (value: string | null | undefined): number =>
@@ -259,12 +259,11 @@ const heroCss = `
 
   /* Laptops and desktops: the title reaches its set size by 1440px. Its width is the site column's, and text-wrap:balance
      splits a title that needs more than one line into even lines; a typed break still sets the split by hand. Roomy
-     spacing is 20px under the title and 40px above the cards and drawing (32px when framed: the frame's border does
-     the separating), with up to 20px less space above the text. */
+     spacing is 20px under the title and 40px above the cards and drawing, framed or not, with up to 20px less space
+     above the text. */
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
     .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
-    .ncx-hh[data-frame="framed"][data-spacing="roomy"]{--hh-stage:32px}
   }
 
   /* The buttons: 28px under the intro (the intro column's gap plus the rest), 12px apart, wrapping onto a new row

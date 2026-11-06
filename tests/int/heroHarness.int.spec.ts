@@ -154,12 +154,15 @@ describe('the layouts', () => {
     expect(css).toContain('[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}')
   })
 
-  it('gives the centred intro 620, 720 or 860px, 620 when unset or unknown', () => {
+  it('gives the centred intro 620, 720, 860 or 1020px, 620 when unset or unknown', () => {
     expect(introMaxWidth('720')).toBe(720)
     expect(introMaxWidth('860')).toBe(860)
+    expect(introMaxWidth('1020')).toBe(1020)
     expect(introMaxWidth(null)).toBe(620)
     expect(introMaxWidth('900')).toBe(620)
+    expect(introMaxWidth('960')).toBe(620)
     expect(render({ introMaxWidth: '860' })).toContain('--hh-intro-max:860px')
+    expect(render({ introMaxWidth: '1020' })).toContain('--hh-intro-max:1020px')
     expect(render()).toContain('--hh-intro-max:620px')
   })
 
@@ -192,14 +195,10 @@ describe('the frame', () => {
     expect(phone).toContain('.ncx-hh[data-frame="framed"] .hh-stage{padding:12px}')
   })
 
-  it('framed: 32px above the stage from 900px with roomy spacing, as the border does the separating', () => {
-    const css = render()
-    const desktop = css.slice(css.indexOf('@media (min-width:900px)'), css.indexOf('@media (max-width:899.98px)'))
-    expect(desktop).toContain('.ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}')
-    expect(desktop).toContain('.ncx-hh[data-frame="framed"][data-spacing="roomy"]{--hh-stage:32px}')
-    // Compact and phones keep their own values.
-    expect(css).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}')
-    expect(css.split('[data-frame="framed"][data-spacing="roomy"]')).toHaveLength(2)
+  it('keeps the same 40px above the stage, framed or not', () => {
+    const css = render({ frame: 'framed' })
+    expect(css).toContain('.ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}')
+    expect(css).not.toContain('[data-frame="framed"][data-spacing="roomy"]')
   })
 
   it('rounds the cards and the drawing panel with the shared radius tokens', () => {
