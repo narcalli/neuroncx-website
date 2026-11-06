@@ -13,6 +13,7 @@ import {
   introMaxWidth,
   introText,
   shownButtons,
+  textBlockOf,
 } from '@/blocks/HeroHarness/Component'
 import { HEADER_EDGE_SCRIPT } from '@/blocks/HeroHarness/HeaderEdge'
 import {
@@ -172,6 +173,55 @@ describe('the layouts', () => {
     expect(desktop.indexOf('[data-spacing="roomy"]')).toBeLessThan(desktop.indexOf('@media (max-width:899.98px)'))
     // Compact keeps its own values.
     expect(render()).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}')
+  })
+})
+
+describe('the text block', () => {
+  const TEXT_BLOCKS = ['centred', 'leftCentred', 'leftStage'] as const
+  const desktop = (css: string) => css.slice(css.indexOf('@media (min-width:900px)'), css.indexOf('@media (max-width:899.98px)'))
+
+  it('marks the hero centred by default, or left with the block centred, or left on the stage edge', () => {
+    expect(render()).toMatch(/<section class="ncx-hh"[^>]* data-textblock="centred"/)
+    for (const textBlock of TEXT_BLOCKS) {
+      expect(render({ textLayout: 'centred', textBlock }), textBlock).toContain(`data-textblock="${textBlock}"`)
+    }
+    expect(textBlockOf(null)).toBe('centred')
+    expect(textBlockOf(undefined)).toBe('centred')
+    expect(textBlockOf('left')).toBe('centred')
+  })
+
+  it('keeps every centred rule as it was', () => {
+    const css = render()
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-text{align-items:center;text-align:center}')
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:center}')
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}')
+    expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}')
+    expect(css).not.toContain('[data-textblock="centred"]')
+  })
+
+  it('left aligns the chip, title, intro and buttons in both left values, centred layout only, from 900px', () => {
+    const css = desktop(render())
+    const both = '.ncx-hh[data-layout="centred"]:is([data-textblock="leftCentred"],[data-textblock="leftStage"])'
+    expect(css).toContain(`${both} .hh-text{align-items:flex-start;text-align:left}`)
+    expect(css).toContain(`${both} .hh-eyebrow{align-self:flex-start}`)
+    expect(css).toContain(`${both} .hh-body{align-items:flex-start}`)
+    expect(css).toContain(`${both} .hh-cta{justify-content:flex-start}`)
+    // Left, block centred: the block as wide as its widest child, centred. On the stage edge: no width of its own.
+    expect(css).toContain('.ncx-hh[data-layout="centred"][data-textblock="leftCentred"] .hh-text{width:fit-content;max-width:100%;margin-inline:auto}')
+    expect(css).not.toMatch(/data-textblock="leftStage"\] \.hh-text\{[^}]*width/)
+    // Below 900px nothing reads the text block: all three stay left aligned and full width.
+    expect(render().slice(render().indexOf('@media (max-width:899.98px)'))).not.toContain('data-textblock')
+  })
+
+  it('draws the cards beside or above the drawing, plain or framed, with each value', () => {
+    for (const textBlock of TEXT_BLOCKS) for (const cardsPosition of ['left', 'above'] as const) for (const frame of ['plain', 'framed'] as const) {
+      const out = render({ textLayout: 'centred', textBlock, cardsPosition, frame, cards: CARDS })
+      const name = `${textBlock} ${cardsPosition} ${frame}`
+      expect(out, name).toMatch(new RegExp(`<section class="ncx-hh"[^>]* data-frame="${frame}" data-textblock="${textBlock}"`))
+      expect(out, name).toContain(`data-cards="${cardsPosition}"`)
+      expect(out, name).toContain('class="hh-stage"')
+      expect(out, name).toContain('<h1>')
+    }
   })
 })
 

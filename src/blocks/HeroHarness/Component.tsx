@@ -96,6 +96,10 @@ const INTRO_MAX_WIDTHS = ['620', '720', '860', '1020'] as const
 export const introMaxWidth = (value: string | null | undefined): number =>
   Number((INTRO_MAX_WIDTHS as readonly string[]).includes(value ?? '') ? value : '620')
 
+/** Where the centred layout's text sits: every line centred (the default), or left aligned in one of two places. */
+export const textBlockOf = (value: string | null | undefined): 'centred' | 'leftCentred' | 'leftStage' =>
+  value === 'leftCentred' || value === 'leftStage' ? value : 'centred'
+
 /**
  * How fast the title shrinks with the screen (900px and wider), in vw. The
  * design's 3.1vw, or faster for sizes over 44px, so that every size is
@@ -117,6 +121,7 @@ export const headingSlope = (px: number): string => `${Math.max(3.1, Math.ceil((
  */
 export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.ReactNode }> = ({
   textLayout,
+  textBlock,
   eyebrow,
   headline,
   intro,
@@ -151,6 +156,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       data-bg={background || 'cloud'}
       data-width={width}
       data-frame={rest.frame === 'framed' ? 'framed' : 'plain'}
+      data-textblock={textBlockOf(textBlock)}
       data-lead={leading ? '' : undefined}
       style={vars}
     >
@@ -264,6 +270,14 @@ const heroCss = `
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
     .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
+    /* Centred layout, text block left: the chip, title, intro and buttons all start on one left edge. Left, block
+       centred sizes the block to its widest child and centres it; left, on the stage edge starts it where the cards
+       and drawing start. Below 900px every centred hero is left aligned and full width already. */
+    .ncx-hh[data-layout="centred"]:is([data-textblock="leftCentred"],[data-textblock="leftStage"]) .hh-text{align-items:flex-start;text-align:left}
+    .ncx-hh[data-layout="centred"]:is([data-textblock="leftCentred"],[data-textblock="leftStage"]) .hh-eyebrow{align-self:flex-start}
+    .ncx-hh[data-layout="centred"]:is([data-textblock="leftCentred"],[data-textblock="leftStage"]) .hh-body{align-items:flex-start}
+    .ncx-hh[data-layout="centred"]:is([data-textblock="leftCentred"],[data-textblock="leftStage"]) .hh-cta{justify-content:flex-start}
+    .ncx-hh[data-layout="centred"][data-textblock="leftCentred"] .hh-text{width:fit-content;max-width:100%;margin-inline:auto}
   }
 
   /* The buttons: 28px under the intro (the intro column's gap plus the rest), 12px apart, wrapping onto a new row
