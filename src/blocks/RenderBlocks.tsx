@@ -34,6 +34,7 @@ import { RecordAnatomyBlock } from '@/blocks/RecordAnatomy/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
+import { ExpandingCardCtaBlock } from '@/blocks/ExpandingCardCta/Component'
 import { HowItWorksBlock } from '@/blocks/HowItWorks/Component'
 import { HowItWorks2Block } from '@/blocks/HowItWorks2/Component'
 import { LogoWallBlock } from '@/blocks/LogoWall/Component'
@@ -77,6 +78,7 @@ const blockComponents = {
   benefits: BenefitsBlock,
   bentoGrid: BentoGrid,
   closingCta: ClosingCtaBlock,
+  expandingCardCta: ExpandingCardCtaBlock,
   contactForm: ContactFormBlock,
   content: ContentBlock,
   conversationHero: ConversationHeroBlock,
@@ -135,6 +137,7 @@ const noMargin = [
   'heroWorkforceGrid',
   'statHero',
   'closingCta',
+  'expandingCardCta',
   'useCases',
   'comparisonTable',
   'clusterLinks',

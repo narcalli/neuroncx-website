@@ -35,7 +35,7 @@ export async function Footer() {
   return (
     <footer className="ncx-footer">
       <style>{`
-        .ncx-footer{background:#16203A;color:#fff;margin-top:auto;
+        .ncx-footer{background:var(--ncx-navy);color:#fff;margin-top:auto;
           font-family:var(--font-body),Arial,sans-serif}
         .ncx-footer .inner{padding-block:64px 36px}
         .ncx-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}

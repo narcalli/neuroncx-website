@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { BlockWrapper } from '@/blocks/BlockWrapper'
+import { isClosingCta } from '@/blocks/closingSlot'
 import { FAQBlock } from '@/blocks/FAQ/Component'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import {
@@ -61,7 +62,7 @@ export type SectionContext = {
 }
 
 /** Whether a layout row ends the page: the closing panel section or a closing call to action block. */
-export const endsPage = (blockType: unknown): boolean => blockType === 'closingSection' || blockType === 'closingCta'
+export const endsPage = (blockType: unknown): boolean => blockType === 'closingSection' || isClosingCta(blockType)
 
 type Block = { blockType?: string | null; heading?: string | null; id?: string | null } & Record<
   string,

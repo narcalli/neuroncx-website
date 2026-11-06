@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
+import { isClosingCta } from '@/blocks/closingSlot'
 import { ClusterFooter } from '@/components/ClusterFooter'
 import type { Crumb } from '@/components/Breadcrumbs'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -195,7 +196,7 @@ export const IndustryEntryPage = ({
   const groupName = collection === 'industryTopics' ? (industryOf(entry as IndustryTopic)?.name ?? null) : null
 
   // A closing call to action block in the layout is the page's closing panel.
-  const ctaBlock = rows.some((b) => b.blockType === 'closingCta')
+  const ctaBlock = rows.some((b) => isClosingCta(b.blockType))
   const closing =
     showsClosing(entry) && !ctaBlock ? (
       <ClosingCtaBlock

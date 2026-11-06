@@ -22,6 +22,7 @@ const flushFirstBlocks = [
   'heroWorkforceGrid',
   'statHero',
   'closingCta',
+  'expandingCardCta',
   'agenticHero',
   'integrationsLanding',
 ]
@@ -47,6 +48,10 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const firstBlock = Array.isArray(layout) ? layout.find((b: any) => b && !b.hidden) : undefined
   const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
+  // A full-bleed navy closing panel meets the navy footer with no page padding between them.
+  // A hidden block never renders, so the last block is the last one shown.
+  const lastBlock = Array.isArray(layout) ? [...layout].reverse().find((b: any) => b && !b.hidden) : undefined
+  const endsFlush = String(lastBlock?.blockType ?? '') === 'expandingCardCta'
 
   // With no hero, a contact form that opens the page carries its one H1, and
   // so does a legal document, as the page title.
@@ -70,7 +75,7 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
 
   return (
     <MotionPage page={page.pageMotion}>
-      <article className={startsFlush ? 'pb-24' : 'pt-16 pb-24'}>
+      <article className={[startsFlush ? '' : 'pt-16', endsFlush ? '' : 'pb-24'].filter(Boolean).join(' ') || undefined}>
         {/* Allows redirects for valid pages too */}
         <PayloadRedirects disableNotFound url={url} />
 
