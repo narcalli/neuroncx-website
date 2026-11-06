@@ -108,7 +108,7 @@ describe('the layouts', () => {
 
   it('shows the small label, as a pill above the title, in every layout when it has text', () => {
     for (const textLayout of ['centred', 'stack', 'grid', 'stackWithLabel'] as const) {
-      expect(render({ textLayout }), textLayout).toContain('<p class="hh-eyebrow hh-tag">Agentic CRM and CX platform</p><h1 data-breaks="">')
+      expect(render({ textLayout }), textLayout).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1 data-breaks="">')
     }
   })
 
@@ -118,12 +118,15 @@ describe('the layouts', () => {
     }
   })
 
-  it('styles the small label as the caption tag, 22px above the title, centred only in the centred layout', () => {
+  it('styles the small label as its own neutral chip, 22px above the title, centred only in the centred layout', () => {
     const css = render()
-    // .hh-tag (styles.ts) gives the pill, crimson-tint fill and crimson-ink text.
-    expect(css).toContain('.ncx-hh .hh-tag{background:var(--ncx-crimson-tint);color:var(--ncx-crimson-ink);border-radius:999px;')
-    expect(css).toContain('.ncx-hh .hh-eyebrow.hh-tag{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;')
-    expect(css).toContain('margin:0 0 calc(22px - var(--hh-gap))')
+    // Its own class, modelled on Hero (custom CSS)'s chips: pill, white fill, rule border, dark text, small uppercase.
+    expect(css).toContain(
+      '.ncx-hh .hh-eyebrow{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 12px;\n    margin:0 0 calc(22px - var(--hh-gap));border:1px solid var(--ncx-rule);border-radius:999px;background:var(--ncx-white);\n    color:var(--ncx-ink);font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;\n    line-height:1.4;letter-spacing:.08em;text-transform:uppercase}',
+    )
+    // Not the drawing caption's tag, which keeps its crimson tint.
+    expect(render()).not.toContain('class="hh-eyebrow hh-tag"')
+    expect(css).not.toContain('.hh-eyebrow.hh-tag')
     expect(css).toContain('.ncx-hh .hh-eyebrow::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}')
     expect(css).toContain('.ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:center}')
     expect(css).toContain('.ncx-hh[data-layout="grid"] .hh-eyebrow{justify-self:start}')
@@ -154,10 +157,17 @@ describe('the layouts', () => {
     expect(render()).toContain('--hh-intro-max:620px')
   })
 
-  it('spaces roomy text 20px under the title and 64px above the cards and drawing, from 900px', () => {
+  it('spaces roomy text 20px under the title and 40px above the cards and drawing, with up to 20px less above, from 900px', () => {
     const desktop = render().slice(render().indexOf('@media (min-width:900px)'))
-    expect(desktop).toContain('.ncx-hh[data-spacing="roomy"]{--hh-gap:20px;--hh-stage:64px}')
+    expect(desktop).toContain('.ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}')
     expect(desktop.indexOf('[data-spacing="roomy"]')).toBeLessThan(desktop.indexOf('@media (max-width:899.98px)'))
+    // Compact keeps its own values.
+    expect(render()).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}')
+  })
+
+  it('pads the drawing panel 8px above and 6px below from 900px, with the caption at least 52px tall', () => {
+    expect(stageCss).toContain('.ncx-hh .hh-panel{position:relative;background:var(--ncx-white);border:1px solid var(--ncx-rule);border-radius:20px;padding:8px 16px 6px;min-width:0}')
+    expect(stageCss).toContain('.ncx-hh .hh-caption{border-top:1px solid var(--ncx-rule-soft);margin-top:6px;padding-top:9px;min-height:52px;display:grid}')
   })
 })
 

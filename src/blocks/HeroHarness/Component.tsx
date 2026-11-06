@@ -162,7 +162,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       ) : null}
       <div className="ncx-container">
         <div className="hh-text">
-          {eyebrow?.trim() ? <p className="hh-eyebrow hh-tag">{eyebrow.trim()}</p> : null}
+          {eyebrow?.trim() ? <p className="hh-eyebrow">{eyebrow.trim()}</p> : null}
           <h1 data-breaks={lines.length > 1 ? '' : undefined}>
             {lines.map((line, i) => (
               <React.Fragment key={i}>
@@ -233,10 +233,12 @@ const heroCss = `
   .ncx-hh h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(28px,3.1vw,var(--hh-h));line-height:1.12;
     letter-spacing:-.022em;color:var(--ncx-ink);margin:0;text-wrap:balance}
   .ncx-hh .hh-intro{font-size:clamp(15px,1.2vw,17px);line-height:1.7;color:var(--ncx-muted);margin:0;text-wrap:pretty}
-  /* The small label: this block's own caption tag (.hh-tag, styles.ts: crimson-tint pill, crimson-ink text), sized
-     up for the top of the hero, with the red dot. 22px under it to the title: the text column's gap plus the rest. */
-  .ncx-hh .hh-eyebrow.hh-tag{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 14px 6px 12px;
-    margin:0 0 calc(22px - var(--hh-gap));font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;
+  /* The small label: a neutral chip, as Hero (custom CSS)'s chips (.hcx-chips li): pill, white fill, 1px rule border,
+     dark text, here in small uppercase with the red dot. Its own class: the drawing caption's tags (.hh-tag) are separate.
+     22px under it to the title: the text column's gap plus the rest. */
+  .ncx-hh .hh-eyebrow{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 12px;
+    margin:0 0 calc(22px - var(--hh-gap));border:1px solid var(--ncx-rule);border-radius:999px;background:var(--ncx-white);
+    color:var(--ncx-ink);font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:12.5px;
     line-height:1.4;letter-spacing:.08em;text-transform:uppercase}
   .ncx-hh .hh-eyebrow::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
 
@@ -256,11 +258,11 @@ const heroCss = `
 
   /* Laptops and desktops: the title reaches its set size by 1440px; a centred title with no typed break settles on
      two balanced lines within 740px (typed breaks keep the editor's lines); roomy spacing is 20px under the title
-     and 64px above the cards and drawing. */
+     and 40px above the cards and drawing, with up to 20px less space above the text. */
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
     .ncx-hh[data-layout="centred"] h1:not([data-breaks]){max-width:740px}
-    .ncx-hh[data-spacing="roomy"]{--hh-gap:20px;--hh-stage:64px}
+    .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
   }
 
   /* The buttons: 28px under the intro (the intro column's gap plus the rest), 12px apart, wrapping onto a new row
