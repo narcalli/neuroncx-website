@@ -163,7 +163,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       <div className="ncx-container">
         <div className="hh-text">
           {eyebrow?.trim() ? <p className="hh-eyebrow">{eyebrow.trim()}</p> : null}
-          <h1 data-breaks={lines.length > 1 ? '' : undefined}>
+          <h1>
             {lines.map((line, i) => (
               <React.Fragment key={i}>
                 {i > 0 ? (
@@ -256,12 +256,11 @@ const heroCss = `
   .ncx-hh[data-layout="centred"] .hh-body{align-items:center;max-width:var(--hh-intro-max)}
   .ncx-hh[data-layout="centred"] .hh-cta{justify-content:center}
 
-  /* Laptops and desktops: the title reaches its set size by 1440px; a centred title with no typed break settles on
-     two balanced lines within 740px (typed breaks keep the editor's lines); roomy spacing is 20px under the title
-     and 40px above the cards and drawing, with up to 20px less space above the text. */
+  /* Laptops and desktops: the title reaches its set size by 1440px. Its width is the site column's, and text-wrap:balance
+     splits a title that needs more than one line into even lines; a typed break still sets the split by hand. Roomy
+     spacing is 20px under the title and 40px above the cards and drawing, with up to 20px less space above the text. */
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
-    .ncx-hh[data-layout="centred"] h1:not([data-breaks]){max-width:740px}
     .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
   }
 

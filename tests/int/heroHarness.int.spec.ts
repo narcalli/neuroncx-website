@@ -57,7 +57,7 @@ describe('the title', () => {
   it('is the one H1, with each typed line break as a desktop-only break', () => {
     const html = render()
     expect(html.match(/<h1/g)).toHaveLength(1)
-    expect(html).toContain('<h1 data-breaks="">An agentic rethink of CRM,<br class="br"/> marketing automation and omnichannel CX.</h1>')
+    expect(html).toContain('<h1>An agentic rethink of CRM,<br class="br"/> marketing automation and omnichannel CX.</h1>')
     expect(headlineLines('One\r\n\n  Two  ')).toEqual(['One', 'Two'])
     expect(render({ headline: 'AI Harness for CRM, CX and Automations' })).toContain('<h1>AI Harness for CRM, CX and Automations</h1>')
   })
@@ -81,10 +81,16 @@ describe('the title', () => {
     expect(render()).toContain('line-height:1.12;\n    letter-spacing:-.022em')
   })
 
-  it('settles a centred title with no typed break on balanced lines within 740px', () => {
-    const desktop = render().slice(render().indexOf('@media (min-width:900px)'))
-    expect(desktop).toContain('.ncx-hh[data-layout="centred"] h1:not([data-breaks]){max-width:740px}')
-    expect(render()).toContain('text-wrap:balance')
+  it('runs as wide as the site column, with text-wrap:balance splitting a long title into even lines', () => {
+    const css = render()
+    expect(css).toContain('text-wrap:balance')
+    // No cap of its own on the title: only the column limits it.
+    expect(css).not.toContain('740px')
+    expect(css).not.toMatch(/h1[^{]*\{[^}]*max-width/)
+    // A typed break still sets the split by hand, on laptops and desktops only.
+    expect(render({ headline: 'One\nTwo' })).toContain('<h1>One<br class="br"/> Two</h1>')
+    const phone = css.slice(css.indexOf('@media (max-width:899.98px)'))
+    expect(phone).toContain('.ncx-hh h1 .br{display:none}')
   })
 })
 
@@ -108,7 +114,7 @@ describe('the layouts', () => {
 
   it('shows the small label, as a pill above the title, in every layout when it has text', () => {
     for (const textLayout of ['centred', 'stack', 'grid', 'stackWithLabel'] as const) {
-      expect(render({ textLayout }), textLayout).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1 data-breaks="">')
+      expect(render({ textLayout }), textLayout).toContain('<p class="hh-eyebrow">Agentic CRM and CX platform</p><h1>')
     }
   })
 
