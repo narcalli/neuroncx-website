@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import {
+  buttonHref,
   drawingLabels,
   harnessCards,
   headingSlope,
@@ -278,6 +279,19 @@ describe('the buttons', () => {
         { type: 'custom', url: '/b', label: 'B' },
       ]).map((b) => b.href),
     ).toEqual(['/', '/a'])
+  })
+
+  it('jump to a section on this page by its Anchor ID, never in a new tab', () => {
+    const html = render({
+      buttons: [
+        { type: 'custom', url: '/contact', label: 'Book a demo' },
+        { type: 'section', section: 'how-it-works', label: 'See how it works', newTab: true },
+      ],
+    })
+    expect(html).toContain('<a class="hh-btn hh-btn--secondary" href="#how-it-works">See how it works</a>')
+    expect(buttonHref({ type: 'section', section: 'how it works' })).toBe('#how%20it%20works')
+    // No section chosen: nowhere to go, so the button is not drawn.
+    expect(shownButtons([{ type: 'section', section: null, label: 'Nowhere' }])).toEqual([])
   })
 
   it('take their Style, or follow their place when it is empty: first primary, second secondary', () => {

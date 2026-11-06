@@ -28,13 +28,20 @@ export const introText = (intro: string | null | undefined): string =>
 type Look = 'primary' | 'secondary'
 
 /**
+ * A button's address. "Section on this page" jumps to the block whose Anchor ID it names: BlockWrapper gives that
+ * block the ID as its HTML id, and 96px of scroll margin for the header. The other types follow Hero (custom CSS).
+ */
+export const buttonHref = (b: Button): string | null =>
+  b.type === 'section' ? (b.section ? `#${encodeURIComponent(b.section)}` : null) : hrefOf(b as Parameters<typeof hrefOf>[0])
+
+/**
  * The buttons that can be drawn: a label and somewhere to go, each with its
  * look. A button's own Style wins; left empty, the first drawn is primary and
  * the second secondary.
  */
 export const shownButtons = (buttons: HeroHarnessProps['buttons']): (Button & { href: string; look: Look })[] =>
   (buttons ?? [])
-    .map((b) => ({ ...b, href: hrefOf(b) ?? '' }))
+    .map((b) => ({ ...b, href: buttonHref(b) ?? '', newTab: b.newTab && b.type !== 'section' }))
     .filter((b) => b.label && b.href)
     .slice(0, 2)
     .map((b, i) => ({
