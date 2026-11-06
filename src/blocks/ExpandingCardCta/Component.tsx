@@ -64,7 +64,7 @@ type Phase = 'still' | 'armed' | 'open'
 
 /**
  * Expanding Card CTA: a closing call to action on a full-bleed navy panel,
- * with a centred heading (one or two lines), a description and one button.
+ * with a centred heading (one or two lines), an optional description and one button.
  * The panel spans the viewport: blocks render straight into <main>, so a
  * plain 100% width is edge to edge with no 100vw overflow. Navy by design,
  * so it counts as the page's one Highlight (navy) block in the CMS.

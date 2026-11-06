@@ -95,6 +95,14 @@ describe('the server HTML', () => {
     expect(html).toContain('<span class="ecc-scan" aria-hidden="true"></span>')
   })
 
+  it('goes straight from the heading to the button when there is no description', () => {
+    for (const description of [null, '']) {
+      const html = markup({ description } as Partial<Props>)
+      expect(html).not.toContain('ecc-desc')
+      expect(html).toMatch(/<\/h2><a class="ecc-btn" href="\/contact">/)
+    }
+  })
+
   it('draws nothing without a first heading line', () => {
     expect(render({ headingLine1: '' })).toBe('')
   })
