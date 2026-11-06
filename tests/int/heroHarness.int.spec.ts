@@ -181,7 +181,7 @@ describe('the frame', () => {
 
   it('framed: one panel round the cards and the drawing, the raised surface and a hairline, no shadow', () => {
     expect(stageCss).toContain(
-      '.ncx-hh[data-frame="framed"] .hh-stage{background:var(--ncx-raised);border:1px solid var(--ncx-rule-strong);\n    border-radius:var(--ncx-r-section);padding:12px}',
+      '.ncx-hh[data-frame="framed"] .hh-stage{background:var(--ncx-raised);border:1px solid var(--ncx-rule-strong);\n    border-radius:var(--ncx-r-section);padding:12px 12px 16px}',
     )
     expect(stageCss).not.toMatch(/data-frame="framed"\][^{]*\{[^}]*box-shadow/)
     // The drawing panel's own edge goes inside it; the cards keep theirs.
@@ -190,6 +190,16 @@ describe('the frame', () => {
     // Phones: the same panel, padded 12px.
     const phone = stageCss.slice(stageCss.indexOf('@media (max-width:899.98px)'))
     expect(phone).toContain('.ncx-hh[data-frame="framed"] .hh-stage{padding:12px}')
+  })
+
+  it('framed: 32px above the stage from 900px with roomy spacing, as the border does the separating', () => {
+    const css = render()
+    const desktop = css.slice(css.indexOf('@media (min-width:900px)'), css.indexOf('@media (max-width:899.98px)'))
+    expect(desktop).toContain('.ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}')
+    expect(desktop).toContain('.ncx-hh[data-frame="framed"][data-spacing="roomy"]{--hh-stage:32px}')
+    // Compact and phones keep their own values.
+    expect(css).toContain('[data-spacing="compact"]{--hh-top:16px;--hh-gap:10px;--hh-stage:14px}')
+    expect(css.split('[data-frame="framed"][data-spacing="roomy"]')).toHaveLength(2)
   })
 
   it('rounds the cards and the drawing panel with the shared radius tokens', () => {

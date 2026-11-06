@@ -40,7 +40,7 @@ export const stageCss = `
      drawing panel drops its own border, radius and padding inside it, so the edges do not double up; the cards keep
      their own borders. */
   .ncx-hh[data-frame="framed"] .hh-stage{background:var(--ncx-raised);border:1px solid var(--ncx-rule-strong);
-    border-radius:var(--ncx-r-section);padding:12px}
+    border-radius:var(--ncx-r-section);padding:12px 12px 16px}
   .ncx-hh[data-frame="framed"] .hh-panel{border:0;border-radius:0;padding:0}
   .ncx-hh .hh-panel:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
   .ncx-hh .hh-draw{position:relative;container:hhdraw / inline-size}

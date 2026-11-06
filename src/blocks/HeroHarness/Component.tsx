@@ -259,10 +259,12 @@ const heroCss = `
 
   /* Laptops and desktops: the title reaches its set size by 1440px. Its width is the site column's, and text-wrap:balance
      splits a title that needs more than one line into even lines; a typed break still sets the split by hand. Roomy
-     spacing is 20px under the title and 40px above the cards and drawing, with up to 20px less space above the text. */
+     spacing is 20px under the title and 40px above the cards and drawing (32px when framed: the frame's border does
+     the separating), with up to 20px less space above the text. */
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
     .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
+    .ncx-hh[data-frame="framed"][data-spacing="roomy"]{--hh-stage:32px}
   }
 
   /* The buttons: 28px under the intro (the intro column's gap plus the rest), 12px apart, wrapping onto a new row
