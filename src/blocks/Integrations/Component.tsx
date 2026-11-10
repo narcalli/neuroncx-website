@@ -105,6 +105,10 @@ export const IntegrationsBlock = async (props: Props) => {
         .ncx-integrations .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
         /* The cards themselves are a card design (components/cards). */
         .ncx-integrations .cards{margin-top:44px}
+        /* The directory design opens on its filter pills (after its own
+           style tag, so not :first-child). Straight under the heading they
+           sit closer, so they read as the heading's own. */
+        .ncx-integrations :is(h2,.intro) + .cards:has(> .group:first-child > .ncx-cdir:first-child > .ncx-dir__pills){margin-top:28px}
         .ncx-integrations .group + .group{margin-top:40px}
         .ncx-integrations .group-name{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:18px;letter-spacing:-.01em;margin:0 0 16px;color:var(--ncx-ink)}
@@ -112,6 +116,8 @@ export const IntegrationsBlock = async (props: Props) => {
         @media(max-width:820px){.ncx-integrations{padding-block:36px}
           .ncx-integrations .cards{margin-top:32px}
           .ncx-integrations .group + .group{margin-top:32px}}
+        /* Pills to cards: 32px from the directory design, 24px on narrow screens. */
+        @media(max-width:900px){.ncx-integrations .ncx-cdir{gap:24px}}
       `}</style>
 
       {label ? <Reveal as="p" from="left" className="label">{label}</Reveal> : null}
