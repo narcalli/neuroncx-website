@@ -188,6 +188,8 @@ export interface Config {
     microApps: MicroApp;
     hubs: Hub;
     ncxPostContents: NcxPostContent;
+    rubrics: Rubric;
+    benchmarkRuns: BenchmarkRun;
     contentEvents: ContentEvent;
     redirects: Redirect;
     'payload-mcp-api-keys': PayloadMcpApiKey;
@@ -225,6 +227,8 @@ export interface Config {
     microApps: MicroAppsSelect<false> | MicroAppsSelect<true>;
     hubs: HubsSelect<false> | HubsSelect<true>;
     ncxPostContents: NcxPostContentsSelect<false> | NcxPostContentsSelect<true>;
+    rubrics: RubricsSelect<false> | RubricsSelect<true>;
+    benchmarkRuns: BenchmarkRunsSelect<false> | BenchmarkRunsSelect<true>;
     contentEvents: ContentEventsSelect<false> | ContentEventsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
@@ -244,12 +248,14 @@ export interface Config {
     footer: Footer;
     siteSettings: SiteSetting;
     whatsappLists: WhatsappList;
+    contentStandards: ContentStandard;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     whatsappLists: WhatsappListsSelect<false> | WhatsappListsSelect<true>;
+    contentStandards: ContentStandardsSelect<false> | ContentStandardsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1172,6 +1178,10 @@ export interface Category {
 export interface User {
   id: string;
   name?: string | null;
+  /**
+   * What this person can do in the admin. Only admins can change it.
+   */
+  role: 'admin' | 'contentOwner' | 'author';
   updatedAt: string;
   createdAt: string;
   enableAPIKey?: boolean | null;
@@ -2864,6 +2874,18 @@ export interface Sector {
    * Follow the site setting, or set this page on its own. The strictest of the site, page and block settings wins.
    */
   pageMotion?: ('follow' | 'on' | 'reduced' | 'off') | null;
+  /**
+   * Lets this exact content publish below its gate. Only a content owner or admin can set it, with a reason. Editing the content afterwards ends it. Not applied while the gate only warns.
+   */
+  gateOverride?: boolean | null;
+  /**
+   * Why this content may publish below its gate. Kept in History.
+   */
+  gateOverrideReason?: string | null;
+  /**
+   * The content the override was granted for. Set automatically.
+   */
+  gateOverrideHash?: string | null;
   /**
    * A shorter name for menus, such as Education. Empty uses the name.
    */
@@ -5909,6 +5931,18 @@ export interface MicroApp {
    * Follow the site setting, or set this page on its own. The strictest of the site, page and block settings wins.
    */
   pageMotion?: ('follow' | 'on' | 'reduced' | 'off') | null;
+  /**
+   * Lets this exact content publish below its gate. Only a content owner or admin can set it, with a reason. Editing the content afterwards ends it. Not applied while the gate only warns.
+   */
+  gateOverride?: boolean | null;
+  /**
+   * Why this content may publish below its gate. Kept in History.
+   */
+  gateOverrideReason?: string | null;
+  /**
+   * The content the override was granted for. Set automatically.
+   */
+  gateOverrideHash?: string | null;
   /**
    * Where the agent works.
    */
@@ -9622,6 +9656,18 @@ export interface IndustryTopic {
    */
   pageMotion?: ('follow' | 'on' | 'reduced' | 'off') | null;
   /**
+   * Lets this exact content publish below its gate. Only a content owner or admin can set it, with a reason. Editing the content afterwards ends it. Not applied while the gate only warns.
+   */
+  gateOverride?: boolean | null;
+  /**
+   * Why this content may publish below its gate. Kept in History.
+   */
+  gateOverrideReason?: string | null;
+  /**
+   * The content the override was granted for. Set automatically.
+   */
+  gateOverrideHash?: string | null;
+  /**
    * The topic page sits under this industry: the industry slug, then this slug.
    */
   industry: string | Sector;
@@ -10714,6 +10760,15 @@ export interface Enquiry {
    */
   sourcePage?: string | null;
   handled?: boolean | null;
+  /**
+   * Set when the enquiry arrives. A lead needs a mobile number.
+   */
+  ncxLead?: {
+    status?: ('created' | 'duplicate' | 'failed' | 'skipped') | null;
+    transactionId?: string | null;
+    note?: string | null;
+    sentAt?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -11306,6 +11361,147 @@ export interface NcxPostContent {
   createdAt: string;
 }
 /**
+ * The criteria content is scored against before it can be published. One rubric is Active at a time; publishing another as Active retires it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rubrics".
+ */
+export interface Rubric {
+  id: string;
+  /**
+   * What the rubric is called in lists and on benchmark runs.
+   */
+  name: string;
+  /**
+   * Goes up by one when a publish changes the items. Renaming or retiring keeps the number. A draft shows the version last published.
+   */
+  version?: number | null;
+  /**
+   * Active: the rubric content is scored against. Publishing a rubric as Active retires the one that was Active. Retired: no longer used, kept for the runs that used it. A rubric still being written stays a draft until it is published.
+   */
+  status: 'active' | 'retired';
+  /**
+   * The rubric that was Active until this one was published as Active. Set automatically.
+   */
+  supersedes?: (string | null) | Rubric;
+  /**
+   * One row per criterion. Each benchmark run records a result for each item.
+   */
+  items: {
+    /**
+     * A short code that stays with this criterion for good, for example EX-01. Runs refer to it, so it is never changed or given to another criterion.
+     */
+    itemId: string;
+    /**
+     * Extractability: whether a bot can answer correctly from this content alone. Engagement: whether the reader can finish what they came to do. House rules: the writing rules every piece follows. Discoverability: search and links.
+     */
+    dimension: 'extractability' | 'engagement' | 'houseRules' | 'discoverability';
+    /**
+     * What is checked, in one or two sentences.
+     */
+    criterion: string;
+    /**
+     * What the content must show to pass this item.
+     */
+    passCondition: string;
+    /**
+     * Blocker: a failure stops publishing whatever the score. Warning: a failure lowers the score only.
+     */
+    severityIfFailed: 'blocker' | 'warning';
+    /**
+     * The content types this item is scored on. Elsewhere it is recorded as not applicable.
+     */
+    appliesTo: ('sectors' | 'industryTopics' | 'microApps')[];
+    id?: string | null;
+  }[];
+  updatedBy?: (string | null) | User;
+  rolledBackFrom?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Each time a version of an entry is scored against a rubric. Records are never edited; a new score is a new run.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "benchmarkRuns".
+ */
+export interface BenchmarkRun {
+  id: string;
+  /**
+   * The entry that was scored.
+   */
+  document:
+    | {
+        relationTo: 'sectors';
+        value: string | Sector;
+      }
+    | {
+        relationTo: 'industryTopics';
+        value: string | IndustryTopic;
+      }
+    | {
+        relationTo: 'microApps';
+        value: string | MicroApp;
+      };
+  /**
+   * The ID of the exact saved version that was scored. A later edit is a new version and needs its own run.
+   */
+  versionId: string;
+  /**
+   * A fingerprint of the scored version's content, worked out from that version. The publish gate matches runs to content by it.
+   */
+  contentHash?: string | null;
+  /**
+   * The rubric the version was scored against.
+   */
+  rubric: string | Rubric;
+  /**
+   * The rubric's version number when it was scored, kept so later edits to the rubric do not change what this run means. Must be a published version, and every result an item in it.
+   */
+  rubricVersion: string;
+  /**
+   * One row per rubric item.
+   */
+  results: {
+    /**
+     * The rubric item's ID, for example EX-01.
+     */
+    itemId: string;
+    /**
+     * Not applicable: the item does not apply to this document, for example an SEO check on an entry with no page of its own. Left out of the score.
+     */
+    state: 'pass' | 'warning' | 'blocker' | 'na';
+    /**
+     * Why it passed or failed, for whoever fixes the content.
+     */
+    note?: string | null;
+    /**
+     * Code: the same content always gets the same result. Person: scored by hand on a worksheet. Shows which part of the score can be reproduced.
+     */
+    decidedBy: 'code' | 'human';
+    id?: string | null;
+  }[];
+  /**
+   * Passes as a percentage of the items that apply, to one decimal. Worked out from the results; empty when no item applies.
+   */
+  score?: number | null;
+  /**
+   * How many results are blockers. Worked out from the results.
+   */
+  blockerCount?: number | null;
+  /**
+   * When the scoring ran. Defaults to when the run was recorded.
+   */
+  runAt: string;
+  /**
+   * Who recorded the run, or the owner of the API key used. Set automatically.
+   */
+  runBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contentEvents".
  */
@@ -11313,10 +11509,19 @@ export interface ContentEvent {
   id: string;
   collectionSlug: string;
   doc: string;
-  action: 'published' | 'unpublished' | 'rolledBack';
+  action:
+    | 'published'
+    | 'unpublished'
+    | 'rolledBack'
+    | 'benchmarkPassed'
+    | 'benchmarkFailed'
+    | 'notScored'
+    | 'overrideSet'
+    | 'overrideCleared';
   user?: (string | null) | User;
   version?: string | null;
   fromVersion?: string | null;
+  note?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -11596,6 +11801,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ncxPostContents';
         value: string | NcxPostContent;
+      } | null)
+    | ({
+        relationTo: 'rubrics';
+        value: string | Rubric;
+      } | null)
+    | ({
+        relationTo: 'benchmarkRuns';
+        value: string | BenchmarkRun;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -13889,6 +14102,7 @@ export interface FeaturesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   enableAPIKey?: T;
@@ -13921,6 +14135,14 @@ export interface EnquiriesSelect<T extends boolean = true> {
   message?: T;
   sourcePage?: T;
   handled?: T;
+  ncxLead?:
+    | T
+    | {
+        status?: T;
+        transactionId?: T;
+        note?: T;
+        sentAt?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -13939,6 +14161,9 @@ export interface SectorsSelect<T extends boolean = true> {
   hasOwnPage?: T;
   usePageDefaults?: T;
   pageMotion?: T;
+  gateOverride?: T;
+  gateOverrideReason?: T;
+  gateOverrideHash?: T;
   menuLabel?: T;
   verticals?: T;
   path?: T;
@@ -14436,6 +14661,9 @@ export interface IndustryTopicsSelect<T extends boolean = true> {
   hasOwnPage?: T;
   usePageDefaults?: T;
   pageMotion?: T;
+  gateOverride?: T;
+  gateOverrideReason?: T;
+  gateOverrideHash?: T;
   industry?: T;
   stage?: T;
   stageOrder?: T;
@@ -15354,6 +15582,9 @@ export interface MicroAppsSelect<T extends boolean = true> {
   hasOwnPage?: T;
   usePageDefaults?: T;
   pageMotion?: T;
+  gateOverride?: T;
+  gateOverrideReason?: T;
+  gateOverrideHash?: T;
   channel?: T;
   verticals?: T;
   path?: T;
@@ -15710,6 +15941,58 @@ export interface NcxPostContentsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rubrics_select".
+ */
+export interface RubricsSelect<T extends boolean = true> {
+  name?: T;
+  version?: T;
+  status?: T;
+  supersedes?: T;
+  items?:
+    | T
+    | {
+        itemId?: T;
+        dimension?: T;
+        criterion?: T;
+        passCondition?: T;
+        severityIfFailed?: T;
+        appliesTo?: T;
+        id?: T;
+      };
+  updatedBy?: T;
+  rolledBackFrom?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "benchmarkRuns_select".
+ */
+export interface BenchmarkRunsSelect<T extends boolean = true> {
+  document?: T;
+  versionId?: T;
+  contentHash?: T;
+  rubric?: T;
+  rubricVersion?: T;
+  results?:
+    | T
+    | {
+        itemId?: T;
+        state?: T;
+        note?: T;
+        decidedBy?: T;
+        id?: T;
+      };
+  score?: T;
+  blockerCount?: T;
+  runAt?: T;
+  runBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contentEvents_select".
  */
 export interface ContentEventsSelect<T extends boolean = true> {
@@ -15719,6 +16002,7 @@ export interface ContentEventsSelect<T extends boolean = true> {
   user?: T;
   version?: T;
   fromVersion?: T;
+  note?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -16251,6 +16535,89 @@ export interface WhatsappList {
   createdAt?: string | null;
 }
 /**
+ * The benchmark score content needs before it can be published, and the names the rubric accepts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contentStandards".
+ */
+export interface ContentStandard {
+  id: string;
+  /**
+   * The score needed by any collection without its own row below.
+   */
+  defaultGate: number;
+  /**
+   * Starting values from calibration, to be recalibrated after the first quarter of real benchmark runs. Each gate rises in steps of 5 once 80 percent of the published entries in that collection clear the next step. A collection without a row uses the default gate.
+   */
+  gates?:
+    | {
+        /**
+         * The collection this gate applies to.
+         */
+        collection: 'sectors' | 'industryTopics' | 'microApps';
+        /**
+         * The score this collection must reach.
+         */
+        gate: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Organisations content may name that are not customers or integrations, such as ad platforms, exam boards and regulators. Any other organisation named in content is a blocker.
+   */
+  allowedThirdParties?:
+    | {
+        /**
+         * As it is written in content, for example Google Ads.
+         */
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Words that name who content is for: the people who use NeuronCx and their business types, never their customers or students.
+   */
+  audienceWords?:
+    | {
+        /**
+         * As it is written in content, for example front desk.
+         */
+        word: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The ways customers reach a business, as content names them. A concrete example names one.
+   */
+  channelWords?:
+    | {
+        /**
+         * As it is written in content, for example WhatsApp.
+         */
+        word: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * NeuronCx names and concepts that are not entries of their own, such as Bot swarm or episode. Content defines each on first use. A product name in content passes if it is here or a published entry.
+   */
+  terms?:
+    | {
+        /**
+         * The term as it is written in content.
+         */
+        term: string;
+        /**
+         * What it means, in one sentence. Confirmed by the module owner.
+         */
+        meaning?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -16459,6 +16826,48 @@ export interface WhatsappListsSelect<T extends boolean = true> {
         collection?: T;
         waListButton?: T;
         waSectionTitle?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contentStandards_select".
+ */
+export interface ContentStandardsSelect<T extends boolean = true> {
+  defaultGate?: T;
+  gates?:
+    | T
+    | {
+        collection?: T;
+        gate?: T;
+        id?: T;
+      };
+  allowedThirdParties?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  audienceWords?:
+    | T
+    | {
+        word?: T;
+        id?: T;
+      };
+  channelWords?:
+    | T
+    | {
+        word?: T;
+        id?: T;
+      };
+  terms?:
+    | T
+    | {
+        term?: T;
+        meaning?: T;
         id?: T;
       };
   updatedAt?: T;
