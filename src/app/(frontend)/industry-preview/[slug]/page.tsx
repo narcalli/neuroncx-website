@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { IndustrySections } from '@/components/industry/IndustrySections'
 import type { Sector } from '@/payload-types'
-import { CMS_TAG, getBySlug } from '@/utilities/cms'
+import { CMS_TAG, getBySlug, notFoundUnlessCmsDown } from '@/utilities/cms'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,7 +26,7 @@ const load = async (slug: string): Promise<Sector | null> => {
 export default async function IndustryPreview({ params }: Args) {
   const { isEnabled: draft } = await draftMode()
   const entry = await load((await params).slug)
-  if (!entry) notFound()
+  if (!entry) notFoundUnlessCmsDown()
   return (
     <article className="pt-16 pb-24">
       {draft && <LivePreviewListener />}

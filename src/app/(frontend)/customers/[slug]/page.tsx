@@ -2,7 +2,6 @@ import { siteUrlFor } from '@/utilities/siteDefaults'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
@@ -10,7 +9,7 @@ import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
 import { BlockIcon } from '@/components/BlockIcon'
 import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
 import RichText from '@/components/RichText'
-import { getMany, CMS_TAG } from '@/utilities/cms'
+import { getMany, CMS_TAG, notFoundUnlessCmsDown } from '@/utilities/cms'
 import {
   byOrderThenName,
   hasPublicPage,
@@ -117,7 +116,7 @@ type Quote = NonNullable<Customer['quotes']>[number]
 export default async function CustomerPage({ params }: Args) {
   const { slug } = await params
   const c = await loadCustomer(slug)
-  if (!c) notFound()
+  if (!c) notFoundUnlessCmsDown()
   const others = await loadOthers(c)
 
   const sectors = populated<Sector>(c.sectors)

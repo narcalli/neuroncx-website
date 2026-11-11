@@ -109,7 +109,9 @@ describe('sitemap', () => {
   })
 })
 
-describe('routes', () => {
+// The first route import loads every block, about 3s alone and more while the
+// other files run alongside, so the default 5s is too tight.
+describe('routes', { timeout: 20_000 }, () => {
   // What the CMS answers: the cluster for its path or slug, nothing for the rest.
   let asked: string[] = []
   beforeEach(() => {

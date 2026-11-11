@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
@@ -11,7 +10,7 @@ import { EdgeCases, type EdgeRow } from '@/components/integrations/EdgeCases'
 import { RelatedCards, type RelatedCard } from '@/components/integrations/RelatedCards'
 import { SetupLanes, type SetupRow } from '@/components/integrations/SetupLanes'
 import { StatusFlow, type FlowRow } from '@/components/integrations/StatusFlow'
-import { CMS_TAG, getGlobal, getMany } from '@/utilities/cms'
+import { CMS_TAG, getGlobal, getMany, notFoundUnlessCmsDown } from '@/utilities/cms'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'
 import { getServerSideURL } from '@/utilities/getURL'
 import { integrationHref } from '@/utilities/integrations'
@@ -171,7 +170,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 export default async function IntegrationPage({ params }: Args) {
   const { slug } = await params
   const d = await loadItem(slug)
-  if (!d) notFound()
+  if (!d) notFoundUnlessCmsDown()
   const [master, related, header] = await Promise.all([
     loadMaster(),
     loadRelated(d),

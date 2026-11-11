@@ -1,7 +1,7 @@
 import type React from 'react'
 
-import { getMany, CMS_TAG } from '@/utilities/cms'
-import { notFound, redirect } from 'next/navigation'
+import { getMany, CMS_TAG, notFoundUnlessCmsDown } from '@/utilities/cms'
+import { redirect } from 'next/navigation'
 
 interface Props {
   disableNotFound?: boolean
@@ -51,5 +51,5 @@ export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }
 
   if (disableNotFound) return null
 
-  notFound()
+  notFoundUnlessCmsDown()
 }

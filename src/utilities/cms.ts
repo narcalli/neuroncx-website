@@ -6,6 +6,7 @@
  * imported into a 'use client' component.
  */
 
+import { notFound } from 'next/navigation'
 import { cache } from 'react'
 
 import { getPayloadURL } from './getURL'
@@ -39,6 +40,36 @@ type FetchOptions = {
 // published content only, as before.
 const PREVIEW_API_KEY = process.env.CMS_PREVIEW_API_KEY
 
+// Failed CMS requests in this render. React's cache() keeps one count per
+// server request, so a route can tell "not in the CMS" from "the CMS did not
+// answer". Outside a render (route handlers) each call gets a fresh count,
+// which nothing reads.
+const failures = cache(() => ({ count: 0 }))
+
+// A 4xx is the CMS answering (a missing route, a refused read); these mean it
+// did not, or could not right now.
+const isOutage = (status: number) => status >= 500 || status === 408 || status === 429
+
+/** Thrown in place of a 404 when the page could not be looked up at all. */
+export class CmsUnavailableError extends Error {
+  constructor() {
+    super('The CMS did not answer, so this page could not be looked up.')
+    this.name = 'CmsUnavailableError'
+  }
+}
+
+/**
+ * notFound(), unless a CMS request failed in this render: then the page may
+ * well exist, and a 404 would be cached by the CDN and shown to everyone for
+ * minutes. It throws instead, so the route's error page shows, uncached.
+ */
+// A declaration, not an arrow function: TypeScript only narrows after a call
+// that returns never when it is one.
+export function notFoundUnlessCmsDown(): never {
+  if (failures().count > 0) throw new CmsUnavailableError()
+  notFound()
+}
+
 const request = async <T>(path: string, query?: Query, opts: FetchOptions = {}): Promise<T | null> => {
   const { revalidate = 60, tags, draft } = opts
 
@@ -56,6 +87,7 @@ const request = async <T>(path: string, query?: Query, opts: FetchOptions = {}):
 
     if (!res.ok) {
       console.error(`CMS ${res.status} for ${path}`)
+      if (isOutage(res.status)) failures().count++
       return null
     }
 
@@ -63,6 +95,7 @@ const request = async <T>(path: string, query?: Query, opts: FetchOptions = {}):
     return draft ? withPreviewedVersion(path, query, data) : data
   } catch (err) {
     console.error(`CMS request failed for ${path}:`, err)
+    failures().count++
     return null
   }
 }

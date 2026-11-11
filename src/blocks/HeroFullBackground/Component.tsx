@@ -282,11 +282,13 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         .ncx-hfb .meta li{display:flex;align-items:center;gap:8px}
         .ncx-hfb .meta li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ncx-crimson)}
 
-        /* Entrance: the buttons and the meta line rise once the Animator client
-           component marks the block as in view. The H1 and the subhead are at
-           rest from the first paint: either can be the LCP element. */
-        .ncx-hfb[data-anim="subtle"] .cta,.ncx-hfb[data-anim="subtle"] .meta,
-        .ncx-hfb[data-anim="lively"] .cta,.ncx-hfb[data-anim="lively"] .meta{
+        /* Entrance: visible at rest, so the buttons and the meta line show
+           without JavaScript. The Animator marks a block that starts off screen
+           "armed" (hidden while out of sight), then "in" as it scrolls into
+           view. The H1 and the subhead are at rest from the first paint:
+           either can be the LCP element. */
+        .ncx-hfb[data-anim="subtle"] .content.armed .cta,.ncx-hfb[data-anim="subtle"] .content.armed .meta,
+        .ncx-hfb[data-anim="lively"] .content.armed .cta,.ncx-hfb[data-anim="lively"] .content.armed .meta{
           opacity:0;transform:translateY(14px)}
 
         .ncx-hfb[data-anim] .content.in .cta{animation:ncx-hfb-rise .5s ease forwards;animation-delay:.38s}

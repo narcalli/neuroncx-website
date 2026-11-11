@@ -8,28 +8,37 @@ type Props = {
 }
 
 /**
- * Adds an "in" class once this block has entered the viewport, which is
- * what actually triggers the CSS entrance animations in Component.tsx.
+ * The entrance animations in the hero blocks (Component.tsx), as an extra on
+ * top of content that is already visible.
  *
- * Everything inside is rendered by the server and already fully visible on
- * its own — this only ever adds motion on top. If this script never runs
- * (JS disabled, an error, a slow connection), the content stays exactly as
- * the server sent it: present and readable, just without the animation.
+ * The server sends everything visible, and the CSS never hides it at rest, so
+ * without this script (JS disabled, an error, a slow connection) the buttons
+ * are there from the first paint. Once it runs:
+ * - a block already on screen stays as it is: hiding what the visitor has
+ *   seen, to animate it back in, would make it blink;
+ * - a block further down is marked "armed" (its buttons hidden while off
+ *   screen), then "in" once it scrolls into view, which plays the animation.
  */
 export const Animator: React.FC<Props> = ({ className, children }) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
+  const [state, setState] = useState<'rest' | 'armed' | 'in'>('rest')
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
 
-    // A hero is normally in view immediately on load, but this still covers
-    // the block being placed further down a page.
+    let first = true
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setInView(true)
+        const visible = entries.some((e) => e.isIntersecting)
+        // The first report is where the block stands when the script runs.
+        if (first) {
+          first = false
+          if (visible) return io.disconnect()
+          return setState('armed')
+        }
+        if (visible) {
+          setState('in')
           io.disconnect()
         }
       },
@@ -39,8 +48,9 @@ export const Animator: React.FC<Props> = ({ className, children }) => {
     return () => io.disconnect()
   }, [])
 
+  const extra = state === 'armed' ? ' armed' : state === 'in' ? ' armed in' : ''
   return (
-    <div ref={ref} className={`${className || ''}${inView ? ' in' : ''}`}>
+    <div ref={ref} className={`${className || ''}${extra}`}>
       {children}
     </div>
   )

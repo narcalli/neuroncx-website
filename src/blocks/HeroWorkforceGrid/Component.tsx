@@ -174,10 +174,12 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           margin:0 0 6px;color:var(--h-text)}
         .ncx-hwg .card__desc{font-size:13px;line-height:1.55;color:var(--h-muted);margin:0}
 
-        /* Entrance: the buttons rise once the Animator client component marks
-           the block as in view. The H1, the subhead and the card grid are at
-           rest from the first paint: any of them can be the LCP element. */
-        .ncx-hwg .cta-row{opacity:0;transform:translateY(16px)}
+        /* Entrance: visible at rest, so the buttons show without JavaScript.
+           The Animator marks a block that starts off screen "armed" (hidden
+           while out of sight), then "in" as it scrolls into view. The H1, the
+           subhead and the card grid are at rest from the first paint: any of
+           them can be the LCP element. */
+        .ncx-hwg .copy.armed .cta-row{opacity:0;transform:translateY(16px)}
         .ncx-hwg .copy.in .cta-row{animation:ncx-hwg-rise .75s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.45s}
         @keyframes ncx-hwg-rise{to{opacity:1;transform:none}}
 

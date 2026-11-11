@@ -26,18 +26,31 @@ type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
-const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') {
-    throw new Error('Expected value to be an object')
-  }
-  const slug = value.slug
-  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
+// The linked entry arrives populated only when it exists and visitors may
+// read it. A deleted, unpublished or hidden target comes back as a bare id,
+// or not at all.
+const linkedSlug = (linkNode: SerializedLinkNode): string | null => {
+  const value = linkNode.fields.doc?.value
+  return value && typeof value === 'object' && typeof value.slug === 'string' && value.slug ? value.slug : null
 }
+
+const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
+  const slug = linkedSlug(linkNode)
+  return linkNode.fields.doc?.relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
+}
+
+const links = LinkJSXConverter({ internalDocToHref })
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
+  ...links,
+  // A link to an entry visitors cannot reach keeps its words and loses the
+  // link, rather than failing the whole page.
+  link: (args) => {
+    const { node, nodesToJSX } = args
+    if (node.fields.linkType === 'internal' && !linkedSlug(node)) return <>{nodesToJSX({ nodes: node.children })}</>
+    return typeof links.link === 'function' ? links.link(args) : links.link
+  },
   // As the default, plus the anchor id the legal document layout gives its sections (blocks/Content/legalOutline.ts).
   heading: ({ node, nodesToJSX }) => {
     const Tag = node.tag

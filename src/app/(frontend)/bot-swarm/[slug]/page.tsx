@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFoundUnlessCmsDown } from '@/utilities/cms'
 import React from 'react'
 
 import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
@@ -96,7 +96,7 @@ export default async function AgentPage({ params }: Args) {
   const { slug } = await params
   const draft = await isDraft()
   const [d, hub] = await Promise.all([getEntryPage(COLLECTION, slug, draft), getHub(COLLECTION, draft)])
-  if (!d) notFound()
+  if (!d) notFoundUnlessCmsDown()
 
   const family = groupOf(d)
   const tokens = { name: d.name, family: family?.name }

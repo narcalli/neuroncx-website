@@ -236,10 +236,12 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
         .ncx-hrp .btn-ghost:hover{background:var(--ncx-paper)}
         .ncx-hrp .btn:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
 
-        /* Entrance: the buttons rise once the Animator client component marks
-           the block as in view. The H1 and the subhead are at rest from the
-           first paint: either can be the LCP element. */
-        .ncx-hrp[data-anim="on"] .cta{opacity:0;transform:translateY(16px)}
+        /* Entrance: visible at rest, so the buttons show without JavaScript.
+           The Animator marks a block that starts off screen "armed" (hidden
+           while out of sight), then "in" as it scrolls into view. The H1 and
+           the subhead are at rest from the first paint: either can be the LCP
+           element. */
+        .ncx-hrp[data-anim="on"] .content.armed .cta{opacity:0;transform:translateY(16px)}
         .ncx-hrp[data-anim="on"] .content.in .cta{animation:ncx-hrp-rise .8s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:.45s}
         @keyframes ncx-hrp-rise{to{opacity:1;transform:none}}
 
