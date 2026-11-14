@@ -1,9 +1,13 @@
-import type { List, MicroApp } from '@/payload-types'
+import type { AgenticFlowDemoBlock, List, MicroApp } from '@/payload-types'
+
+import { resolveLink } from './eventLinks'
+import type { EventLink } from './FlowDemo'
 
 /**
  * Agent features mode, as plain data for the page: the families to offer,
  * each with its Live and Pilot agents, by order. Built on the server from
- * the agents themselves, so the block holds no agent copy.
+ * the agents themselves, so the block holds no agent copy. Groups mode fills
+ * the same shape from what is typed on the block (groupsToFamilies).
  */
 
 export type FeatureAgent = {
@@ -19,6 +23,15 @@ export type FeatureAgent = {
   humanTeam: boolean
   records: string | null
   teamControls: string | null
+  // Groups mode. Each one, when absent, leaves the item as Agent features draws it.
+  /** The item button's chip, in place of "Pilot". */
+  chip?: string | null
+  /** The second card's pills. Absent: the Virtual agent pill, and Human team after a hand-over. */
+  handlerTags?: ('agent' | 'human')[]
+  /** The third card's icon, from the site's icon library (BlockIcon). */
+  icon?: string | null
+  /** A link under the third card. */
+  link?: EventLink | null
 }
 
 export type FeatureFamily = { id: string; name: string; agents: FeatureAgent[] }
@@ -87,4 +100,49 @@ export const featureFamilies = (
         .map(toFeatureAgent),
     }))
     .filter((f) => f.agents.length)
+}
+
+type Group = NonNullable<AgenticFlowDemoBlock['groups']>[number]
+
+/**
+ * Groups mode: the groups and items typed on the block, as families and
+ * agents. Tags are the item's own words, not channel names; every feature
+ * line is kept. An id is the panel's DOM id, its button's aria-controls and
+ * the key its animations follow, so ids are unique across all groups: the
+ * rows' own ids, else their position.
+ */
+export const groupsToFamilies = (groups: Group[] | null | undefined, draft = false): FeatureFamily[] => {
+  const used = new Set<string>()
+  const unique = (id: string | null | undefined, fallback: string) => {
+    let key = id || fallback
+    while (used.has(key)) key = `${key}-${used.size}`
+    used.add(key)
+    return key
+  }
+  return (groups ?? []).flatMap((group, gi) => {
+    const name = text(group?.label)
+    if (!name) return []
+    const agents = (group.items ?? []).flatMap((item, ii): FeatureAgent[] => {
+      const itemName = text(item?.name)
+      if (!itemName) return []
+      return [
+        {
+          id: unique(item.id, `group-${gi + 1}-item-${ii + 1}`),
+          name: itemName,
+          pilot: false,
+          summary: text(item.summary),
+          channels: (item.tags ?? []).map((t) => text(t?.label)).filter((t): t is string => Boolean(t)),
+          keyPoints: (item.features ?? []).map((f) => text(f?.line)).filter((l): l is string => Boolean(l)),
+          humanTeam: false,
+          records: text(item.lands),
+          teamControls: text(item.youSet),
+          chip: text(item.chip),
+          handlerTags: (item.handlerTags ?? []).filter((h): h is 'agent' | 'human' => h === 'agent' || h === 'human'),
+          icon: text(item.icon),
+          link: resolveLink(item.link, draft),
+        },
+      ]
+    })
+    return agents.length ? [{ id: unique(group.id, `group-${gi + 1}`), name, agents }] : []
+  })
 }

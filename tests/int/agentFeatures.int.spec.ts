@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest'
 
 import { AgentFeatures } from '@/blocks/AgenticFlowDemo/AgentFeatures'
 import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
-import { featureFamilies, toFeatureAgent } from '@/blocks/AgenticFlowDemo/featureData'
+import { featureFamilies, groupsToFamilies, toFeatureAgent } from '@/blocks/AgenticFlowDemo/featureData'
+import { resolveLink } from '@/blocks/AgenticFlowDemo/eventLinks'
 import type { MicroApp } from '@/payload-types'
 import { tallest } from '@/blocks/AgenticFlowDemo/useMeasured'
 
@@ -135,6 +136,103 @@ describe('reserving height (useMeasured)', () => {
     expect(tallest([el(234), el(254), el(197)])).toBe(254)
     expect(tallest([])).toBeUndefined()
     expect(tallest(null)).toBeUndefined()
+  })
+})
+
+describe('Groups mode data (groupsToFamilies)', () => {
+  const item = (over: Record<string, unknown> = {}) => ({
+    id: 'i1',
+    name: 'Customer 360',
+    summary: 'One record per customer.',
+    features: [{ line: 'One' }, { line: 'Two' }, { line: 'Three' }, { line: 'Four' }, { line: 'Five' }],
+    lands: 'On the customer record.',
+    ...over,
+  })
+  const groups = [
+    {
+      id: 'g1',
+      label: 'CRM',
+      items: [
+        item({ chip: 'New', tags: [{ label: 'whatsapp' }, { label: 'Works with your ERP' }], handlerTags: ['human'], icon: 'database', youSet: 'Fields and stages.', link: { label: 'See the CRM', type: 'custom', url: '/crm' } }),
+        item({ id: 'i2', name: 'Transactions' }),
+      ],
+    },
+    { id: 'g2', label: 'CX', items: [item({ id: 'i3', name: 'Agent desk' })] },
+  ]
+
+  it('maps every item onto the explorer contract, keeping all five feature lines and the tags as typed', () => {
+    const [crm] = groupsToFamilies(groups as never)
+    expect(crm).toMatchObject({ id: 'g1', name: 'CRM' })
+    expect(crm.agents[0]).toEqual({
+      id: 'i1',
+      name: 'Customer 360',
+      pilot: false,
+      summary: 'One record per customer.',
+      // Not channel names: "whatsapp" stays as typed, not "Works on WhatsApp".
+      channels: ['whatsapp', 'Works with your ERP'],
+      keyPoints: ['One', 'Two', 'Three', 'Four', 'Five'],
+      humanTeam: false,
+      records: 'On the customer record.',
+      teamControls: 'Fields and stages.',
+      chip: 'New',
+      handlerTags: ['human'],
+      icon: 'database',
+      link: { label: 'See the CRM', href: '/crm', newTab: false },
+    })
+    expect(crm.agents[1]).toMatchObject({ chip: null, handlerTags: [], icon: null, link: null, channels: [], teamControls: null })
+  })
+
+  it('gives every group and item an id no other has, even when the rows carry none or repeat one', () => {
+    const noIds = [
+      { label: 'A', items: [item({ id: undefined }), item({ id: undefined, name: 'Second' })] },
+      { label: 'B', items: [item({ id: undefined })] },
+    ]
+    const ids = groupsToFamilies(noIds as never).flatMap((f) => [f.id, ...f.agents.map((a) => a.id)])
+    expect(new Set(ids).size).toBe(ids.length)
+    const repeated = [
+      { id: 'same', label: 'A', items: [item({ id: 'same' })] },
+      { id: 'same', label: 'B', items: [item({ id: 'same' })] },
+    ]
+    const again = groupsToFamilies(repeated as never).flatMap((f) => [f.id, ...f.agents.map((a) => a.id)])
+    expect(new Set(again).size).toBe(again.length)
+  })
+
+  it('leaves out an item with no name and a group with no label or no items left', () => {
+    const families = groupsToFamilies([
+      { id: 'g1', label: 'Kept', items: [item(), item({ id: 'i9', name: '  ' })] },
+      { id: 'g2', label: '', items: [item({ id: 'i3' })] },
+      { id: 'g3', label: 'Empty', items: [item({ id: 'i4', name: '' })] },
+    ] as never)
+    expect(families.map((f) => f.name)).toEqual(['Kept'])
+    expect(families[0].agents.map((a) => a.id)).toEqual(['i1'])
+    expect(groupsToFamilies(null)).toEqual([])
+  })
+
+  it('leaves the agents exactly as before: none of the new fields appear on them', () => {
+    const a = toFeatureAgent(agents[0])
+    for (const key of ['chip', 'handlerTags', 'icon', 'link']) expect(a, key).not.toHaveProperty(key)
+  })
+
+  it('takes Agent features\' default eyebrows and line, and keeps unset as Flow', () => {
+    expect(resolveDesign({ mode: 'groups' })).toMatchObject({
+      stageLabels: ['What it does', 'Features', 'Saves to your systems'],
+      lineStyle: 'static',
+      lineColor: 'crimson',
+      autoplay: null,
+    })
+    expect(resolveDesign({ mode: 'groups' })).toEqual(resolveDesign({ mode: 'agentFeatures' }))
+    expect(resolveDesign({})).toEqual(resolveDesign({ mode: 'flow' }))
+  })
+})
+
+describe('a link (resolveLink)', () => {
+  it('goes to a page, home, a URL or an agent with its own page, and is nothing without text or a target', () => {
+    expect(resolveLink({ label: 'Pricing', type: 'reference', reference: { relationTo: 'pages', value: { slug: 'pricing' } } } as never)).toEqual({ label: 'Pricing', href: '/pricing', newTab: false })
+    expect(resolveLink({ label: 'Home', type: 'reference', reference: { relationTo: 'pages', value: { slug: 'home' } } } as never)?.href).toBe('/')
+    expect(resolveLink({ label: 'Docs', type: 'custom', url: 'https://docs.example.com', newTab: true } as never)).toEqual({ label: 'Docs', href: 'https://docs.example.com', newTab: true })
+    expect(resolveLink({ label: '', type: 'custom', url: '/x' } as never)).toBeNull()
+    expect(resolveLink({ label: 'Nowhere', type: 'reference' } as never)).toBeNull()
+    expect(resolveLink(null)).toBeNull()
   })
 })
 

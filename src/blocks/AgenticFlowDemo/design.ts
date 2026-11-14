@@ -4,13 +4,14 @@ import type { AgenticFlowDemoBlock } from '@/payload-types'
 
 /**
  * The block's Design tab (neuroncx-cms src/blocks/AgenticFlowDemo/config.ts)
- * resolved to what the page draws, both modes. Every option left as saved
+ * resolved to what the page draws, in every mode; Groups looks as Agent
+ * features does by default. Every option left as saved
  * before the tab existed, or empty, gives the block's look from before it:
  * where that look differs by mode (the card eyebrows, the line), empty means
  * "as this mode looks by default".
  */
 
-export type Mode = 'flow' | 'agentFeatures'
+export type Mode = 'flow' | 'agentFeatures' | 'groups'
 export type AccentName = 'crimson' | 'navy' | 'teal' | 'grey'
 export type LineStyle = 'animated' | 'static' | 'none'
 
@@ -51,6 +52,7 @@ const PANEL_BG = { cloud: 'var(--ncx-cloud)', white: 'var(--ncx-white)', none: '
 export const STAGE_LABELS: Record<Mode, [string, string, string]> = {
   flow: ['Trigger', 'Route', 'Resolve'],
   agentFeatures: ['What it does', 'Features', 'Saves to your systems'],
+  groups: ['What it does', 'Features', 'Saves to your systems'],
 }
 
 export const DEFAULT_PROMPT = 'Pick an event and watch it travel through.'
@@ -82,7 +84,8 @@ const pick = <T extends string>(value: unknown, allowed: readonly T[], fallback:
 const text = (value: unknown): string | null => (typeof value === 'string' && value.trim() ? value.trim() : null)
 
 export const resolveDesign = (block: Partial<AgenticFlowDemoBlock>, eventCount = 0): Design => {
-  const mode: Mode = block.mode === 'agentFeatures' ? 'agentFeatures' : 'flow'
+  // Unset, or anything unknown, is Flow: blocks saved before the mode existed are Flow blocks.
+  const mode: Mode = block.mode === 'agentFeatures' || block.mode === 'groups' ? block.mode : 'flow'
   const defaults = STAGE_LABELS[mode]
   const labels = (block.stageLabels ?? {}) as Record<string, unknown>
   const accents = (block.accents ?? {}) as Record<string, unknown>

@@ -8,7 +8,7 @@ import { getEntries } from '@/utilities/content'
 import { AgentFeatures } from './AgentFeatures'
 import { resolveDesign } from './design'
 import { eventLinks } from './eventLinks'
-import { chosenIndustries, featureFamilies, type FeatureFamily } from './featureData'
+import { chosenIndustries, featureFamilies, groupsToFamilies, type FeatureFamily } from './featureData'
 import { FlowDemo } from './FlowDemo'
 
 /**
@@ -46,6 +46,21 @@ export const loadAgentFamilies = async (
 
 export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
   const draft = (await draftMode()).isEnabled
+
+  // Groups mode: the same explorer, from the groups typed on the block. No agents are read.
+  if (props.mode === 'groups') {
+    return (
+      <AgentFeatures
+        heading={props.heading}
+        intro={props.intro}
+        families={groupsToFamilies(props.groups, draft)}
+        pickFamilyLabel={props.pickFamilyLabel || 'Pick a family'}
+        pickAgentLabel={props.pickAgentLabel || 'Agents'}
+        design={resolveDesign(props)}
+        motion={props.motion}
+      />
+    )
+  }
 
   if (props.mode !== 'agentFeatures') {
     const events = (props.events || []).filter((e) => e && e.label)
