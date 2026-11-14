@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import type { AgenticFlowDemoBlock as AgenticFlowDemoProps } from '@/payload-types'
 
 import { accentVars, designClasses, designVars, nextEvent, type Design } from './design'
 import { StageLine } from './StageLine'
+import { tallest, useMeasured } from './useMeasured'
 import { flowCss } from './styles'
 import { useMotionLevel } from '@/motion/useMotionLevel'
 import { SplitHeading } from '@/motion/SplitHeading'
@@ -68,34 +69,9 @@ export const FlowDemo: React.FC<
 
   // The stage keeps the height of its tallest event, so nothing below it moves as
   // events change (route points can differ in number). Each event's cards are laid
-  // out once, hidden, after mount, and again on resize and once fonts have loaded.
-  const [stageMin, setStageMin] = useState<number>()
-  const [measuring, setMeasuring] = useState(false)
+  // out once, hidden, while measuring (useMeasured).
   const ghosts = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (list.length < 2) return
-    let wait: number | undefined
-    const measure = () => setMeasuring(true)
-    const onResize = () => {
-      window.clearTimeout(wait)
-      wait = window.setTimeout(measure, 150)
-    }
-    measure()
-    window.addEventListener('resize', onResize)
-    void document.fonts?.ready.then(measure)
-    return () => {
-      window.clearTimeout(wait)
-      window.removeEventListener('resize', onResize)
-    }
-  }, [list.length])
-
-  useLayoutEffect(() => {
-    if (!measuring) return
-    const heights = [...(ghosts.current?.children ?? [])].map((el) => (el as HTMLElement).offsetHeight)
-    setStageMin(heights.length ? Math.max(...heights) : undefined)
-    setMeasuring(false)
-  }, [measuring])
+  const { value: stageMin, measuring } = useMeasured(list.length > 1, () => tallest(ghosts.current?.children), [list.length])
 
   if (!list.length) return null
 

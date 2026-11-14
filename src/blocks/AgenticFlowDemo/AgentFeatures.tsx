@@ -16,6 +16,7 @@ import { accentVars, designClasses, designVars, type Design } from './design'
 import type { FeatureAgent, FeatureFamily } from './featureData'
 import { StageLine } from './StageLine'
 import { featuresCss, flowCss } from './styles'
+import { tallest, useMeasured } from './useMeasured'
 
 /** The "Saves to your systems" packet's hop into the database icon, rising through (18, -18). */
 const PACKET_ARC = [{ x: 0, y: 0 }, controlThrough({ x: 0, y: 0 }, { x: 18, y: -18 }, { x: 42, y: -4 }), { x: 42, y: -4 }]
@@ -134,6 +135,18 @@ export const AgentFeatures: React.FC<{
     { dependencies: [shown.f, shown.a, doAnimate], scope: scopeRef },
   )
 
+  // Nothing below the block moves as families and agents change: the panel area
+  // keeps the tallest panel's height, and the item row the tallest family's row.
+  // Every panel is in the DOM to measure; the item rows are drawn hidden while
+  // measuring, since only one family's row is mounted (useMeasured).
+  const stageOuter = useRef<HTMLDivElement>(null)
+  const rowGhosts = useRef<HTMLDivElement>(null)
+  const { value: reserved, measuring } = useMeasured(
+    families.length > 0,
+    () => ({ panel: tallest(stageOuter.current?.querySelectorAll(':scope > .stage')), row: tallest(rowGhosts.current?.children) }),
+    [families.map((f) => `${f.id}:${f.agents.length}`).join()],
+  )
+
   if (!families.length) return null
 
   return (
@@ -170,7 +183,21 @@ export const AgentFeatures: React.FC<{
           </div>
 
           <p className="lab-q lab-q--agents">{pickAgentLabel}</p>
-          <div className="chips-wrap">
+          <div className="chips-wrap" style={reserved?.row ? { minHeight: reserved.row } : undefined}>
+            {measuring ? (
+              <div className="chips-ghosts" ref={rowGhosts} aria-hidden="true">
+                {families.map((f) => (
+                  <div key={f.id} className="chips">
+                    {f.agents.map((a) => (
+                      <button key={a.id} type="button" className="chip" tabIndex={-1}>
+                        {a.name}
+                        {a.pilot ? <span className="pilot">Pilot</span> : null}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <AnimatePresence mode="popLayout" custom={dir} initial={false}>
               <m.div
                 key={families[familyAt].id}
@@ -204,7 +231,13 @@ export const AgentFeatures: React.FC<{
             </AnimatePresence>
           </div>
 
-          <m.div className="stage-outer" layout transition={{ duration: doAnimate ? 0.3 : 0, ease: [0.22, 1, 0.36, 1] }}>
+          <m.div
+            ref={stageOuter}
+            className="stage-outer"
+            style={reserved?.panel ? { minHeight: reserved.panel } : undefined}
+            layout
+            transition={{ duration: doAnimate ? 0.3 : 0, ease: [0.22, 1, 0.36, 1] }}
+          >
             {families.map((f, fi) =>
               f.agents.map((a, ai) => {
                 const isShown = fi === shown.f && ai === shown.a
@@ -223,7 +256,13 @@ export const AgentFeatures: React.FC<{
                     role="region"
                     aria-label={a.name}
                     aria-hidden={!active}
-                    style={{ position: isShown ? 'relative' : 'absolute', inset: isShown ? undefined : 0, pointerEvents: active ? 'auto' : 'none' }}
+                    // Inactive panels sit top, left and right, at their own height, so each can be measured
+                    // where it is; the shown one fills the reserved height (not while measuring).
+                    style={{
+                      ...(isShown ? { position: 'relative' as const } : { position: 'absolute' as const, top: 0, left: 0, right: 0 }),
+                      minHeight: isShown && !measuring ? reserved?.panel : undefined,
+                      pointerEvents: active ? 'auto' : 'none',
+                    }}
                     animate={{ opacity: active ? 1 : 0, x: fading ? -14 * dir : 0 }}
                     transition={{ duration: doAnimate ? 0.16 : 0 }}
                     onAnimationComplete={() => {

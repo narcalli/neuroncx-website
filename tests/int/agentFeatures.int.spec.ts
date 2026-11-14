@@ -6,6 +6,7 @@ import { AgentFeatures } from '@/blocks/AgenticFlowDemo/AgentFeatures'
 import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
 import { featureFamilies, toFeatureAgent } from '@/blocks/AgenticFlowDemo/featureData'
 import type { MicroApp } from '@/payload-types'
+import { tallest } from '@/blocks/AgenticFlowDemo/useMeasured'
 
 /** The Agentic Flow Demo in Agent features mode. */
 
@@ -93,9 +94,10 @@ describe('the panel', () => {
 
   it("puts every agent's panel in the HTML (motion plan prompt 7: out of flow, not display:none), only the selected one laid out", () => {
     for (const id of ['a1', 'a2', 'a3']) expect(html).toContain(`id="ncx-agent-${id}"`)
+    // Inactive panels sit top, left and right at their own height, so each can be measured where it is.
     expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance" aria-hidden="false" style="position:relative;pointer-events:auto"/)
-    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"/)
-    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"/)
+    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none"/)
+    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none"/)
     expect(html).not.toContain('Recover')
   })
 
@@ -125,3 +127,13 @@ describe('the panel', () => {
     ).toBe('')
   })
 })
+
+describe('reserving height (useMeasured)', () => {
+  it('takes the tallest element, or nothing when there are none', () => {
+    const el = (offsetHeight: number) => ({ offsetHeight }) as unknown as Element
+    expect(tallest([el(234), el(254), el(197)])).toBe(254)
+    expect(tallest([])).toBeUndefined()
+    expect(tallest(null)).toBeUndefined()
+  })
+})
+

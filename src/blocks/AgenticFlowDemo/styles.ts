@@ -90,6 +90,8 @@ export const featuresCss = `
         .ncx-flow--features .stage-outer{position:relative}
         .ncx-flow--features .lab-q--agents{margin:20px 0 10px}
         .ncx-flow--features .chips{display:flex;flex-wrap:wrap;gap:8px}
+        /* Every family's item row, hidden, while the row height is measured (AgentFeatures). */
+        .ncx-flow--features .chips-ghosts{position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none}
         .ncx-flow--features .chip{display:inline-flex;align-items:center;gap:7px;color:var(--ncx-body);background:var(--ncx-white);
           border:1px solid var(--ncx-rule);border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit;font-weight:500;font-size:.84rem;line-height:1.2}
         .ncx-flow--features.fd-compact .chip{padding:4px 10px;font-size:.78rem}
