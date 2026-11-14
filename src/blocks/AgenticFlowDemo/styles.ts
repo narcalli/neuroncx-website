@@ -25,6 +25,10 @@ export const flowCss = `
         .ncx-flow .stage{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(28px,6vw,80px);margin-top:26px;align-items:stretch}
         .ncx-flow.fd-top .stage{align-items:start}
         .ncx-flow .stage-svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
+        /* Each event's cards, laid out hidden at the stage's width so the stage can keep the tallest
+           one's height (FlowDemo). Only there while measuring. */
+        .ncx-flow .stage-ghosts{position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none;z-index:-1}
+        .ncx-flow .stage-ghosts .stage{margin:0}
         .ncx-flow.fd-line-none .stage-svg{display:none}
         .ncx-flow.fd-line-static .dot{display:none}
         .ncx-flow .base{fill:none;stroke:var(--fd-line,var(--ncx-rule));stroke-width:2;stroke-dasharray:4 7}
@@ -54,6 +58,7 @@ export const flowCss = `
         .ncx-flow .stage-foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(28px,6vw,80px);margin-top:12px}
         .ncx-flow .ev-link{grid-column:3;justify-self:start;font-weight:600;font-size:.9rem;color:var(--ncx-crimson-ink);text-decoration:none}
         .ncx-flow .ev-link:hover{text-decoration:underline}
+        .ncx-flow .ev-link--none{visibility:hidden}
         .ncx-flow .note{margin:18px 0 0;font-size:.82rem;color:var(--ncx-muted)}
         @media (max-width:720px){
           .ncx-flow{padding:60px 0}

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import type { AgenticFlowDemoBlock as AgenticFlowDemoProps } from '@/payload-types'
 
@@ -66,12 +66,88 @@ export const FlowDemo: React.FC<
     }
   }, [d.autoplay, touched, list.length, level])
 
+  // The stage keeps the height of its tallest event, so nothing below it moves as
+  // events change (route points can differ in number). Each event's cards are laid
+  // out once, hidden, after mount, and again on resize and once fonts have loaded.
+  const [stageMin, setStageMin] = useState<number>()
+  const [measuring, setMeasuring] = useState(false)
+  const ghosts = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (list.length < 2) return
+    let wait: number | undefined
+    const measure = () => setMeasuring(true)
+    const onResize = () => {
+      window.clearTimeout(wait)
+      wait = window.setTimeout(measure, 150)
+    }
+    measure()
+    window.addEventListener('resize', onResize)
+    void document.fonts?.ready.then(measure)
+    return () => {
+      window.clearTimeout(wait)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [list.length])
+
+  useLayoutEffect(() => {
+    if (!measuring) return
+    const heights = [...(ghosts.current?.children ?? [])].map((el) => (el as HTMLElement).offsetHeight)
+    setStageMin(heights.length ? Math.max(...heights) : undefined)
+    setMeasuring(false)
+  }, [measuring])
+
   if (!list.length) return null
 
   const link = ev?.id ? links[ev.id] : undefined
-  // Ticks under the route text. No animation: the line is measured from the cards' heights.
-  const routePoints = (ev?.routePoints ?? []).map((p) => p?.line?.trim()).filter((l): l is string => Boolean(l))
+  // The link row stays while any event has a link, so the block keeps its height across events.
+  const anyLink = list.some((e) => e.id && links[e.id])
   const [first, second, third] = d.stageLabels
+
+  // One event's three cards: on the stage, and hidden while the stage height is measured.
+  const cards = (e: DemoEvent | undefined, routeOn: boolean, resolveOn: boolean) => {
+    // Ticks under the route text. No animation: the line is measured from the cards' heights.
+    const points = (e?.routePoints ?? []).map((p) => p?.line?.trim()).filter((l): l is string => Boolean(l))
+    return (
+      <>
+        <div className={`node n-trig on`} style={accentVars(d.accents[0])}>
+          <span className="tag">{first}</span>
+          <b>{e?.triggerTitle}</b>
+          <small>{e?.triggerText}</small>
+        </div>
+
+        <div className={`node n-route${routeOn ? ' on' : ''}`} style={accentVars(d.accents[1])}>
+          <span className="tag">{second}</span>
+          <div className="hch">
+            {HANDLERS.map((h) => (
+              <span key={h} className={routeOn && (e?.handlers || []).includes(h) ? 'on' : ''}>
+                {d.handlerLabels[h]}
+              </span>
+            ))}
+          </div>
+          <small>{e?.routeText}</small>
+          {points.length ? (
+            <ul className="pts">
+              {points.map((line, i) => (
+                <li key={i}>
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+                    <path d="M3.5 8.5 6.5 11.5 12.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+
+        <div className={`node n-res ok${resolveOn ? ' on' : ''}`} style={accentVars(d.accents[2])}>
+          <span className="tag">{third}</span>
+          <b>{e?.resolveTitle}</b>
+          <small>{e?.resolveText}</small>
+        </div>
+      </>
+    )
+  }
 
   return (
     <section className={`ncx-flow ${designClasses(d)}`} style={designVars(d)}>
@@ -102,49 +178,29 @@ export const FlowDemo: React.FC<
             ))}
           </div>
 
-          <div className="stage">
-            <StageLine lineStyle={d.lineStyle} playKey={plays} onProgress={setProgress} />
+          <div className="stage" style={stageMin ? { minHeight: stageMin } : undefined}>
+            <StageLine lineStyle={d.lineStyle} playKey={plays} onProgress={setProgress} remeasure={stageMin} />
 
-            <div className={`node n-trig on`} style={accentVars(d.accents[0])}>
-              <span className="tag">{first}</span>
-              <b>{ev?.triggerTitle}</b>
-              <small>{ev?.triggerText}</small>
-            </div>
+            {cards(ev, routeOn, resolveOn)}
 
-            <div className={`node n-route${routeOn ? ' on' : ''}`} style={accentVars(d.accents[1])}>
-              <span className="tag">{second}</span>
-              <div className="hch">
-                {HANDLERS.map((h) => (
-                  <span key={h} className={routeOn && (ev?.handlers || []).includes(h) ? 'on' : ''}>
-                    {d.handlerLabels[h]}
-                  </span>
+            {measuring ? (
+              <div className="stage-ghosts" ref={ghosts} aria-hidden="true">
+                {list.map((e, i) => (
+                  <div key={i} className="stage">
+                    {cards(e, true, true)}
+                  </div>
                 ))}
               </div>
-              <small>{ev?.routeText}</small>
-              {routePoints.length ? (
-                <ul className="pts">
-                  {routePoints.map((line, i) => (
-                    <li key={i}>
-                      <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
-                        <path d="M3.5 8.5 6.5 11.5 12.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-
-            <div className={`node n-res ok${resolveOn ? ' on' : ''}`} style={accentVars(d.accents[2])}>
-              <span className="tag">{third}</span>
-              <b>{ev?.resolveTitle}</b>
-              <small>{ev?.resolveText}</small>
-            </div>
+            ) : null}
           </div>
 
-          {link ? (
+          {anyLink ? (
             <div className="stage-foot">
-              {isExternal(link.href) || link.newTab ? (
+              {!link ? (
+                <span className="ev-link ev-link--none" aria-hidden="true">
+                  &nbsp;
+                </span>
+              ) : isExternal(link.href) || link.newTab ? (
                 <a
                   className="ev-link"
                   href={link.href}

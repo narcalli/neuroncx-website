@@ -168,10 +168,15 @@ describe('Flow mode on the page', () => {
     expect(flow({})).toContain('<svg class="stage-svg"')
   })
 
-  it("shows the selected event's link under the resolve card", () => {
+  it("shows the selected event's link under the resolve card, keeping the row on events without one", () => {
     const html = flow({}, { e1: { label: 'See the payment flow', href: '/payments', newTab: false } })
     expect(html).toMatch(/<div class="stage-foot"><a class="ev-link" href="\/payments">See the payment flow →<\/a><\/div>/)
-    expect(flow({ startEvent: 2 }, { e1: { label: 'x', href: '/x', newTab: false } })).not.toContain('class="stage-foot"')
+    // Another event has a link: the row stays, hidden, so the block keeps its height across events.
+    const other = flow({ startEvent: 2 }, { e1: { label: 'x', href: '/x', newTab: false } })
+    expect(other).toMatch(/<div class="stage-foot"><span class="ev-link ev-link--none" aria-hidden="true">\u00a0<\/span><\/div>/)
+    expect(other).not.toContain('href="/x"')
+    // No event has a link: no row at all.
+    expect(flow({ startEvent: 2 }, {})).not.toContain('class="stage-foot"')
   })
 })
 

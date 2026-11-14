@@ -21,7 +21,9 @@ export const StageLine: React.FC<{
   lineStyle: LineStyle
   playKey: string | number
   onProgress?: (p: number) => void
-}> = ({ lineStyle, playKey, onProgress }) => {
+  /** Changes when the stage's own size is set, such as Flow mode's height across events: the line is measured again. */
+  remeasure?: unknown
+}> = ({ lineStyle, playKey, onProgress, remeasure }) => {
   const svgRef = useRef<SVGSVGElement>(null)
   const pathRef = useRef<SVGPathElement>(null)
   const dotRef = useRef<SVGCircleElement>(null)
@@ -82,6 +84,12 @@ export const StageLine: React.FC<{
     running.current = animate(0, 1, { duration: 2.6, ease: 'easeInOut', onUpdate: (v) => paint(v) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playKey, lineStyle])
+
+  // Measured again, without replaying, when the stage's size is set from outside.
+  useLayoutEffect(() => {
+    layout()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remeasure])
 
   useEffect(() => {
     const onResize = () => layout()
