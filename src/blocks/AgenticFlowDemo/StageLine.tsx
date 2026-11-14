@@ -101,6 +101,26 @@ export const StageLine: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Card heights can change with no event change or resize, such as when web fonts
+  // arrive: measured again on the next frame, at most once a frame. It repaints at
+  // the current point, so a running line animation carries on rather than restarting.
+  useEffect(() => {
+    const stage = svgRef.current?.parentElement
+    if (!stage || typeof ResizeObserver === 'undefined') return
+    let frame = 0
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => layout())
+    })
+    observer.observe(stage)
+    stage.querySelectorAll(':scope > .node').forEach((node) => observer.observe(node))
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lineStyle])
+
   if (lineStyle === 'none') return null
   return (
     <svg className="stage-svg" ref={svgRef} aria-hidden="true" focusable="false">
