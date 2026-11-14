@@ -174,6 +174,7 @@ export interface Config {
     features: Feature;
     users: User;
     enquiries: Enquiry;
+    enquiryReads: EnquiryRead;
     sectors: Sector;
     industryTopics: IndustryTopic;
     sharedContent: SharedContent;
@@ -213,6 +214,7 @@ export interface Config {
     features: FeaturesSelect<false> | FeaturesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
+    enquiryReads: EnquiryReadsSelect<false> | EnquiryReadsSelect<true>;
     sectors: SectorsSelect<false> | SectorsSelect<true>;
     industryTopics: IndustryTopicsSelect<false> | IndustryTopicsSelect<true>;
     sharedContent: SharedContentSelect<false> | SharedContentSelect<true>;
@@ -922,13 +924,13 @@ export interface Page {
   updatedBy?: (string | null) | User;
   rolledBackFrom?: string | null;
   /**
+   * What changed and what to check. Write it before ticking Ready for review: it goes in the email and the review queue.
+   */
+  reviewNote?: string | null;
+  /**
    * Asks a content owner or admin to review and publish this entry. They are emailed when this is ticked and saved, while the review workflow is on. Cleared on publish.
    */
   readyForReview?: boolean | null;
-  /**
-   * What changed and what to check. Sent in the email and shown in the review queue.
-   */
-  reviewNote?: string | null;
   reviewRequestedBy?: (string | null) | User;
   reviewRequestedAt?: string | null;
   updatedAt: string;
@@ -988,13 +990,13 @@ export interface Post {
   updatedBy?: (string | null) | User;
   rolledBackFrom?: string | null;
   /**
+   * What changed and what to check. Write it before ticking Ready for review: it goes in the email and the review queue.
+   */
+  reviewNote?: string | null;
+  /**
    * Asks a content owner or admin to review and publish this entry. They are emailed when this is ticked and saved, while the review workflow is on. Cleared on publish.
    */
   readyForReview?: boolean | null;
-  /**
-   * What changed and what to check. Sent in the email and shown in the review queue.
-   */
-  reviewNote?: string | null;
   reviewRequestedBy?: (string | null) | User;
   reviewRequestedAt?: string | null;
   updatedAt: string;
@@ -4274,13 +4276,13 @@ export interface Sector {
   updatedBy?: (string | null) | User;
   rolledBackFrom?: string | null;
   /**
+   * What changed and what to check. Write it before ticking Ready for review: it goes in the email and the review queue.
+   */
+  reviewNote?: string | null;
+  /**
    * Asks a content owner or admin to review and publish this entry. They are emailed when this is ticked and saved, while the review workflow is on. Cleared on publish.
    */
   readyForReview?: boolean | null;
-  /**
-   * What changed and what to check. Sent in the email and shown in the review queue.
-   */
-  reviewNote?: string | null;
   reviewRequestedBy?: (string | null) | User;
   reviewRequestedAt?: string | null;
   updatedAt: string;
@@ -5689,6 +5691,15 @@ export interface AgenticFlowDemoBlock {
         triggerTitle: string;
         triggerText: string;
         routeText: string;
+        /**
+         * Named items listed under the route text, as ticks. Leave empty for a plain text card.
+         */
+        routePoints?:
+          | {
+              line: string;
+              id?: string | null;
+            }[]
+          | null;
         handlers?: ('agent' | 'human')[] | null;
         resolveTitle: string;
         resolveText: string;
@@ -6459,13 +6470,13 @@ export interface MicroApp {
   updatedBy?: (string | null) | User;
   rolledBackFrom?: string | null;
   /**
+   * What changed and what to check. Write it before ticking Ready for review: it goes in the email and the review queue.
+   */
+  reviewNote?: string | null;
+  /**
    * Asks a content owner or admin to review and publish this entry. They are emailed when this is ticked and saved, while the review workflow is on. Cleared on publish.
    */
   readyForReview?: boolean | null;
-  /**
-   * What changed and what to check. Sent in the email and shown in the review queue.
-   */
-  reviewNote?: string | null;
   reviewRequestedBy?: (string | null) | User;
   reviewRequestedAt?: string | null;
   updatedAt: string;
@@ -10272,13 +10283,13 @@ export interface IndustryTopic {
   updatedBy?: (string | null) | User;
   rolledBackFrom?: string | null;
   /**
+   * What changed and what to check. Write it before ticking Ready for review: it goes in the email and the review queue.
+   */
+  reviewNote?: string | null;
+  /**
    * Asks a content owner or admin to review and publish this entry. They are emailed when this is ticked and saved, while the review workflow is on. Cleared on publish.
    */
   readyForReview?: boolean | null;
-  /**
-   * What changed and what to check. Sent in the email and shown in the review queue.
-   */
-  reviewNote?: string | null;
   reviewRequestedBy?: (string | null) | User;
   reviewRequestedAt?: string | null;
   updatedAt: string;
@@ -10819,6 +10830,33 @@ export interface Enquiry {
     note?: string | null;
     sentAt?: string | null;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Who saw which enquiry, and when. Kept by the system; it cannot be edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiryReads".
+ */
+export interface EnquiryRead {
+  id: string;
+  /**
+   * The enquiry opened. Empty for a list.
+   */
+  enquiry?: (string | null) | Enquiry;
+  /**
+   * How many enquiries were returned: 1 for an enquiry opened, the number listed for a list.
+   */
+  count?: number | null;
+  user?: (string | null) | User;
+  /**
+   * Listed: a list of enquiries. Opened: one enquiry, looked at on its own.
+   */
+  how: 'listed' | 'opened';
+  via?: ('session' | 'apiKey') | null;
+  ip?: string | null;
+  userAgent?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -11598,6 +11636,10 @@ export interface Redirect {
         } | null);
     url?: string | null;
   };
+  /**
+   * Permanent tells search engines the move is for good. Temporary keeps the old address listed.
+   */
+  type?: ('308' | '307') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -11795,6 +11837,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'enquiries';
         value: string | Enquiry;
+      } | null)
+    | ({
+        relationTo: 'enquiryReads';
+        value: string | EnquiryRead;
       } | null)
     | ({
         relationTo: 'sectors';
@@ -12049,8 +12095,8 @@ export interface PagesSelect<T extends boolean = true> {
   breadcrumbLabel?: T;
   updatedBy?: T;
   rolledBackFrom?: T;
-  readyForReview?: T;
   reviewNote?: T;
+  readyForReview?: T;
   reviewRequestedBy?: T;
   reviewRequestedAt?: T;
   updatedAt?: T;
@@ -12642,6 +12688,12 @@ export interface AgenticFlowDemoBlockSelect<T extends boolean = true> {
         triggerTitle?: T;
         triggerText?: T;
         routeText?: T;
+        routePoints?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
         handlers?: T;
         resolveTitle?: T;
         resolveText?: T;
@@ -13952,8 +14004,8 @@ export interface PostsSelect<T extends boolean = true> {
   slug?: T;
   updatedBy?: T;
   rolledBackFrom?: T;
-  readyForReview?: T;
   reviewNote?: T;
+  readyForReview?: T;
   reviewRequestedBy?: T;
   reviewRequestedAt?: T;
   updatedAt?: T;
@@ -14201,6 +14253,21 @@ export interface EnquiriesSelect<T extends boolean = true> {
         note?: T;
         sentAt?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiryReads_select".
+ */
+export interface EnquiryReadsSelect<T extends boolean = true> {
+  enquiry?: T;
+  count?: T;
+  user?: T;
+  how?: T;
+  via?: T;
+  ip?: T;
+  userAgent?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -14700,8 +14767,8 @@ export interface SectorsSelect<T extends boolean = true> {
   kbLastReviewed?: T;
   updatedBy?: T;
   rolledBackFrom?: T;
-  readyForReview?: T;
   reviewNote?: T;
+  readyForReview?: T;
   reviewRequestedBy?: T;
   reviewRequestedAt?: T;
   updatedAt?: T;
@@ -14926,8 +14993,8 @@ export interface IndustryTopicsSelect<T extends boolean = true> {
   kbLastReviewed?: T;
   updatedBy?: T;
   rolledBackFrom?: T;
-  readyForReview?: T;
   reviewNote?: T;
+  readyForReview?: T;
   reviewRequestedBy?: T;
   reviewRequestedAt?: T;
   updatedAt?: T;
@@ -15818,8 +15885,8 @@ export interface MicroAppsSelect<T extends boolean = true> {
       };
   updatedBy?: T;
   rolledBackFrom?: T;
-  readyForReview?: T;
   reviewNote?: T;
+  readyForReview?: T;
   reviewRequestedBy?: T;
   reviewRequestedAt?: T;
   updatedAt?: T;
@@ -16089,6 +16156,7 @@ export interface RedirectsSelect<T extends boolean = true> {
         reference?: T;
         url?: T;
       };
+  type?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -16688,6 +16756,18 @@ export interface ContentStandard {
    * On: on Pages, Posts, Industries, Industry topics and Bot swarm, authors cannot publish or schedule a publish. They tick Ready for review, and content owners and admins are emailed. Off: anyone signed in can publish, and no review emails are sent.
    */
   reviewRequired?: boolean | null;
+  /**
+   * Other websites a redirect may send visitors to. Redirects to paths on this site, or to the site itself, need no entry here.
+   */
+  redirectHosts?:
+    | {
+        /**
+         * For example docs.example.com.
+         */
+        host: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -16945,6 +17025,12 @@ export interface ContentStandardsSelect<T extends boolean = true> {
         id?: T;
       };
   reviewRequired?: T;
+  redirectHosts?:
+    | T
+    | {
+        host?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

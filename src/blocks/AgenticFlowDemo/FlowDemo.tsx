@@ -69,6 +69,8 @@ export const FlowDemo: React.FC<
   if (!list.length) return null
 
   const link = ev?.id ? links[ev.id] : undefined
+  // Ticks under the route text. No animation: the line is measured from the cards' heights.
+  const routePoints = (ev?.routePoints ?? []).map((p) => p?.line?.trim()).filter((l): l is string => Boolean(l))
   const [first, second, third] = d.stageLabels
 
   return (
@@ -119,6 +121,18 @@ export const FlowDemo: React.FC<
                 ))}
               </div>
               <small>{ev?.routeText}</small>
+              {routePoints.length ? (
+                <ul className="pts">
+                  {routePoints.map((line, i) => (
+                    <li key={i}>
+                      <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+                        <path d="M3.5 8.5 6.5 11.5 12.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
             <div className={`node n-res ok${resolveOn ? ' on' : ''}`} style={accentVars(d.accents[2])}>

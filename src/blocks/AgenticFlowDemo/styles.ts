@@ -47,6 +47,10 @@ export const flowCss = `
         .ncx-flow .hch{display:flex;gap:8px;flex-wrap:wrap}
         .ncx-flow .hch span{border-radius:999px;padding:5px 11px;font-size:.8rem;border:1px solid var(--ncx-rule);color:var(--ncx-muted);transition:background .3s,color .3s}
         .ncx-flow .hch span.on{background:var(--ncx-crimson);color:var(--ncx-on-navy);border-color:var(--ncx-crimson)}
+        /* Route points: ticks under the route text, as Agent features' list, the tick in the card's accent. */
+        .ncx-flow .pts{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+        .ncx-flow .pts li{display:flex;align-items:flex-start;gap:9px;font-size:.88rem;line-height:1.45;color:var(--ncx-body)}
+        .ncx-flow .pts svg{flex:none;margin-top:2px;color:var(--acc)}
         .ncx-flow .stage-foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(28px,6vw,80px);margin-top:12px}
         .ncx-flow .ev-link{grid-column:3;justify-self:start;font-weight:600;font-size:.9rem;color:var(--ncx-crimson-ink);text-decoration:none}
         .ncx-flow .ev-link:hover{text-decoration:underline}
