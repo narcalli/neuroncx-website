@@ -95,9 +95,10 @@ describe('the panel', () => {
   it("puts every agent's panel in the HTML (motion plan prompt 7: out of flow, not display:none), only the selected one laid out", () => {
     for (const id of ['a1', 'a2', 'a3']) expect(html).toContain(`id="ncx-agent-${id}"`)
     // Inactive panels sit top, left and right at their own height, so each can be measured where it is.
-    expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance" aria-hidden="false" style="position:relative;pointer-events:auto"/)
-    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none"/)
-    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none"/)
+    // Each carries its opacity in the server HTML, so only the selected one shows before JavaScript runs.
+    expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance" aria-hidden="false" style="position:relative;pointer-events:auto;opacity:1;transform:none"/)
+    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
+    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
     expect(html).not.toContain('Recover')
   })
 

@@ -263,6 +263,10 @@ export const AgentFeatures: React.FC<{
                       minHeight: isShown && !measuring ? reserved?.panel : undefined,
                       pointerEvents: active ? 'auto' : 'none',
                     }}
+                    // Start from the animate values, so the server HTML already carries each panel's
+                    // opacity: the selected one visible, the rest hidden, before any JavaScript runs.
+                    // No mount animation; later changes animate as before.
+                    initial={false}
                     animate={{ opacity: active ? 1 : 0, x: fading ? -14 * dir : 0 }}
                     transition={{ duration: doAnimate ? 0.16 : 0 }}
                     onAnimationComplete={() => {
