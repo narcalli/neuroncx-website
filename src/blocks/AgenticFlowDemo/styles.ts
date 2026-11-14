@@ -116,6 +116,11 @@ export const featuresCss = `
         .ncx-flow--features .saves-ic{flex:none}
         .ncx-flow--features .saves .pkt{fill:var(--ncx-crimson)}
         .ncx-flow--features .saves small{color:var(--ncx-muted);font-size:.85rem;line-height:1.45}
+        /* Groups mode: an item's own icon where the cylinder sits, at the cylinder's size, and its link
+           at the foot of the third card. */
+        .ncx-flow--features .saves-icon{flex:none;display:inline-flex;align-items:center;justify-content:flex-end;width:46px;height:30px;color:var(--ncx-navy)}
+        .ncx-flow--features .saves-icon svg{width:22px;height:22px}
+        .ncx-flow--features .node .ev-link{align-self:flex-start;margin-top:6px}
         @media (max-width:899.98px){
           .ncx-flow--features .stage{grid-template-columns:1fr;gap:30px}
           .ncx-flow--features .stage::before{left:50%;right:auto;top:0;bottom:0;width:3px;height:auto;margin:0 0 0 -1.5px}

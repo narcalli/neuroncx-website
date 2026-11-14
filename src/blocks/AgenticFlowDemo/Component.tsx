@@ -58,6 +58,8 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
         pickAgentLabel={props.pickAgentLabel || 'Agents'}
         design={resolveDesign(props)}
         motion={props.motion}
+        // Only when set: an unset prop would still be written into the page's data.
+        {...(props.youSetLabel ? { youSetLabel: props.youSetLabel } : {})}
       />
     )
   }
@@ -91,6 +93,8 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
       pickAgentLabel={props.pickAgentLabel || 'Agents'}
       design={resolveDesign(props)}
       motion={props.motion}
+      // Only when set: an unset prop would still be written into the page's data.
+      {...(props.youSetLabel ? { youSetLabel: props.youSetLabel } : {})}
     />
   )
 }

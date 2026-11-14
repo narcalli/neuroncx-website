@@ -1,7 +1,10 @@
 'use client'
 
 import { AnimatePresence, motion as m } from 'motion/react'
+import Link from 'next/link'
 import React, { useRef, useState } from 'react'
+
+import { BlockIcon } from '@/components/BlockIcon'
 
 import { arc, controlThrough } from '@/motion/arc'
 import { gsap, useGSAP } from '@/motion/gsap'
@@ -28,6 +31,17 @@ const listVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -36 : 36, opacity: 0 }),
 }
 
+/** The item button's chip: Groups' own, else "Pilot" for an agent in pilot. */
+const chipOf = (a: FeatureAgent): string | null => a.chip ?? (a.pilot ? 'Pilot' : null)
+
+/** The second card's pills: Groups' handler tags when set, else the Virtual agent pill and Human team after a hand-over. */
+const pillsOf = (a: FeatureAgent) => ({
+  agent: a.handlerTags ? a.handlerTags.includes('agent') : true,
+  human: a.handlerTags ? a.handlerTags.includes('human') : a.humanTeam,
+})
+
+const isExternal = (href: string) => /^https?:\/\//.test(href)
+
 /**
  * Agent features mode: pick a family, then an agent, and see what it does,
  * its features and what it saves. Every agent's panel is in the HTML, so
@@ -53,7 +67,10 @@ export const AgentFeatures: React.FC<{
   design: Design
   /** The block's own Motion panel. */
   motion?: MotionSetting | null
-}> = ({ eyebrow, heading, intro, families, pickFamilyLabel, pickAgentLabel, design: d, motion }) => {
+  /** Before the third card's last line; "You set:" when the block has none. */
+  youSetLabel?: string | null
+}> = ({ eyebrow, heading, intro, families, pickFamilyLabel, pickAgentLabel, design: d, motion, youSetLabel }) => {
+  const youSet = youSetLabel?.trim() || 'You set:'
   const doAnimate = useMotionLevel(motion) === 'on'
 
   // familyAt/agentAt: the tabs' own selection, moves at once so a click
@@ -191,7 +208,7 @@ export const AgentFeatures: React.FC<{
                     {f.agents.map((a) => (
                       <button key={a.id} type="button" className="chip" tabIndex={-1}>
                         {a.name}
-                        {a.pilot ? <span className="pilot">Pilot</span> : null}
+                        {chipOf(a) ? <span className="pilot">{chipOf(a)}</span> : null}
                       </button>
                     ))}
                   </div>
@@ -224,7 +241,7 @@ export const AgentFeatures: React.FC<{
                     onClick={() => pickAgent(ai)}
                   >
                     {a.name}
-                    {a.pilot ? <span className="pilot">Pilot</span> : null}
+                    {chipOf(a) ? <span className="pilot">{chipOf(a)}</span> : null}
                   </m.button>
                 ))}
               </m.div>
@@ -248,6 +265,7 @@ export const AgentFeatures: React.FC<{
                 // HTML already shows in its settled state (gen is bumped
                 // only once a change has actually happened).
                 const replay = doAnimate && isShown && gen > 0
+                const pills = pillsOf(a)
                 return (
                   <m.div
                     key={a.id}
@@ -316,60 +334,88 @@ export const AgentFeatures: React.FC<{
                           ))}
                         </ul>
                       ) : null}
-                      <div className="hch hch--handlers" key={isShown ? `hdl-${gen}` : 'hdl'}>
-                        <m.span
-                          className="on"
-                          initial={replay ? { opacity: 0, scale: 0.6 } : false}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ stiffness: 500, damping: 20, type: 'spring' as const, delay: replay ? 0.15 : 0 }}
-                        >
-                          {d.handlerLabels.agent}
-                        </m.span>
-                        {a.humanTeam ? (
-                          <m.span
-                            className="on"
-                            initial={replay ? { opacity: 0, scale: 0.6 } : false}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ stiffness: 500, damping: 20, type: 'spring' as const, delay: replay ? 0.23 : 0 }}
-                          >
-                            {d.handlerLabels.human}
-                          </m.span>
-                        ) : null}
-                      </div>
+                      {pills.agent || pills.human ? (
+                        <div className="hch hch--handlers" key={isShown ? `hdl-${gen}` : 'hdl'}>
+                          {pills.agent ? (
+                            <m.span
+                              className="on"
+                              initial={replay ? { opacity: 0, scale: 0.6 } : false}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ stiffness: 500, damping: 20, type: 'spring' as const, delay: replay ? 0.15 : 0 }}
+                            >
+                              {d.handlerLabels.agent}
+                            </m.span>
+                          ) : null}
+                          {pills.human ? (
+                            <m.span
+                              className="on"
+                              initial={replay ? { opacity: 0, scale: 0.6 } : false}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ stiffness: 500, damping: 20, type: 'spring' as const, delay: replay ? 0.23 : 0 }}
+                            >
+                              {d.handlerLabels.human}
+                            </m.span>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
 
                     <div className="node ok on" style={accentVars(d.accents[2])}>
                       <span className="tag">{d.stageLabels[2]}</span>
                       {a.records ? (
                         <div className="saves">
-                          <svg className="saves-ic" width="46" height="30" viewBox="0 0 64 36" aria-hidden="true" style={{ overflow: 'visible' }}>
-                            <circle
-                              className="pkt"
-                              ref={(el) => {
-                                packetRefs.current[a.id] = el
-                              }}
-                              r={6}
-                              cx={2}
-                              cy={12}
-                              opacity={0}
-                            />
-                            <g
-                              ref={(el) => {
-                                dbRefs.current[a.id] = el
-                              }}
-                            >
-                              <path d="M38 9v18c0 2.2 5.4 4 12 4s12-1.8 12-4V9" fill="var(--ncx-white)" stroke="var(--ncx-navy)" strokeWidth="1.8" />
-                              <ellipse cx={50} cy={9} rx={12} ry={4} fill="var(--ncx-white)" stroke="var(--ncx-navy)" strokeWidth="1.8" />
-                              <path d="M38 18c0 2.2 5.4 4 12 4s12-1.8 12-4" fill="none" stroke="var(--ncx-navy)" strokeWidth="1.4" />
-                            </g>
-                          </svg>
+                          {/* An item's own icon takes the cylinder's place, without the packet, which is aimed at
+                              the cylinder; a Groups item without one shows none. Agents keep the cylinder. */}
+                          {a.icon ? (
+                            <span className="saves-icon">
+                              <BlockIcon name={a.icon} fallback="database" round />
+                            </span>
+                          ) : a.icon === undefined ? (
+                            <svg className="saves-ic" width="46" height="30" viewBox="0 0 64 36" aria-hidden="true" style={{ overflow: 'visible' }}>
+                              <circle
+                                className="pkt"
+                                ref={(el) => {
+                                  packetRefs.current[a.id] = el
+                                }}
+                                r={6}
+                                cx={2}
+                                cy={12}
+                                opacity={0}
+                              />
+                              <g
+                                ref={(el) => {
+                                  dbRefs.current[a.id] = el
+                                }}
+                              >
+                                <path d="M38 9v18c0 2.2 5.4 4 12 4s12-1.8 12-4V9" fill="var(--ncx-white)" stroke="var(--ncx-navy)" strokeWidth="1.8" />
+                                <ellipse cx={50} cy={9} rx={12} ry={4} fill="var(--ncx-white)" stroke="var(--ncx-navy)" strokeWidth="1.8" />
+                                <path d="M38 18c0 2.2 5.4 4 12 4s12-1.8 12-4" fill="none" stroke="var(--ncx-navy)" strokeWidth="1.4" />
+                              </g>
+                            </svg>
+                          ) : null}
                           <small>{a.records}</small>
                         </div>
                       ) : null}
                       {a.teamControls ? (
                         <small className="you-set">
-                          <strong>You set:</strong> {a.teamControls}
+                          <strong>{youSet}</strong> {a.teamControls}
                         </small>
+                      ) : null}
+                      {/* Label and arrow as one string: Next's compiler drops the space between {label} and &rarr;. */}
+                      {a.link ? (
+                        isExternal(a.link.href) || a.link.newTab ? (
+                          <a
+                            className="ev-link"
+                            href={a.link.href}
+                            {...(a.link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                          >
+                            {`${a.link.label} →`}
+                          </a>
+                        ) : (
+                          <Link className="ev-link" href={a.link.href}>
+                            {`${a.link.label} →`}
+                          </Link>
+                        )
                       ) : null}
                     </div>
                   </m.div>

@@ -236,3 +236,92 @@ describe('a link (resolveLink)', () => {
   })
 })
 
+describe('Groups mode in the explorer', () => {
+  const item = (over: Record<string, unknown>) => ({
+    summary: 'A summary.',
+    features: [{ line: 'One' }],
+    lands: 'On the record.',
+    ...over,
+  })
+  const render = (items: Record<string, unknown>[], youSetLabel?: string) =>
+    renderToStaticMarkup(
+      React.createElement(AgentFeatures, {
+        heading: 'Groups',
+        families: groupsToFamilies([{ id: 'g1', label: 'CRM', items }] as never),
+        pickFamilyLabel: 'Pick a group',
+        pickAgentLabel: 'Items',
+        design: resolveDesign({ mode: 'groups' }),
+        ...(youSetLabel ? { youSetLabel } : {}),
+      }),
+    )
+  const panel = (html: string, id: string) => {
+    const start = html.indexOf(`id="ncx-agent-${id}"`)
+    const next = html.indexOf('id="ncx-agent-', start + 1)
+    return html.slice(start, next === -1 ? undefined : next)
+  }
+
+  it("shows an item's own chip on its button, and none without one", () => {
+    const html = render([item({ id: 'i1', name: 'Customer 360', chip: 'New' }), item({ id: 'i2', name: 'Transactions' })])
+    expect(html).toMatch(/aria-controls="ncx-agent-i1"[^>]*>Customer 360<span class="pilot">New<\/span>/)
+    expect(html).toMatch(/aria-controls="ncx-agent-i2"[^>]*>Transactions<\/button>/)
+  })
+
+  it('draws both handler pills, one, or none (and then no pill row at all)', () => {
+    const html = render([
+      item({ id: 'both', name: 'Both', handlerTags: ['agent', 'human'] }),
+      item({ id: 'human', name: 'Human', handlerTags: ['human'] }),
+      item({ id: 'none', name: 'None', handlerTags: [] }),
+    ])
+    const pills = (id: string) => [...panel(html, id).matchAll(/<span class="on"[^>]*>(Virtual agent|Human team)<\/span>/g)].map((m) => m[1])
+    expect(pills('both')).toEqual(['Virtual agent', 'Human team'])
+    expect(pills('human')).toEqual(['Human team'])
+    expect(pills('none')).toEqual([])
+    expect(panel(html, 'none')).not.toContain('hch--handlers')
+  })
+
+  it('draws a chosen icon in place of the cylinder, without the packet, and no icon without one', () => {
+    const html = render([item({ id: 'icon', name: 'Icon', icon: 'users' }), item({ id: 'plain', name: 'Plain' })])
+    expect(panel(html, 'icon')).toMatch(/<div class="saves"><span class="saves-icon"><svg[^>]*>/)
+    expect(panel(html, 'icon')).not.toContain('saves-ic"')
+    expect(panel(html, 'icon')).not.toContain('class="pkt"')
+    expect(panel(html, 'plain')).toMatch(/<div class="saves"><small>On the record.<\/small><\/div>/)
+  })
+
+  it("puts an item's link under the third card, respecting a new tab, and takes the block's \"You set\" label", () => {
+    const html = render(
+      [
+        item({ id: 'in', name: 'In', youSet: 'The stages.', link: { label: 'See the CRM', type: 'custom', url: '/crm' } }),
+        item({ id: 'out', name: 'Out', link: { label: 'Docs', type: 'custom', url: 'https://docs.example.com', newTab: true } }),
+      ],
+      'Your team sets:',
+    )
+    expect(panel(html, 'in')).toMatch(/<small class="you-set"><strong>Your team sets:<\/strong> The stages.<\/small><a class="ev-link" href="\/crm">See the CRM →<\/a>/)
+    expect(panel(html, 'out')).toMatch(/<a class="ev-link" href="https:\/\/docs.example.com" target="_blank" rel="noopener noreferrer">Docs →<\/a>/)
+  })
+
+  it('falls back to "You set:" for a block saved before the label existed', () => {
+    const html = render([item({ id: 'i1', name: 'One', youSet: 'The stages.' })])
+    expect(panel(html, 'i1')).toContain('<strong>You set:</strong> The stages.')
+  })
+
+  it('leaves Agent features as it was: Pilot chip, Virtual agent pill always, Human team after a hand-over, the cylinder', () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AgentFeatures, {
+        heading: 'H',
+        families: featureFamilies([], lists, agents),
+        pickFamilyLabel: 'Pick a family',
+        pickAgentLabel: 'Agents',
+        design: resolveDesign({ mode: 'agentFeatures' }),
+      }),
+    )
+    expect(html).toMatch(/Payment services<span class="pilot">Pilot<\/span>/)
+    expect(panel(html, 'a1')).toMatch(/<span class="on"[^>]*>Virtual agent<\/span><\/div>/)
+    expect(panel(html, 'a2')).toMatch(/<span class="on"[^>]*>Virtual agent<\/span><span class="on"[^>]*>Human team<\/span>/)
+    expect(panel(html, 'a2')).toContain('class="saves-ic"')
+    // In the markup, not the styles every mode carries.
+    const markup = html.replace(/<style>[\s\S]*?<\/style>/g, '')
+    expect(markup).not.toContain('saves-icon')
+    expect(markup).not.toContain('ev-link')
+  })
+})
+
