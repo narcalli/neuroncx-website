@@ -222,6 +222,8 @@ export const headerCss = `
 .ncx-mega__list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto;gap:2px}
 /* 4 or more items: two columns, each as wide as its widest item, filled row by row. */
 .ncx-mega__list.is-grid{grid-template-columns:repeat(2,auto);column-gap:4px}
+/* A group set to 3 or 4 rows: items fill each column top to bottom, then start the next. */
+.ncx-mega__list.is-rows{grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);grid-template-columns:none;grid-auto-columns:auto;column-gap:4px}
 .ncx-mega__list > li{display:flex}
 /* Icon slot and text. The slot is as tall as the label's line and the rows
    align to the top, so a label sits on the same line whether a description

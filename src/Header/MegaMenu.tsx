@@ -68,7 +68,9 @@ export const MegaPanel = React.forwardRef<
               </p>
             ) : null}
             <ul
-              className={`ncx-mega__list${g.grid ? ' is-grid' : ''}`}
+              className={`ncx-mega__list${g.grid ? ' is-grid' : ''}${g.rows ? ' is-rows' : ''}`}
+              // Only for 3 or 4 rows, so an Auto group's markup stays as it was.
+              {...(g.rows ? { style: { '--rows': g.rows } as React.CSSProperties } : {})}
               {...(showLabel ? { 'aria-labelledby': labelId } : {})}
             >
               {g.items.map((item) => (

@@ -6,9 +6,10 @@ import { hrefOf, type LinkValue } from '@/utilities/cmsValues'
  * without a browser. The CMS describes the same rules to editors (the Groups
  * field on the header's menu items):
  *
- *   The menu panel sizes itself. A single group hides its label. Groups with
- *   4 or more items wrap into 2 columns. The featured card only shows when the
- *   menu has 5 or more items in total.
+ *   The menu panel sizes itself. A single group hides its label. A group on
+ *   Auto rows wraps into 2 columns once it has 4 or more items; set 3 or 4
+ *   rows to fill each column to that many before starting the next. The
+ *   featured card only shows when the menu has 5 or more items in total.
  */
 
 export type NavItem = NonNullable<Header['navItems']>[number]
@@ -23,7 +24,11 @@ export type MenuEntry = {
   badge: 'new' | 'beta' | null
 }
 
-export type MenuGroup = { id: string; label: string | null; items: MenuEntry[] }
+/** rows: the group's own rows per column (3 or 4); absent or null is Auto. */
+export type MenuGroup = { id: string; label: string | null; items: MenuEntry[]; rows?: 3 | 4 | null }
+
+/** A group's Rows per column from the CMS, as a number; Auto, empty or anything else is null. */
+const rowsOf = (value: unknown): 3 | 4 | null => (value === '3' ? 3 : value === '4' ? 4 : null)
 
 export type Featured = {
   eyebrow: string | null
@@ -52,6 +57,7 @@ const ownGroups = (item: NavItem): MenuGroup[] =>
     .map((g, gi) => ({
       id: g.id || `g${gi}`,
       label: g.label?.trim() || null,
+      rows: rowsOf(g.rows),
       items: (g.items || []).flatMap((it, ii) => {
         const to = it?.label ? target(it.link as LinkValue) : null
         if (!to) return []
@@ -135,7 +141,9 @@ export const GRID_MIN_ITEMS = 4
 /**
  * How a panel lays out its groups:
  * - labels show only when there is more than one group;
- * - a group with 4 or more items is a 2-column grid, a shorter one a list;
+ * - a group set to 3 or 4 rows fills columns of that many, top to bottom;
+ * - otherwise (Auto) a group with 4 or more items is a 2-column grid, a
+ *   shorter one a list;
  * - the featured card shows when it is switched on, has a title, and the
  *   menu has 5 or more items in total.
  */
@@ -147,7 +155,7 @@ export const panelLayout = (groups: MenuGroup[], featured: NavItem['featured'] |
     // In a row of labelled columns, a column without a label keeps the space,
     // so every column's first item starts on the same line.
     reserveLabel: showLabels && groups.some((g) => g.label),
-    groups: groups.map((g) => ({ ...g, grid: g.items.length >= GRID_MIN_ITEMS })),
+    groups: groups.map((g) => ({ ...g, rows: g.rows ?? null, grid: !g.rows && g.items.length >= GRID_MIN_ITEMS })),
     hasIcons: groups.some((g) => g.items.some((i) => i.icon)),
     featured: featuredOf(featured, total),
   }

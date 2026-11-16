@@ -32,7 +32,7 @@ describe('what a menu item is', () => {
     )
     expect(kind).toEqual({
       kind: 'megaMenu',
-      groups: [{ id: 'a', label: 'Modules', items: [{ id: 'x', icon: 'users', label: 'CRM', description: 'The record', href: '/crm', newTab: false, badge: 'new' }] }],
+      groups: [{ id: 'a', label: 'Modules', rows: null, items: [{ id: 'x', icon: 'users', label: 'CRM', description: 'The record', href: '/crm', newTab: false, badge: 'new' }] }],
     })
   })
 
@@ -178,3 +178,35 @@ describe('the way from a trigger to its panel', () => {
     expect(headerCss).toContain('opacity:0;visibility:hidden;')
   })
 })
+
+describe('rows per column', () => {
+  const megaWith = (rows: unknown) =>
+    menuKind(nav({ type: 'megaMenu', groups: [{ id: 'a', label: 'Modules', rows, items: entries(4) }] } as never))
+  const rowsOf = (kind: ReturnType<typeof menuKind>) => (kind.kind === 'megaMenu' ? kind.groups[0].rows : 'not a mega menu')
+
+  it("reads a group's setting: 3 and 4 as numbers, Auto, empty or anything else as Auto", () => {
+    expect(rowsOf(megaWith('3'))).toBe(3)
+    expect(rowsOf(megaWith('4'))).toBe(4)
+    for (const v of ['auto', null, undefined, '5', 4]) expect(rowsOf(megaWith(v)), String(v)).toBeNull()
+  })
+
+  it('lets 3 or 4 rows replace the Auto 2-column grid, and leaves Auto as it was', () => {
+    const groups = (rows: (3 | 4 | null)[]) => groupsOf(4, 4, 4, 3).map((g, i) => ({ ...g, rows: rows[i] }))
+    const laid = panelLayout(groups([null, 3, 4, null]), null).groups
+    expect(laid.map((g) => g.grid)).toEqual([true, false, false, false])
+    expect(laid.map((g) => g.rows)).toEqual([null, 3, 4, null])
+    // A group with no rows at all, as every saved one is, is Auto.
+    expect(panelLayout(groupsOf(4), null).groups[0]).toMatchObject({ grid: true, rows: null })
+  })
+
+  it('draws a 3 or 4 row group as a column-flow list, and an Auto group with exactly the markup it had', () => {
+    const html = (rows: 3 | 4 | null) =>
+      renderToStaticMarkup(React.createElement(MegaPanel, { id: 'p', groups: groupsOf(4).map((g) => ({ ...g, rows })), featured: null }))
+    expect(html(null)).toMatch(/<ul class="ncx-mega__list is-grid">/)
+    expect(html(null)).not.toContain('is-rows')
+    expect(html(3)).toMatch(/<ul class="ncx-mega__list is-rows" style="--rows:3">/)
+    expect(html(4)).toMatch(/<ul class="ncx-mega__list is-rows" style="--rows:4">/)
+    expect(headerCss).toContain('.ncx-mega__list.is-rows{grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto)')
+  })
+})
+
