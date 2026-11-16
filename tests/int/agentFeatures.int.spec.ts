@@ -6,6 +6,7 @@ import { AgentFeatures } from '@/blocks/AgenticFlowDemo/AgentFeatures'
 import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
 import { featureFamilies, groupsToFamilies, toFeatureAgent } from '@/blocks/AgenticFlowDemo/featureData'
 import { resolveLink } from '@/blocks/AgenticFlowDemo/eventLinks'
+import { itemButtonsLabel } from '@/blocks/AgenticFlowDemo/Component'
 import type { MicroApp } from '@/payload-types'
 import { tallest } from '@/blocks/AgenticFlowDemo/useMeasured'
 
@@ -322,6 +323,43 @@ describe('Groups mode in the explorer', () => {
     const markup = html.replace(/<style>[\s\S]*?<\/style>/g, '')
     expect(markup).not.toContain('saves-icon')
     expect(markup).not.toContain('ev-link')
+  })
+})
+
+describe('the label above the item buttons', () => {
+  const render = (pickAgentLabel: string) =>
+    renderToStaticMarkup(
+      React.createElement(AgentFeatures, {
+        heading: 'Groups',
+        families: groupsToFamilies([{ id: 'g1', label: 'CRM', items: [{ id: 'i1', name: 'Customer 360', summary: 'S.', features: [{ line: 'One' }], lands: 'L.' }] }] as never),
+        pickFamilyLabel: 'Pick a capability',
+        pickAgentLabel,
+        design: resolveDesign({ mode: 'groups' }),
+      }),
+    )
+
+  it('is "Agents" when the block has none, missing or null, and empty when cleared on purpose', () => {
+    expect(itemButtonsLabel(undefined)).toBe('Agents')
+    expect(itemButtonsLabel(null)).toBe('Agents')
+    expect(itemButtonsLabel('')).toBe('')
+    expect(itemButtonsLabel('Modules')).toBe('Modules')
+  })
+
+  it('is left out when empty, and the item row is named by its group alone', () => {
+    const html = render(itemButtonsLabel(''))
+    // In the markup, not the styles every explorer carries.
+    expect(html.replace(/<style>[\s\S]*?<\/style>/g, '')).not.toContain('lab-q--agents')
+    expect(html).toContain('<p class="lab-q">Pick a capability</p>')
+    expect(html).toMatch(/class="chips" role="group" aria-label="CRM"/)
+  })
+
+  it('shows "Agents" for a block with none, and the item row is named "label: group"', () => {
+    for (const value of [undefined, null]) {
+      const html = render(itemButtonsLabel(value))
+      expect(html).toContain('<p class="lab-q lab-q--agents">Agents</p>')
+      expect(html).toMatch(/class="chips" role="group" aria-label="Agents: CRM"/)
+    }
+    expect(render(itemButtonsLabel('Modules'))).toMatch(/<p class="lab-q lab-q--agents">Modules<\/p>[\s\S]*aria-label="Modules: CRM"/)
   })
 })
 

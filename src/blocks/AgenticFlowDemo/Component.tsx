@@ -44,6 +44,12 @@ export const loadAgentFamilies = async (
   return featureFamilies(props.families, lists, agents, chosenIndustries(props))
 }
 
+/**
+ * The label above the item buttons: "Agents" when the block has none (missing or null, as in a block
+ * saved before the field), but an empty one, cleared on purpose, hides the label.
+ */
+export const itemButtonsLabel = (value: string | null | undefined): string => value ?? 'Agents'
+
 export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
   const draft = (await draftMode()).isEnabled
 
@@ -55,7 +61,7 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
         intro={props.intro}
         families={groupsToFamilies(props.groups, draft)}
         pickFamilyLabel={props.pickFamilyLabel || 'Pick a family'}
-        pickAgentLabel={props.pickAgentLabel || 'Agents'}
+        pickAgentLabel={itemButtonsLabel(props.pickAgentLabel)}
         design={resolveDesign(props)}
         motion={props.motion}
         // Only when set: an unset prop would still be written into the page's data.
@@ -90,7 +96,7 @@ export const AgenticFlowDemoBlock = async (props: AgenticFlowDemoProps) => {
       intro={props.intro}
       families={families}
       pickFamilyLabel={props.pickFamilyLabel || 'Pick a family'}
-      pickAgentLabel={props.pickAgentLabel || 'Agents'}
+      pickAgentLabel={itemButtonsLabel(props.pickAgentLabel)}
       design={resolveDesign(props)}
       motion={props.motion}
       // Only when set: an unset prop would still be written into the page's data.

@@ -199,7 +199,8 @@ export const AgentFeatures: React.FC<{
             ))}
           </div>
 
-          <p className="lab-q lab-q--agents">{pickAgentLabel}</p>
+          {/* Only with text: a block can clear it to show no label above the item buttons. */}
+          {pickAgentLabel ? <p className="lab-q lab-q--agents">{pickAgentLabel}</p> : null}
           <div className="chips-wrap" style={reserved?.row ? { minHeight: reserved.row } : undefined}>
             {measuring ? (
               <div className="chips-ghosts" ref={rowGhosts} aria-hidden="true">
@@ -220,7 +221,7 @@ export const AgentFeatures: React.FC<{
                 key={families[familyAt].id}
                 className="chips"
                 role="group"
-                aria-label={`${pickAgentLabel}: ${families[familyAt].name}`}
+                aria-label={pickAgentLabel ? `${pickAgentLabel}: ${families[familyAt].name}` : families[familyAt].name}
                 custom={dir}
                 variants={listVariants}
                 initial="enter"
