@@ -353,6 +353,12 @@ describe('the label above the item buttons', () => {
     expect(html).toMatch(/class="chips" role="group" aria-label="CRM"/)
   })
 
+  it('puts the item row straight after the group row only when there is no label (the spacing rule in styles.ts)', () => {
+    const markup = (value: string) => render(value).replace(/<style>[\s\S]*?<\/style>/g, '')
+    expect(markup('')).toMatch(/<div class="trig fam-trig"[\s\S]*?<\/button><\/div><div class="chips-wrap"/)
+    expect(markup('Modules')).toContain('Modules</p><div class="chips-wrap"')
+  })
+
   it('shows "Agents" for a block with none, and the item row is named "label: group"', () => {
     for (const value of [undefined, null]) {
       const html = render(itemButtonsLabel(value))

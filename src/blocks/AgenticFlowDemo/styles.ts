@@ -89,6 +89,8 @@ export const featuresCss = `
            out of flow, so they add nothing to that height. */
         .ncx-flow--features .stage-outer{position:relative}
         .ncx-flow--features .lab-q--agents{margin:20px 0 10px}
+        /* No label above the item buttons (cleared on the block): keep the rows apart. */
+        .ncx-flow--features .fam-trig + .chips-wrap{margin-top:20px}
         .ncx-flow--features .chips{display:flex;flex-wrap:wrap;gap:8px}
         /* Every family's item row, hidden, while the row height is measured (AgentFeatures). */
         .ncx-flow--features .chips-ghosts{position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none}
