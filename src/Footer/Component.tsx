@@ -59,7 +59,8 @@ export async function Footer() {
         <div className="cols">
           <div>
             <Link href="/">
-              <Logo src={logo?.src || null} />
+              {/* At the foot of the page: never ahead of the images above it. */}
+              <Logo src={logo?.src || null} width={logo?.width} height={logo?.height} loading="lazy" priority="low" />
             </Link>
             {footerData?.tagline ? <p className="tagline">{footerData.tagline}</p> : null}
           </div>
