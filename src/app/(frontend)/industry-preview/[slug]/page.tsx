@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import React from 'react'
 
-import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { LivePreviewListener } from '@/components/lazyClient'
 import { IndustrySections } from '@/components/industry/IndustrySections'
 import type { Sector } from '@/payload-types'
 import { CMS_TAG, getBySlug, notFoundUnlessCmsDown } from '@/utilities/cms'

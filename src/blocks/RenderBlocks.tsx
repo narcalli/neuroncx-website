@@ -5,15 +5,25 @@ import type { Page } from '@/payload-types'
 import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
 import { IntegrationsMarqueeBlock } from '@/components/blocks/IntegrationsMarquee/IntegrationsMarquee'
 import { DetailedProductSuiteBlock } from '@/blocks/DetailedProductSuite/Component'
-import { FAQBlock } from '@/blocks/FAQ/Component'
-import { AgenticHeroBlock } from '@/blocks/AgenticHero/Component'
+import {
+  AgenticCartsDemoBlock,
+  AgenticCasesBlock,
+  AgenticEpisodeBlock,
+  AgenticHeroBlock,
+  AgenticOrbitBlock,
+  AgenticStatsBlock,
+  AudienceTabsBlock,
+  ClosingCtaBlock,
+  ContactFormBlock,
+  ExpandingCardCtaBlock,
+  FAQBlock,
+  HowItWorks2Block,
+  JourneyEngineBlock,
+  PlatformLayersBlock,
+  RecordAnatomyBlock,
+} from '@/components/lazyClient'
 import { AgenticFlowDemoBlock } from '@/blocks/AgenticFlowDemo/Component'
-import { AgenticStatsBlock } from '@/blocks/AgenticStats/Component'
-import { AgenticCartsDemoBlock } from '@/blocks/AgenticCartsDemo/Component'
-import { AgenticOrbitBlock } from '@/blocks/AgenticOrbit/Component'
-import { AgenticEpisodeBlock } from '@/blocks/AgenticEpisode/Component'
 import { SwarmDiagramBlock } from '@/blocks/SwarmDiagram/Component'
-import { AgenticCasesBlock } from '@/blocks/AgenticCases/Component'
 import { AgenticClosingBlock } from '@/blocks/AgenticClosing/Component'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { ArticleGridBlock } from '@/blocks/ArticleGrid/Component'
@@ -29,14 +39,9 @@ import { HeroHarnessBlock } from '@/blocks/HeroHarness/Component'
 import { ComparisonTableBlock } from '@/blocks/ComparisonTable/Component'
 import { ClusterLinksBlock } from '@/blocks/ClusterLinks/Component'
 import { closingSlot } from '@/blocks/closingSlot'
-import { AudienceTabsBlock } from '@/blocks/AudienceTabs/Component'
-import { RecordAnatomyBlock } from '@/blocks/RecordAnatomy/Component'
 import { HeroWorkforceGridBlock } from '@/blocks/HeroWorkforceGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
-import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
-import { ExpandingCardCtaBlock } from '@/blocks/ExpandingCardCta/Component'
 import { HowItWorksBlock } from '@/blocks/HowItWorks/Component'
-import { HowItWorks2Block } from '@/blocks/HowItWorks2/Component'
 import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { StatHeroBlock } from '@/blocks/StatHero/Component'
 import { BenefitsBlock } from '@/blocks/Benefits/Component'
@@ -51,12 +56,9 @@ import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
 import { CustomerDirectoryBlock } from '@/blocks/CustomerDirectory/Component'
 import { WhatsappWidgetBlock } from '@/blocks/WhatsappWidget/Component'
 import { UseCasesBlock } from '@/blocks/UseCases/Component'
-import { ContactFormBlock } from '@/blocks/ContactForm/Component'
 import { PartnerStripBlock } from '@/blocks/PartnerStrip/Component'
 import { ProblemStatementBlock } from '@/blocks/ProblemStatement/Component'
-import { PlatformLayersBlock } from '@/blocks/PlatformLayers/Component'
 import { PlatformLayersTwoBlock } from '@/blocks/PlatformLayersTwo/Component'
-import { JourneyEngineBlock } from '@/blocks/JourneyEngine/Component'
 import { ContextEngineBlock } from '@/blocks/ContextEngine/Component'
 import { SolutionGridBlock } from '@/blocks/SolutionGrid/Component'
 import { TrustPanelBlock } from '@/blocks/TrustPanel/Component'
@@ -180,7 +182,7 @@ export const RenderBlocks: React.FC<{
 
         if (blockType && blockType in blockComponents) {
           // Block props come straight from the CMS, so their types are not checked here.
-        const Block = blockComponents[blockType] as React.ComponentType<any>
+          const Block = blockComponents[blockType] as React.ComponentType<any>
 
           if (Block) {
             // Appearance options chosen in the admin, applied by the wrapper.

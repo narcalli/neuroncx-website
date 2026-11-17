@@ -3,7 +3,8 @@ import React from 'react'
 import { CMSLink } from '@/components/Link'
 import type { PlatformLayersTwoBlock as PlatformLayersTwoProps } from '@/payload-types'
 
-import { ScrollStackClient, type ScrollStackItem } from './ScrollStackClient'
+import type { ScrollStackItem } from './ScrollStackClient'
+import { ScrollStackClient } from '@/components/lazyClient'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
 

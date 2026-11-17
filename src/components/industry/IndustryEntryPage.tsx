@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
+import { ClosingCtaBlock, LivePreviewListener } from '@/components/lazyClient'
 import { isClosingCta } from '@/blocks/closingSlot'
 import { ClusterFooter } from '@/components/ClusterFooter'
 import type { Crumb } from '@/components/Breadcrumbs'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { EntryHero, EntryHeroBar } from '@/components/sections/EntryHero'
 import { endsPage, RenderSections, type SectionContext } from '@/components/sections/RenderSections'
 import { fillHeading, SECTION_HEADINGS, sectionKeyOf } from '@/content/registry'

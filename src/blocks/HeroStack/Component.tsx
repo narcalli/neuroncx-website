@@ -3,7 +3,8 @@ import React from 'react'
 import type { HeroStackBlock as HeroStackProps } from '@/payload-types'
 import { pickMedia, type MediaValue } from '@/utilities/media'
 
-import { HeroStackClient, type HeroStackItem } from './Client'
+import type { HeroStackItem } from './Client'
+import { HeroStackClient } from '@/components/lazyClient'
 
 /**
  * The Hero Stack block. Each product's screenshot is resolved here, on the

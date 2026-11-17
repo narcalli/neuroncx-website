@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
-import { FAQBlock } from '@/blocks/FAQ/Component'
+import { ClosingCtaBlock, FAQBlock, LivePreviewListener } from '@/components/lazyClient'
 import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { CONTENT_COLLECTIONS, fillHeading, SECTION_HEADINGS, type ContentCollectionSlug } from '@/content/registry'
 import type { Hub } from '@/payload-types'
 import { hrefOf, paragraph, type LinkValue } from '@/utilities/cmsValues'

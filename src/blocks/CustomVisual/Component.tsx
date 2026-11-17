@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ShadowVisual } from '@/blocks/HeroCustom/ShadowVisual'
+import { ShadowVisual } from '@/components/lazyClient'
 import { safeVisualCss, safeVisualHtml } from '@/blocks/HeroCustom/safety'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'

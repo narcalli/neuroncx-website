@@ -1,14 +1,8 @@
 import { draftMode } from 'next/headers'
 import React from 'react'
 
-import { AgentFeatures } from '@/blocks/AgenticFlowDemo/AgentFeatures'
 import { loadAgentFamilies } from '@/blocks/AgenticFlowDemo/Component'
 import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
-import { AgenticCartsDemoBlock } from '@/blocks/AgenticCartsDemo/Component'
-import { AgenticEpisodeBlock } from '@/blocks/AgenticEpisode/Component'
-import { AgenticOrbitBlock } from '@/blocks/AgenticOrbit/Component'
-import { AgenticStatsBlock } from '@/blocks/AgenticStats/Component'
-import { AudienceTabsBlock } from '@/blocks/AudienceTabs/Component'
 import { BlockWrapper } from '@/blocks/BlockWrapper'
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
 import { ClusterLinksBlock, extraEntries } from '@/blocks/ClusterLinks/Component'
@@ -18,9 +12,17 @@ import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { PlatformLayersTwoBlock } from '@/blocks/PlatformLayersTwo/Component'
 import { ProblemStatementBlock } from '@/blocks/ProblemStatement/Component'
 import { ProductSuite2Block } from '@/blocks/ProductSuite2/Component'
-import { RecordAnatomyBlock } from '@/blocks/RecordAnatomy/Component'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { BentoGrid } from '@/components/blocks/BentoGrid/BentoGrid'
+import {
+  AgentFeatures,
+  AgenticCartsDemoBlock,
+  AgenticEpisodeBlock,
+  AgenticOrbitBlock,
+  AgenticStatsBlock,
+  AudienceTabsBlock,
+  RecordAnatomyBlock,
+} from '@/components/lazyClient'
 import type { Customer, IndustryTopic, Integration, Sector } from '@/payload-types'
 import { CMS_TAG, getMany } from '@/utilities/cms'
 import { clusterGroups, type ClusterEntry, type ClusterPage } from '@/utilities/clusters'

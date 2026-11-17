@@ -1,9 +1,8 @@
 import React from 'react'
 
 import { resolveDesign } from '@/blocks/AgenticFlowDemo/design'
-import { FlowDemo } from '@/blocks/AgenticFlowDemo/FlowDemo'
+import { FlowDemo, HowItWorks2Block } from '@/components/lazyClient'
 import { ComparisonTableBlock } from '@/blocks/ComparisonTable/Component'
-import { HowItWorks2Block } from '@/blocks/HowItWorks2/Component'
 import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { SectionShell } from '@/components/sections/SectionShell'
 import type { Integration, IndustryTopic, MicroApp } from '@/payload-types'

@@ -12,7 +12,7 @@ import { getBySlug, CMS_TAG } from '@/utilities/cms'
 import { getServerSideURL } from '@/utilities/getURL'
 import { blogPosting, jsonLdHtml } from '@/utilities/jsonLd'
 import { pickMedia, type MediaValue } from '@/utilities/media'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { LivePreviewListener } from '@/components/lazyClient'
 
 export const dynamic = 'force-dynamic'
 

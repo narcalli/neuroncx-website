@@ -2,7 +2,7 @@ import React from 'react'
 
 import { BlockWrapper } from '@/blocks/BlockWrapper'
 import { isClosingCta } from '@/blocks/closingSlot'
-import { FAQBlock } from '@/blocks/FAQ/Component'
+import { FAQBlock } from '@/components/lazyClient'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import {
   CONTENT_COLLECTIONS,

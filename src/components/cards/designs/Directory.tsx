@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { DirectoryList } from '@/blocks/CustomerDirectory/DirectoryList'
+import { DirectoryList } from '@/components/lazyClient'
 import { directoryListCss } from '@/blocks/CustomerDirectory/styles'
 
 import type { CardDesignProps } from '../types'

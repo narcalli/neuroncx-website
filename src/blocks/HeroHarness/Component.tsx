@@ -5,7 +5,8 @@ import type { HeroHarnessBlock as HeroHarnessProps } from '@/payload-types'
 
 import { PARTS, type HarnessLabels, type Part } from './geometry'
 import { HeaderEdge } from './HeaderEdge'
-import { HarnessStage, type HarnessCard } from './Stage'
+import type { HarnessCard } from './Stage'
+import { HarnessStage } from '@/components/lazyClient'
 import { stageCss } from './styles'
 
 type Button = NonNullable<HeroHarnessProps['buttons']>[number]

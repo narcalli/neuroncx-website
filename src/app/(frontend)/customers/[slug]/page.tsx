@@ -5,7 +5,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { CaseStudyGridBlock } from '@/blocks/CaseStudyGrid/Component'
-import { ClosingCtaBlock } from '@/blocks/ClosingCTA/Component'
+import { ClosingCtaBlock } from '@/components/lazyClient'
 import { BlockIcon } from '@/components/BlockIcon'
 import { Breadcrumbs, buildTrail } from '@/components/Breadcrumbs'
 import RichText from '@/components/RichText'

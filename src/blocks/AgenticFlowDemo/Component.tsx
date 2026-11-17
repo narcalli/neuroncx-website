@@ -5,11 +5,10 @@ import type { AgenticFlowDemoBlock as AgenticFlowDemoProps, List, MicroApp } fro
 import { CMS_TAG, getMany } from '@/utilities/cms'
 import { getEntries } from '@/utilities/content'
 
-import { AgentFeatures } from './AgentFeatures'
+import { AgentFeatures, FlowDemo } from '@/components/lazyClient'
 import { resolveDesign } from './design'
 import { eventLinks } from './eventLinks'
 import { chosenIndustries, featureFamilies, groupsToFamilies, type FeatureFamily } from './featureData'
-import { FlowDemo } from './FlowDemo'
 
 /**
  * The Agentic Flow Demo block. Flow mode (the default, and every block saved

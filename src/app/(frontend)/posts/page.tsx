@@ -9,7 +9,7 @@ import RichText from '@/components/RichText'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getBySlug, CMS_TAG } from '@/utilities/cms'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { LivePreviewListener } from '@/components/lazyClient'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Code } from './Component.client'
+import { Code } from '@/components/lazyClient'
 
 export type CodeBlockProps = {
   code: string

@@ -4,7 +4,7 @@ import RichText from '@/components/RichText'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 
 import { CMSLink } from '../../components/Link'
-import { LegalContents } from './LegalContents'
+import { LegalContents } from '@/components/lazyClient'
 import { outlineLegal } from './legalOutline'
 
 type Props = Pick<ContentBlockProps, 'columns' | 'lastUpdated'> & {

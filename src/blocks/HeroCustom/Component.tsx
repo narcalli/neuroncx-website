@@ -2,7 +2,7 @@ import React from 'react'
 
 import type { HeroCustomBlock as HeroCustomProps } from '@/payload-types'
 
-import { ShadowVisual } from './ShadowVisual'
+import { ShadowVisual } from '@/components/lazyClient'
 import { safeVisualCss, safeVisualHtml } from './safety'
 
 type LinkGroup = HeroCustomProps['primaryCta']

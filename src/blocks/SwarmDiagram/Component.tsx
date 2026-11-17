@@ -4,7 +4,7 @@ import type { SwarmDiagramBlock as Props } from '@/payload-types'
 import { getEntries, isDraft } from '@/utilities/content'
 
 import { buildPairs, factFallback, type Agent } from './geometry'
-import { SwarmDiagramClient } from './Diagram'
+import { SwarmDiagramClient } from '@/components/lazyClient'
 
 /**
  * The bot swarm diagram (docs/motion/bot-swarm-motion-demo.html, the swarm
