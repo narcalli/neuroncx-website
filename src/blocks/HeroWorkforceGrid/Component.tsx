@@ -30,6 +30,8 @@ type Props = {
   speed?: 'slow' | 'medium' | 'fast' | null
   columns?: '2' | '3' | '4' | null
   cards?: Card[] | null
+  leading?: React.ReactNode
+  crumbs?: React.ReactNode
 }
 
 /** Resolves a CTA group into a real address, or null when there is nothing to link to. */
@@ -75,8 +77,11 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   speed,
   columns,
   cards,
+  leading,
+  crumbs,
 }) => {
   if (!headline) return null
+  const trail = leading ?? crumbs
 
   const words = headline.trim().split(/\s+/)
   const columnCount = Number(columns) === 2 || Number(columns) === 4 ? Number(columns) : 3
@@ -125,6 +130,8 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           padding-block:clamp(48px,7vw,88px);display:grid;
           grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
           gap:clamp(28px,4vw,56px);align-items:center}
+        .ncx-hwg .lead{position:absolute;top:64px;left:0;right:0;z-index:3;--crumb-top:28px;pointer-events:none}
+        .ncx-hwg .lead nav,.ncx-hwg .lead a{pointer-events:auto}
         /* Nothing beside the text: it takes the full width. */
         .ncx-hwg .inner[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
         .ncx-hwg .inner[data-cols="1"] .subhead{max-width:none}
@@ -207,6 +214,11 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
       `}</style>
 
       <div className="bg" />
+      {trail ? (
+        <div className="lead">
+          <div className="ncx-container">{trail}</div>
+        </div>
+      ) : null}
 
       <div className="inner ncx-container" data-cols={hasCards ? '2' : '1'}>
         <Animator className="copy">

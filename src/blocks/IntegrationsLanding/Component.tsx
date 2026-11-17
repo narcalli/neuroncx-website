@@ -98,8 +98,11 @@ const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): S
 }
 
 export const IntegrationsLandingBlock: React.FC<
-  Pick<IntegrationsLandingBlockProps, 'master'> & { record?: IntegrationsMaster | null }
-> = async ({ master, record }) => {
+  Pick<IntegrationsLandingBlockProps, 'master'> & {
+    record?: IntegrationsMaster | null
+    leading?: React.ReactNode
+  }
+> = async ({ master, record, leading }) => {
   const m = record ?? (await loadMaster(master))
   if (!m) return null
 
@@ -203,7 +206,11 @@ export const IntegrationsLandingBlock: React.FC<
       `}</style>
 
       <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`} data-loop>
-        <div className="inner ncx-container">
+        <div
+          className="inner ncx-container"
+          style={leading ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties) : undefined}
+        >
+          {leading}
           <div className={`ncx-ihub__grid${image ? '' : ' is-single'}`}>
             <div>
               {m.eyebrow ? (

@@ -30,6 +30,17 @@ const flushFirstBlocks = [
 const pillarIdOf = (page: Page): string | null =>
   page.parent && typeof page.parent === 'object' ? page.parent.id : (page.parent ?? null)
 
+const hasHeroText = (rt: any): boolean => {
+  if (!rt?.root?.children || !Array.isArray(rt.root.children)) return false
+  const walk = (nodes: any[]): boolean =>
+    nodes.some(
+      (n) =>
+        (typeof n?.text === 'string' && n.text.trim() !== '') ||
+        (Array.isArray(n?.children) && walk(n.children)),
+    )
+  return walk(rt.root.children)
+}
+
 /**
  * A CMS page: breadcrumbs, hero and blocks. Used at /{slug} and, for cluster
  * pages, at /{pillar}/{slug}; `url` is the address it was requested at. A
@@ -42,11 +53,14 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const pillarId = isCluster(page) && !page.hideClusterFooter ? pillarIdOf(page) : null
   const footer = pillarId ? <ClusterFooter page={page} siblings={await loadClusterPages(pillarId, draft)} /> : null
 
-  // A page whose hero is disabled and whose first block is flush gets no top padding.
+  // A page whose hero is disabled (or left on empty lowImpact above a flush hero block)
+  // and whose first block is flush gets no top padding.
   // A hidden block never renders, so the first block is the first one shown.
-  const heroDisabled = !hero || hero.type === 'none'
   const firstBlock = Array.isArray(layout) ? layout.find((b: any) => b && !b.hidden) : undefined
   const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
+  const emptyLowImpact =
+    hero?.type === 'lowImpact' && !hasHeroText(hero.richText) && flushFirstBlocks.includes(firstBlockType)
+  const heroDisabled = !hero || hero.type === 'none' || emptyLowImpact
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
   // A full-bleed navy closing panel meets the navy footer with no page padding between them.
   // A hidden block never renders, so the last block is the last one shown.
@@ -81,7 +95,7 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
 
         {draft && <LivePreviewListener />}
 
-        <RenderHero {...hero} leading={crumbs} />
+        {heroDisabled ? null : <RenderHero {...hero} leading={crumbs} />}
         {heroDisabled && !startsFlush && crumbs ? <div className="ncx-container pt-7">{crumbs}</div> : null}
         <RenderBlocks
           blocks={headedLayout}

@@ -89,6 +89,15 @@ describe('the hero from the layout', () => {
     expect(out).not.toContain('Admission CRM for universities')
     expect(out).toContain('aria-label="Breadcrumb"')
     expect(out.match(/<h1[\s>]/g)).toHaveLength(1)
+
+    const agenticOut = await page(
+      topic({
+        heroDesign: 'blockHero',
+        layout: [{ blockType: 'agenticHero', headline: 'ZZ agentic hero headline' }, bento],
+      }),
+    )
+    expect(agenticOut).toContain('ZZ agentic hero headline')
+    expect(agenticOut).toContain('aria-label="Breadcrumb"')
   })
 
   it('keeps one H1: a hero row elsewhere, or with another hero design, is left out', async () => {

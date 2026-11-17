@@ -57,7 +57,10 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
   )
 }
 
-export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentWords, intro, ctaLabel, ctaUrl, nodes }) => {
+export const AgenticHeroBlock: React.FC<
+  AgenticHeroProps & { leading?: React.ReactNode; crumbs?: React.ReactNode }
+> = ({ headline, accentWords, intro, ctaLabel, ctaUrl, nodes, leading, crumbs }) => {
+  const trail = leading ?? crumbs
   const words = (headline || '').split(' ').filter(Boolean)
   const accents = new Set(
     (accentWords || '')
@@ -126,7 +129,7 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         .ncx-hero .ncx-pr{transform-box:fill-box;transform-origin:center;animation:ncxPing 3.2s ease-out infinite}
         @keyframes ncxPing{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.1);opacity:0}}
         @media (max-width:860px){
-          .ncx-hero{padding:60px 0 72px}
+          .ncx-hero{padding:calc(64px + clamp(44px,6vw,76px)) 0 72px}
           .ncx-hero .net{right:-170px;width:min(640px,72vw);opacity:.32}
         }
         @media (prefers-reduced-motion:reduce){
@@ -134,7 +137,12 @@ export const AgenticHeroBlock: React.FC<AgenticHeroProps> = ({ headline, accentW
         }
       `}</style>
 
-      <div className="wrap ncx-container">
+      <div
+        className="wrap ncx-container"
+        // The breadcrumb trail sits 28px under the fixed header (--crumb-top).
+        style={trail ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties) : undefined}
+      >
+        {trail}
         {slotNodes.length > 0 ? (
           <svg className="net" viewBox="0 0 600 420" aria-hidden="true" focusable="false">
             <g fill="none" strokeWidth={1.6} strokeLinecap="round" stroke="rgba(26,32,53,.28)">
