@@ -1,13 +1,15 @@
 /**
  * Security headers for every response (next.config.ts headers()).
  *
- * The Content-Security-Policy is sent as Report-Only to start: browsers log
- * what it would block, in the developer console, and block nothing. Once a
- * walk through the site shows no reports, ENFORCE_CSP switches it on.
+ * The Content-Security-Policy is enforced. It ran as Report-Only first; a walk
+ * through the live site on 17 Nov 2026 reported only Cloudflare's analytics
+ * beacon, now allowed. Set ENFORCE_CSP to false to go back to reporting only.
  *
  * What it allows, and why:
- *   - scripts: this site, Next's inline bootstrap scripts, Cloudflare Turnstile
- *   - styles: inline (blocks and the custom HTML/CSS visuals carry their own), Google Fonts
+ *   - scripts: this site, Next's inline bootstrap scripts, Cloudflare Turnstile,
+ *     and Cloudflare Web Analytics (injected by Cloudflare in front of the site)
+ *   - styles: inline (blocks and the custom HTML/CSS visuals carry their own)
+ *   - fonts: this site (self-hosted by next/font)
  *   - images and video: the CMS, and any https address (S3, editors' own picks)
  *   - frames: Turnstile; and this site may be framed by the CMS (live preview) only
  *
@@ -15,9 +17,10 @@
  * live preview. frame-ancestors does that job.
  */
 
-export const ENFORCE_CSP = false
+export const ENFORCE_CSP = true
 
 const TURNSTILE = 'https://challenges.cloudflare.com'
+const CF_ANALYTICS = 'https://static.cloudflareinsights.com'
 
 const originOf = (value: string): string | null => {
   try {
@@ -32,12 +35,12 @@ export const contentSecurityPolicy = ({ cmsUrls, isDev }: { cmsUrls: string[]; i
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],
     // Next's dev server evaluates code and reloads over a websocket.
-    'script-src': ["'self'", "'unsafe-inline'", TURNSTILE, ...(isDev ? ["'unsafe-eval'"] : [])],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'script-src': ["'self'", "'unsafe-inline'", TURNSTILE, CF_ANALYTICS, ...(isDev ? ["'unsafe-eval'"] : [])],
+    'style-src': ["'self'", "'unsafe-inline'"],
+    'font-src': ["'self'", 'data:'],
     'img-src': ["'self'", 'data:', 'blob:', 'https:', ...cms],
     'media-src': ["'self'", 'blob:', 'https:', ...cms],
-    'connect-src': ["'self'", TURNSTILE, ...cms, ...(isDev ? ['ws:'] : [])],
+    'connect-src': ["'self'", TURNSTILE, 'https://cloudflareinsights.com', ...cms, ...(isDev ? ['ws:'] : [])],
     'frame-src': ["'self'", TURNSTILE],
     'frame-ancestors': ["'self'", ...cms],
     'object-src': ["'none'"],

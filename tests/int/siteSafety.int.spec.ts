@@ -250,10 +250,10 @@ describe('the enquiry route', () => {
 describe('security headers', () => {
   const cmsUrls = ['https://cms.test/', 'https://cms.test', 'not a url']
 
-  it('report the content policy first, and set the other headers', () => {
+  it('enforce the content policy first, and set the other headers', () => {
     const headers = Object.fromEntries(securityHeaders({ cmsUrls, isDev: false }).map((h) => [h.key, h.value]))
     expect(Object.keys(headers)).toEqual([
-      'Content-Security-Policy-Report-Only',
+      'Content-Security-Policy',
       'Referrer-Policy',
       'X-Content-Type-Options',
       'Permissions-Policy',
@@ -266,6 +266,9 @@ describe('security headers', () => {
     const csp = contentSecurityPolicy({ cmsUrls, isDev: false })
     expect(csp).toContain("frame-ancestors 'self' https://cms.test;")
     expect(csp).toContain('https://challenges.cloudflare.com')
+    // Cloudflare's analytics beacon, injected in front of the site, and no Google Fonts any more.
+    expect(csp).toContain('https://static.cloudflareinsights.com')
+    expect(csp).not.toContain('fonts.g')
     expect(csp).toContain("object-src 'none'")
     expect(csp).not.toContain('unsafe-eval')
     expect(contentSecurityPolicy({ cmsUrls, isDev: true })).toContain("'unsafe-eval'")
