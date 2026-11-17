@@ -68,6 +68,7 @@ export async function GET(request: Request) {
   urls.push(
     ...integrationEntries(integrations, origin),
     ...customerEntries(customers, origin),
+    { loc: `${origin}/posts` },
     ...postEntries(posts, origin),
   )
 

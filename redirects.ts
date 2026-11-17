@@ -21,6 +21,12 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: true,
   }
 
+  const blogRedirect = {
+    source: '/blog',
+    destination: '/posts',
+    permanent: true,
+  }
+
   // Old neuroncx.in addresses, each to its page on this site.
   const oldSite: [string, string][] = [
     ['/ai-assisted-chatbot-for-admissions-college-and-higher-education-institution/3', '/higher-education'],
@@ -70,6 +76,7 @@ export const redirects: NextConfig['redirects'] = async () => {
     ...netlifySubdomain,
     internetExplorerRedirect,
     botSwarmPreview,
+    blogRedirect,
     ...oldSite.map(([source, destination]) => ({ source, destination, permanent: true })),
   ]
 }

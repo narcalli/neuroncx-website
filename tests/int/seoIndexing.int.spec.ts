@@ -102,6 +102,7 @@ describe('sitemap pages outside the content collections', () => {
     const xml = await (await GET(new Request(`${SITE}/content-sitemap.xml`))).text()
     expect(xml).toContain(`<loc>${SITE}/integrations/docpulse</loc>`)
     expect(xml).toContain(`<loc>${SITE}/customers/ovum</loc>`)
+    expect(xml).toContain(`<loc>${SITE}/posts</loc>`)
     expect(xml).toContain(`<loc>${SITE}/posts/four-flows</loc>`)
     expect(xml).not.toContain('hidden-one')
   })
