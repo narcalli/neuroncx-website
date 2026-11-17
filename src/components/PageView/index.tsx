@@ -11,34 +11,46 @@ import { loadClusterPages } from '@/utilities/clusters'
 import { isCluster } from '@/utilities/pages'
 import { MotionPage } from '@/motion/MotionProvider'
 
-// Blocks that own their top spacing and should sit flush under the header.
-// Keep in sync with noMargin in src/blocks/RenderBlocks.tsx.
-const flushFirstBlocks = [
+// Hero blocks that render an H1 when first on a page with no page hero, and an H2 otherwise.
+const heroBlocks = [
+  'agenticHero',
   'conversationHero',
-  'heroFullBackground',
-  'heroRightPlacement',
   'heroCustom',
+  'heroFullBackground',
   'heroHarness',
+  'heroRightPlacement',
+  'heroStack',
   'heroWorkforceGrid',
   'statHero',
-  'closingCta',
-  'expandingCardCta',
-  'agenticHero',
   'integrationsLanding',
 ]
+
+// Blocks that own their top spacing and should sit flush under the header.
+// Keep in sync with noMargin in src/blocks/RenderBlocks.tsx.
+const flushFirstBlocks = [...heroBlocks, 'closingCta', 'expandingCardCta']
 
 const pillarIdOf = (page: Page): string | null =>
   page.parent && typeof page.parent === 'object' ? page.parent.id : (page.parent ?? null)
 
-const hasHeroText = (rt: any): boolean => {
-  if (!rt?.root?.children || !Array.isArray(rt.root.children)) return false
-  const walk = (nodes: any[]): boolean =>
+type RichTextNode = { text?: unknown; children?: RichTextNode[] }
+type LayoutBlock = Page['layout'][number] & {
+  hidden?: boolean | null
+  background?: string | null
+  documentStyle?: string | null
+  headingLevel?: 'h1' | 'h2'
+  pageTitle?: string | null
+}
+
+const hasHeroText = (rt: Page['hero']['richText']): boolean => {
+  const children = rt?.root?.children
+  if (!Array.isArray(children)) return false
+  const walk = (nodes: RichTextNode[]): boolean =>
     nodes.some(
       (n) =>
         (typeof n?.text === 'string' && n.text.trim() !== '') ||
         (Array.isArray(n?.children) && walk(n.children)),
     )
-  return walk(rt.root.children)
+  return walk(children as RichTextNode[])
 }
 
 /**
@@ -48,7 +60,8 @@ const hasHeroText = (rt: any): boolean => {
  * action, unless the page turns it off.
  */
 export const PageView = async ({ page, url, draft }: { page: Page; url: string; draft: boolean }) => {
-  const { hero, layout } = page as any
+  const { hero } = page
+  const layout = (page.layout ?? []) as LayoutBlock[]
 
   const pillarId = isCluster(page) && !page.hideClusterFooter ? pillarIdOf(page) : null
   const footer = pillarId ? <ClusterFooter page={page} siblings={await loadClusterPages(pillarId, draft)} /> : null
@@ -56,7 +69,7 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   // A page whose hero is disabled (or left on empty lowImpact above a flush hero block)
   // and whose first block is flush gets no top padding.
   // A hidden block never renders, so the first block is the first one shown.
-  const firstBlock = Array.isArray(layout) ? layout.find((b: any) => b && !b.hidden) : undefined
+  const firstBlock = Array.isArray(layout) ? layout.find((b) => b && !b.hidden) : undefined
   const firstBlockType = firstBlock ? String(firstBlock.blockType) : ''
   const emptyLowImpact =
     hero?.type === 'lowImpact' && !hasHeroText(hero.richText) && flushFirstBlocks.includes(firstBlockType)
@@ -64,20 +77,25 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const startsFlush = heroDisabled && flushFirstBlocks.includes(firstBlockType)
   // A full-bleed navy closing panel meets the navy footer with no page padding between them.
   // A hidden block never renders, so the last block is the last one shown.
-  const lastBlock = Array.isArray(layout) ? [...layout].reverse().find((b: any) => b && !b.hidden) : undefined
+  const lastBlock = Array.isArray(layout) ? [...layout].reverse().find((b) => b && !b.hidden) : undefined
   const endsFlush = String(lastBlock?.blockType ?? '') === 'expandingCardCta'
 
-  // With no hero, a contact form that opens the page carries its one H1, and
-  // so does a legal document, as the page title.
-  const headedLayout =
-    heroDisabled && Array.isArray(layout)
-      ? layout.map((b: any) => {
-          if (b !== firstBlock) return b
-          if (firstBlockType === 'contactForm') return { ...b, headingLevel: 'h1' }
-          if (firstBlockType === 'content' && b.documentStyle === 'legal') return { ...b, pageTitle: page.title }
-          return b
-        })
-      : layout
+  // With no hero, a hero block or contact form that opens the page carries
+  // its one H1, and so does a legal document, as the page title. Any other
+  // hero block renders an H2.
+  const headedLayout: Page['layout'] = Array.isArray(layout)
+    ? layout.map((b): LayoutBlock => {
+        if (!b) return b
+        const type = String(b.blockType)
+        if (heroBlocks.includes(type)) {
+          return { ...b, headingLevel: heroDisabled && b === firstBlock ? 'h1' : 'h2' }
+        }
+        if (!heroDisabled || b !== firstBlock) return b
+        if (type === 'contactForm') return { ...b, headingLevel: 'h1' }
+        if (type === 'content' && b.documentStyle === 'legal') return { ...b, pageTitle: page.title }
+        return b
+      })
+    : []
 
   // The breadcrumbs go inside whatever renders first: the configured hero,
   // else a flush first block, else a container above the blocks (on the

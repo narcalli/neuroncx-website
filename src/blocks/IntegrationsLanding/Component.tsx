@@ -86,7 +86,7 @@ const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): S
   })
   if (rows.length) return rows
 
-  const only = idsOf(m.filter?.categories as any)
+  const only = idsOf(m.filter?.categories)
   return (only.length ? categories.filter((c) => only.includes(c.id)) : categories).map((c) => ({
     key: c.id,
     category: c,
@@ -101,8 +101,10 @@ export const IntegrationsLandingBlock: React.FC<
   Pick<IntegrationsLandingBlockProps, 'master'> & {
     record?: IntegrationsMaster | null
     leading?: React.ReactNode
+    headingLevel?: 'h1' | 'h2'
   }
-> = async ({ master, record, leading }) => {
+> = async ({ master, record, leading, headingLevel = 'h1' }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const m = record ?? (await loadMaster(master))
   if (!m) return null
 
@@ -111,7 +113,7 @@ export const IntegrationsLandingBlock: React.FC<
     { sort: 'order', limit: 50, depth: 0 },
     { tags: [CMS_TAG, 'integration-categories'] },
   )
-  const products = idsOf(m.filter?.products as any)
+  const products = idsOf(m.filter?.products)
   const sections = sectionsOf(m, categories)
 
   const centred = m.heroLayout === 'centred'
@@ -150,7 +152,7 @@ export const IntegrationsLandingBlock: React.FC<
           font-size:13px;color:var(--ncx-muted);border:1px solid var(--ncx-rule);background:var(--ncx-white);
           padding:7px 15px;border-radius:999px;margin:0 0 24px}
         .ncx-ihub .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
-        .ncx-ihub h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(36px,4.6vw,56px);
+        .ncx-ihub h1,.ncx-ihub__hero h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(36px,4.6vw,56px);
           line-height:1.06;letter-spacing:-.035em;margin:0;max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--ncx-ink)}
         .ncx-ihub .sub{margin:24px 0 0;max-width:56ch;font-size:19px;line-height:1.65;color:var(--ncx-muted)}
         .ncx-ihub .cta{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
@@ -169,7 +171,7 @@ export const IntegrationsLandingBlock: React.FC<
         .ncx-ihub__visual img{width:100%;height:auto;display:block;border-radius:12px}
         /* Centred: one column, everything on the centre line. */
         .ncx-ihub__hero.is-centred .ncx-ihub__grid{justify-items:center;text-align:center}
-        .ncx-ihub__hero.is-centred h1,.ncx-ihub__hero.is-centred .sub{margin-inline:auto}
+        .ncx-ihub__hero.is-centred h1,.ncx-ihub__hero.is-centred h2,.ncx-ihub__hero.is-centred .sub{margin-inline:auto}
         .ncx-ihub__hero.is-centred .cta,.ncx-ihub__hero.is-centred .systems{justify-content:center}
 
         .ncx-ihub__section{padding-block:72px}
@@ -219,7 +221,7 @@ export const IntegrationsLandingBlock: React.FC<
                   {m.eyebrow}
                 </p>
               ) : null}
-              <h1>{m.h1}</h1>
+              <Heading>{m.h1}</Heading>
               {m.subheading ? <p className="sub">{m.subheading}</p> : null}
               {(primaryHref && m.cta?.label) || (secondaryHref && m.hero?.secondaryCta?.label) ? (
                 <div className="cta">

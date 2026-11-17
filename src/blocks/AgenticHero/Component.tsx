@@ -58,8 +58,9 @@ const NodeBadge = ({ node, x, y, i }: { node: Node; x: number; y: number; i: num
 }
 
 export const AgenticHeroBlock: React.FC<
-  AgenticHeroProps & { leading?: React.ReactNode; crumbs?: React.ReactNode }
-> = ({ headline, accentWords, intro, ctaLabel, ctaUrl, nodes, leading, crumbs }) => {
+  AgenticHeroProps & { leading?: React.ReactNode; crumbs?: React.ReactNode; headingLevel?: 'h1' | 'h2' }
+> = ({ headline, accentWords, intro, ctaLabel, ctaUrl, nodes, leading, crumbs, headingLevel = 'h1' }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const trail = leading ?? crumbs
   const words = (headline || '').split(' ').filter(Boolean)
   const accents = new Set(
@@ -95,7 +96,7 @@ export const AgenticHeroBlock: React.FC<
         }
         @media(prefers-reduced-motion:reduce){.ncx-hero::before{animation:none}}
         .ncx-hero .wrap{position:relative;z-index:1}
-        .ncx-hero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,4.1rem);
+        .ncx-hero h1,.ncx-hero h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;font-size:clamp(2.4rem,6.2vw,4.1rem);
           line-height:1.1;max-width:var(--ncx-heading-max);letter-spacing:-.02em;margin:0}
         .ncx-hero .w{display:inline-block}
         .ncx-hero .acc{position:relative}
@@ -118,11 +119,11 @@ export const AgenticHeroBlock: React.FC<
         .ncx-hero .net{position:absolute;right:0;top:50%;transform:translateY(-50%);
           width:min(640px,56%);height:auto;z-index:-1;pointer-events:none}
         @media (min-width:861px){
-          .ncx-hero h1{max-width:min(var(--ncx-heading-max),47%)}
+          .ncx-hero h1,.ncx-hero h2{max-width:min(var(--ncx-heading-max),47%)}
           .ncx-hero .hero-p{max-width:min(54ch,47%)}
         }
         /* No diagram beside the text: it takes the full width. */
-        .ncx-hero[data-cols="1"] h1{max-width:var(--ncx-heading-max)}
+        .ncx-hero[data-cols="1"] h1,.ncx-hero[data-cols="1"] h2{max-width:var(--ncx-heading-max)}
         .ncx-hero[data-cols="1"] .hero-p{max-width:none}
         .ncx-hero .ln{stroke-dasharray:3 9;animation:ncxFlow 1.4s linear infinite}
         @keyframes ncxFlow{to{stroke-dashoffset:-24}}
@@ -172,7 +173,7 @@ export const AgenticHeroBlock: React.FC<
             ))}
           </svg>
         ) : null}
-        <h1 aria-label={headline || undefined}>
+        <Heading aria-label={headline || undefined}>
           {words.map((word, i) => {
             const plain = word.replace(/[^a-z0-9]/gi, '').toLowerCase()
             const isAccent = accents.has(plain)
@@ -184,7 +185,7 @@ export const AgenticHeroBlock: React.FC<
               </React.Fragment>
             )
           })}
-        </h1>
+        </Heading>
 
         {/* The H1 and the intro are at rest from the first paint: either can be the LCP element. */}
         {intro ? <p className="hero-p">{intro}</p> : null}

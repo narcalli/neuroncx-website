@@ -34,6 +34,7 @@ type Props = {
   height?: 'tall' | 'medium' | null
   /** Shown at the top of the hero, 28px under the fixed header (the page's breadcrumbs). */
   leading?: React.ReactNode
+  headingLevel?: 'h1' | 'h2'
 }
 
 const FOCAL: Record<string, string> = {
@@ -158,8 +159,10 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
   animation,
   height,
   leading,
+  headingLevel = 'h1',
 }) => {
   if (!headline) return null
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
 
   const words = headline.trim().split(/\s+/)
   const items = (metaItems || []).filter((m) => m && m.text)
@@ -263,7 +266,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
         .ncx-hfb[data-placement="right"] .inner{max-width:44%}
         .ncx-hfb .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;
           color:var(--ncx-crimson-on-navy);margin:0 0 14px}
-        .ncx-hfb h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
+        .ncx-hfb h1,.ncx-hfb h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:clamp(32px,5.2vw,56px);line-height:1.08;letter-spacing:-.02em;margin:0;
           max-width:var(--ncx-heading-max);text-wrap:balance}
         .ncx-hfb .word{display:inline-block;white-space:pre}
@@ -318,7 +321,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
              instead of running under the breadcrumbs. */
           .ncx-hfb[data-lead] .content{position:relative;inset:auto;min-height:520px}
           .ncx-hfb .inner{max-width:none}
-          .ncx-hfb h1{font-size:clamp(28px,8vw,38px);max-width:none}
+          .ncx-hfb h1,.ncx-hfb h2{font-size:clamp(28px,8vw,38px);max-width:none}
           .ncx-hfb .subhead{font-size:16px}
           /* Only swap to the mobile file when one was actually provided —
              otherwise the desktop file stays put rather than disappearing. */
@@ -398,7 +401,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
           <div className="inner">
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
 
-            <h1 aria-label={headline}>
+            <Heading aria-label={headline}>
               {words.map((word, i) => (
                 <React.Fragment key={i}>
                   <span className="word" style={{ '--i': i } as React.CSSProperties} aria-hidden="true">
@@ -407,7 +410,7 @@ export const HeroFullBackgroundBlock: React.FC<Props> = ({
                   {i < words.length - 1 ? ' ' : ''}
                 </React.Fragment>
               ))}
-            </h1>
+            </Heading>
 
             {subhead ? <p className="subhead">{subhead}</p> : null}
 

@@ -27,6 +27,7 @@ type Props = {
   crumbs?: React.ReactNode
   /** Passed by RenderBlocks when ConversationHero is the first block on a Page. */
   leading?: React.ReactNode
+  headingLevel?: 'h1' | 'h2'
 }
 
 type Line = { kind: 'them' | 'us' | 'tag'; text: string }
@@ -66,7 +67,9 @@ export const ConversationHeroBlock: React.FC<Props> = ({
   stats,
   crumbs,
   leading,
+  headingLevel = 'h1',
 }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const trail = crumbs ?? leading
   const lines = parse(conversation)
   const messages = lines.filter((l) => l.kind !== 'tag')
@@ -123,11 +126,11 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         .ncx-chero .eyebrow{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:.82rem;
           letter-spacing:.04em;color:var(--ncx-crimson-ink);margin:0 0 14px}
         /* The size comes from the editor's "Heading size" field. */
-        .ncx-chero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
+        .ncx-chero h1,.ncx-chero h2{font-family:var(--font-display),Arial,sans-serif;font-weight:700;
           font-size:var(--chero-h);line-height:1.06;letter-spacing:-.02em;
           margin:0;max-width:var(--ncx-heading-max)}
         /* On phones a large size would run off the screen, so it stops at 36px. */
-        @media(max-width:699px){.ncx-chero h1{font-size:min(var(--chero-h),36px)}}
+        @media(max-width:699px){.ncx-chero h1,.ncx-chero h2{font-size:min(var(--chero-h),36px)}}
         .ncx-chero .sub{margin:22px 0 0;font-size:1.06rem;line-height:1.6;
           color:var(--ncx-muted);max-width:52ch}
         .ncx-chero .cta{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
@@ -205,7 +208,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
 
         @media(max-width:960px){
           .ncx-chero .grid{grid-template-columns:1fr;gap:36px}
-          .ncx-chero h1{max-width:100%}
+          .ncx-chero h1,.ncx-chero h2{max-width:100%}
           .ncx-chero .stats{margin-top:36px}
         }
         @media(prefers-reduced-motion:reduce){
@@ -228,7 +231,7 @@ export const ConversationHeroBlock: React.FC<Props> = ({
         <div className="grid" data-cols={messages.length ? '2' : '1'}>
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-            <h1>{headline}</h1>
+            <Heading>{headline}</Heading>
             {subhead ? <p className="sub">{subhead}</p> : null}
 
             {primaryButtonLabel || secondaryButtonLabel ? (

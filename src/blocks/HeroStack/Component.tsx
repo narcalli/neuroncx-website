@@ -13,7 +13,10 @@ import { HeroStackClient } from '@/components/lazyClient'
  * the browser found no screenshots, rendered no cards, and the hero lost its
  * stack after loading (React hydration error #418).
  */
-export const HeroStackBlock: React.FC<HeroStackProps> = ({ products, ...rest }) => {
+export const HeroStackBlock: React.FC<HeroStackProps & { headingLevel?: 'h1' | 'h2' }> = ({
+  products,
+  ...rest
+}) => {
   const items: HeroStackItem[] = (products || []).flatMap((p) => {
     const pick = pickMedia(p?.screenshot as MediaValue, 'stack1600')
     return p?.label && pick ? [{ id: p.id, label: p.label, caption: p.caption, pick }] : []

@@ -32,6 +32,7 @@ type Props = {
   cards?: Card[] | null
   leading?: React.ReactNode
   crumbs?: React.ReactNode
+  headingLevel?: 'h1' | 'h2'
 }
 
 /** Resolves a CTA group into a real address, or null when there is nothing to link to. */
@@ -79,8 +80,10 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
   cards,
   leading,
   crumbs,
+  headingLevel = 'h1',
 }) => {
   if (!headline) return null
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const trail = leading ?? crumbs
 
   const words = headline.trim().split(/\s+/)
@@ -140,7 +143,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           font-family:var(--font-display),Arial,sans-serif;font-size:14px;font-weight:600;color:var(--h-eyebrow)}
         .ncx-hwg .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;
           background:var(--crimson);box-shadow:0 0 0 4px rgba(198,40,40,.25)}
-        .ncx-hwg h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;letter-spacing:-.025em;
+        .ncx-hwg h1,.ncx-hwg h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;letter-spacing:-.025em;
           line-height:1.06;font-size:clamp(38px,4.2vw,58px);margin:0 0 20px;
           max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--h-text)}
         .ncx-hwg .word{display:inline-block;white-space:pre}
@@ -225,7 +228,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
           <div>
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
 
-            <h1 aria-label={headline}>
+            <Heading aria-label={headline}>
               {words.map((word, i) => (
                 <React.Fragment key={i}>
                   <span className="word" style={{ '--i': i } as React.CSSProperties} aria-hidden="true">
@@ -234,7 +237,7 @@ export const HeroWorkforceGridBlock: React.FC<Props> = ({
                   {i < words.length - 1 ? ' ' : ''}
                 </React.Fragment>
               ))}
-            </h1>
+            </Heading>
 
             {subhead ? <p className="subhead">{subhead}</p> : null}
 

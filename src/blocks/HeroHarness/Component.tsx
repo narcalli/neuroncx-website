@@ -127,7 +127,9 @@ export const headingSlope = (px: number): string => `${Math.max(3.1, Math.ceil((
  * Below the text: the cards, which act as tabs, and the drawing of the
  * harness they light up (Stage.tsx, geometry.ts).
  */
-export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.ReactNode }> = ({
+export const HeroHarnessBlock: React.FC<
+  HeroHarnessProps & { leading?: React.ReactNode; headingLevel?: 'h1' | 'h2' }
+> = ({
   textLayout,
   textBlock,
   eyebrow,
@@ -140,8 +142,10 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
   introMaxWidth: introMax,
   background,
   leading,
+  headingLevel = 'h1',
   ...rest
 }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const layout = textLayout || 'centred'
   const width = rest.blockWidth === 'header' ? 'header' : 'site'
   const lines = headlineLines(headline)
@@ -178,7 +182,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
       <div className="ncx-container">
         <div className="hh-text">
           {eyebrow?.trim() ? <p className="hh-eyebrow">{eyebrow.trim()}</p> : null}
-          <h1>
+          <Heading>
             {lines.map((line, i) => (
               <React.Fragment key={i}>
                 {i > 0 ? (
@@ -189,7 +193,7 @@ export const HeroHarnessBlock: React.FC<HeroHarnessProps & { leading?: React.Rea
                 {line}
               </React.Fragment>
             ))}
-          </h1>
+          </Heading>
           <div className="hh-body">
             {paragraph ? <p className="hh-intro">{paragraph}</p> : null}
             {shown.length ? (
@@ -245,7 +249,7 @@ const heroCss = `
   .ncx-hh .hh-lead{position:absolute;top:64px;left:0;right:0;z-index:3;--crumb-top:28px;pointer-events:none}
   .ncx-hh .hh-lead nav,.ncx-hh .hh-lead a{pointer-events:auto}
 
-  .ncx-hh h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(28px,3.1vw,var(--hh-h));line-height:1.12;
+  .ncx-hh h1,.ncx-hh .hh-text > h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(28px,3.1vw,var(--hh-h));line-height:1.12;
     letter-spacing:-.022em;color:var(--ncx-ink);margin:0;text-wrap:balance}
   .ncx-hh .hh-intro{font-size:clamp(15px,1.2vw,17px);line-height:1.7;color:var(--ncx-muted);margin:0;text-wrap:pretty}
   /* The small label: a neutral chip, as Hero (custom CSS)'s chips (.hcx-chips li): pill, white fill, 1px rule border,
@@ -262,7 +266,7 @@ const heroCss = `
   .ncx-hh .hh-body{display:flex;flex-direction:column;align-items:flex-start;gap:var(--hh-gap);max-width:var(--hh-intro-w)}
   /* Grid: the title spans both columns; the intro starts where the drawing starts. */
   .ncx-hh[data-layout="grid"] .hh-text{display:grid;grid-template-columns:minmax(0,35fr) minmax(0,65fr);gap:var(--hh-gap) 20px}
-  .ncx-hh[data-layout="grid"] h1,.ncx-hh[data-layout="grid"] .hh-eyebrow{grid-column:1 / -1}
+  .ncx-hh[data-layout="grid"] h1,.ncx-hh[data-layout="grid"] .hh-text > h2,.ncx-hh[data-layout="grid"] .hh-eyebrow{grid-column:1 / -1}
   .ncx-hh[data-layout="grid"] .hh-eyebrow{justify-self:start}
   .ncx-hh[data-layout="grid"] .hh-body{grid-column:2;max-width:none}
   /* Centred: the title and the intro centred above the cards and drawing. */
@@ -277,6 +281,7 @@ const heroCss = `
      above the text. */
   @media (min-width:900px){
     .ncx-hh h1{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
+    .ncx-hh .hh-text > h2{font-size:clamp(28px,var(--hh-h-vw),var(--hh-h))}
     .ncx-hh[data-spacing="roomy"]{--hh-top:clamp(32px,calc(4.5vw - 20px),44px);--hh-gap:20px;--hh-stage:40px}
     /* Centred layout, text block left: the chip, title, intro and buttons all start on one left edge. Left, block
        centred sizes the block to its widest child and centres it; left, on the stage edge starts it where the cards
@@ -307,7 +312,9 @@ const heroCss = `
      Title and intro sizes match the integration page hero (/integrations/abdm). Centred text goes left aligned. */
   @media (max-width:899.98px){
     .ncx-hh h1 .br{display:none}
+    .ncx-hh .hh-text > h2 .br{display:none}
     .ncx-hh h1{font-size:38px;line-height:1.06}
+    .ncx-hh .hh-text > h2{font-size:38px;line-height:1.06}
     .ncx-hh .hh-intro{font-size:19px;line-height:1.65}
     .ncx-hh[data-layout="centred"] .hh-text{align-items:flex-start;text-align:left;gap:16px}
     .ncx-hh[data-layout="centred"] .hh-eyebrow{align-self:flex-start;margin-bottom:6px}

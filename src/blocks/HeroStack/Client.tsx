@@ -42,8 +42,9 @@ const depthOf = (i: number, active: number, n: number) => (i - active + n) % n
  * products are a plain list.
  */
 export const HeroStackClient: React.FC<
-  Omit<HeroStackProps, 'products'> & { items: HeroStackItem[] }
-> = ({ eyebrow, heading, intro, primaryCta, secondaryCta, items, showFrame }) => {
+  Omit<HeroStackProps, 'products'> & { items: HeroStackItem[]; headingLevel?: 'h1' | 'h2' }
+> = ({ eyebrow, heading, intro, primaryCta, secondaryCta, items, showFrame, headingLevel = 'h1' }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const list = items
   const n = list.length
   const level = useMotionLevel()
@@ -99,7 +100,7 @@ export const HeroStackClient: React.FC<
           font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:.75rem;
           letter-spacing:.06em;text-transform:uppercase;color:var(--hs-accent)}
         .ncx-hstack .hs-eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hs-accent)}
-        .ncx-hstack h1{margin:0;font-family:var(--font-display),Arial,sans-serif;font-weight:600;
+        .ncx-hstack h1,.ncx-hstack .hs-copy > h2{margin:0;font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
         .ncx-hstack .hs-intro{margin:0;font-size:1.05rem;line-height:1.6;color:var(--hs-muted);max-width:34rem;text-wrap:pretty}
         .ncx-hstack .hs-ctas{display:flex;flex-wrap:wrap;gap:12px}
@@ -169,7 +170,7 @@ export const HeroStackClient: React.FC<
           .ncx-hstack{padding-block:calc(var(--bar) + 28px) 48px}
           .ncx-hstack .hs-inner{display:block}
           .ncx-hstack .hs-copy{gap:14px}
-          .ncx-hstack h1{font-size:clamp(1.7rem,7vw,2.2rem)}
+          .ncx-hstack h1,.ncx-hstack .hs-copy > h2{font-size:clamp(1.7rem,7vw,2.2rem)}
           .ncx-hstack .hs-intro{display:none}
           /* Phones show the intro in the product list; with no products it stays here. */
           .ncx-hstack .hs-inner[data-cols="1"] .hs-intro{display:block}
@@ -187,7 +188,7 @@ export const HeroStackClient: React.FC<
       <div className="hs-inner ncx-container" data-cols={n ? '2' : '1'}>
         <div className="hs-copy">
           {eyebrow ? <p className="hs-eyebrow">{eyebrow}</p> : null}
-          <h1>{heading}</h1>
+          <Heading>{heading}</Heading>
           {intro ? <p className="hs-intro">{intro}</p> : null}
           {buttons}
 

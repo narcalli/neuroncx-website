@@ -40,6 +40,7 @@ export const HeroCustomBlock: React.FC<
     leading?: React.ReactNode
     /** Short labels under the subhead. Entry pages pass their hero chips; the page block has none. */
     chips?: { label: string }[] | null
+    headingLevel?: 'h1' | 'h2'
   }
 > = ({
   eyebrow,
@@ -59,7 +60,9 @@ export const HeroCustomBlock: React.FC<
   maxWidth,
   leading,
   chips,
+  headingLevel = 'h1',
 }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const html = safeVisualHtml(visualHtml)
   const css = safeVisualCss(visualCss)
   const pos = visualPosition || 'right'
@@ -91,7 +94,7 @@ export const HeroCustomBlock: React.FC<
         <div className="hcx-grid" data-cols={visual ? undefined : '1'}>
           <div className="hcx-copy">
             {eyebrow ? <p className="hcx-eyebrow">{eyebrow}</p> : null}
-            <h1>{headline}</h1>
+            <Heading>{headline}</Heading>
             {subhead ? <p className="hcx-sub">{subhead}</p> : null}
             {chips?.length ? (
               <ul className="hcx-chips">
@@ -146,7 +149,7 @@ const heroCss = `
   .ncx-hcx .hcx-eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0 0 18px;
     font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--hcx-muted)}
   .ncx-hcx .hcx-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ncx-crimson)}
-  .ncx-hcx h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(36px,4.6vw,60px);line-height:1.06;
+  .ncx-hcx h1,.ncx-hcx h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:clamp(36px,4.6vw,60px);line-height:1.06;
     letter-spacing:-.025em;margin:0;max-width:var(--ncx-heading-max);color:var(--hcx-ink)}
   .ncx-hcx .hcx-sub{margin:22px 0 0;max-width:52ch;font-size:clamp(16px,1.3vw,19px);line-height:1.65;color:var(--hcx-muted)}
   .ncx-hcx .hcx-chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}

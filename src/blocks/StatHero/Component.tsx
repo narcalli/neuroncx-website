@@ -15,6 +15,7 @@ type Props = {
   stats?: Stat[] | null
   /** Shown first, at the top of the hero's padding (the page's breadcrumbs). */
   leading?: React.ReactNode
+  headingLevel?: 'h1' | 'h2'
 }
 
 export const StatHeroBlock: React.FC<Props> = ({
@@ -27,7 +28,9 @@ export const StatHeroBlock: React.FC<Props> = ({
   secondaryLink,
   stats,
   leading,
+  headingLevel = 'h1',
 }) => {
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
   const items = stats || []
 
   return (
@@ -64,7 +67,7 @@ export const StatHeroBlock: React.FC<Props> = ({
           border:1px solid var(--ncx-rule);background:var(--ncx-white);
           padding:7px 15px;border-radius:999px;margin:0 0 24px}
         .ncx-stathero .spark{width:7px;height:7px;border-radius:50%;background:var(--ncx-crimson)}
-        .ncx-stathero h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
+        .ncx-stathero h1,.ncx-stathero h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(36px,4.6vw,56px);line-height:1.06;letter-spacing:-.035em;
           margin:0 auto;max-width:var(--ncx-heading-max);text-wrap:balance;color:var(--ncx-ink)}
         .ncx-stathero .sub{margin:24px auto 0;max-width:60ch;font-size:19px;line-height:1.65;color:var(--ncx-muted)}
@@ -97,7 +100,7 @@ export const StatHeroBlock: React.FC<Props> = ({
             {eyebrow}
           </p>
         ) : null}
-        <h1>{headline}</h1>
+        <Heading>{headline}</Heading>
         {subhead ? <p className="sub">{subhead}</p> : null}
 
         {primaryLabel || secondaryLabel ? (

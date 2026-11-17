@@ -27,6 +27,7 @@ type Props = {
   animation?: 'on' | 'off' | null
   /** Shown at the top of the hero, under the fixed header (a page's breadcrumbs). Not a CMS field. */
   leading?: React.ReactNode
+  headingLevel?: 'h1' | 'h2'
 }
 
 /** Resolves a CTA group into a real address, or null when there is nothing to link to. */
@@ -134,8 +135,10 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
   videoPoster,
   animation,
   leading,
+  headingLevel = 'h1',
 }) => {
   if (!headline) return null
+  const Heading = headingLevel === 'h2' ? 'h2' : 'h1'
 
   const words = headline.trim().split(/\s+/)
   const anim = animation === 'off' ? 'off' : 'on'
@@ -220,7 +223,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
           font-weight:600;color:var(--ncx-crimson-ink);display:inline-flex;align-items:center;gap:8px}
         .ncx-hrp .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;
           background:var(--ncx-crimson);box-shadow:0 0 0 4px var(--ncx-crimson-tint)}
-        .ncx-hrp h1{font-family:var(--font-display),Arial,sans-serif;font-weight:600;
+        .ncx-hrp h1,.ncx-hrp h2{font-family:var(--font-display),Arial,sans-serif;font-weight:600;
           letter-spacing:-.025em;line-height:1.05;font-size:clamp(40px,5vw,67px);
           margin:0 0 20px;max-width:var(--ncx-heading-max);text-wrap:balance}
         .ncx-hrp .word{display:inline-block;white-space:pre}
@@ -298,7 +301,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
           <div className="copy">
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
 
-            <h1 aria-label={headline}>
+            <Heading aria-label={headline}>
               {words.map((word, i) => (
                 <React.Fragment key={i}>
                   <span className="word" style={{ '--i': i } as React.CSSProperties} aria-hidden="true">
@@ -307,7 +310,7 @@ export const HeroRightPlacementBlock: React.FC<Props> = ({
                   {i < words.length - 1 ? ' ' : ''}
                 </React.Fragment>
               ))}
-            </h1>
+            </Heading>
 
             {subhead ? <p className="subhead">{subhead}</p> : null}
 
