@@ -127,13 +127,13 @@ export const ContactFormBlock: React.FC<Props> = ({
   return (
     <section className="ncx-contact ncx-container">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Source+Serif+4:opsz,wght@8..60,400&display=swap');
+        /* The site's own faces (layout.tsx), not a Google Fonts @import, which held up drawing the page. */
         .ncx-contact{padding-block:56px;
-          font-family:"Source Serif 4",Georgia,serif;color:var(--ncx-ink)}
+          font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-ink)}
         .ncx-contact .cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
-        .ncx-contact .label{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:14px;
+        .ncx-contact .label{font-family:var(--font-display),Arial,sans-serif;font-size:14px;
           margin:0 0 12px;color:var(--ncx-crimson-ink)}
-        .ncx-contact h1,.ncx-contact h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:500;
+        .ncx-contact h1,.ncx-contact h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;
           font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:0;max-width:var(--ncx-heading-max)}
         .ncx-contact .intro{color:var(--ncx-muted);margin:14px 0 0;max-width:46ch;font-size:18px;line-height:1.6}
         /* Was a violet-to-cyan gradient rim showing through a 1px pad. Both
@@ -142,9 +142,9 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact .card{border-radius:16px;padding:1px;background:var(--ncx-rule)}
         .ncx-contact .in{background:var(--ncx-white);border-radius:15px;padding:28px 26px}
         .ncx-contact .field{margin-bottom:16px}
-        .ncx-contact label{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;
+        .ncx-contact label{display:block;font-family:var(--font-display),Arial,sans-serif;
           font-size:13px;color:var(--ncx-muted);margin-bottom:6px}
-        .ncx-contact input,.ncx-contact textarea{width:100%;font-family:"Source Serif 4",Georgia,serif;
+        .ncx-contact input,.ncx-contact textarea{width:100%;font-family:var(--font-body),Arial,sans-serif;
           font-size:16px;color:var(--ncx-ink);background:var(--ncx-paper);
           border:1px solid var(--ncx-rule);border-radius:8px;padding:11px 13px}
         .ncx-contact textarea{min-height:96px;resize:vertical}
@@ -152,7 +152,7 @@ export const ContactFormBlock: React.FC<Props> = ({
           outline-offset:1px;background:var(--ncx-white)}
         .ncx-contact .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
         .ncx-contact .turnstile:not(:empty){margin-bottom:16px}
-        .ncx-contact button{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:15px;
+        .ncx-contact button{font-family:var(--font-display),Arial,sans-serif;font-size:15px;
           font-weight:500;padding:13px 24px;border-radius:8px;border:0;cursor:pointer;
           background:var(--ncx-navy);color:var(--ncx-on-navy);margin-top:4px}
         .ncx-contact button[disabled]{opacity:.6;cursor:default}
@@ -161,7 +161,7 @@ export const ContactFormBlock: React.FC<Props> = ({
         .ncx-contact .consent a:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:2px}
         .ncx-contact .err{color:var(--ncx-crimson-ink);font-size:15px;margin:12px 0 0}
         .ncx-contact .err:empty{margin:0}
-        .ncx-contact .done{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:17px;
+        .ncx-contact .done{font-family:var(--font-display),Arial,sans-serif;font-size:17px;
           line-height:1.6;color:var(--ncx-ink);margin:0}
         .ncx-contact .req{color:var(--ncx-crimson-ink)}
         @media(max-width:860px){.ncx-contact{padding-block:40px}
