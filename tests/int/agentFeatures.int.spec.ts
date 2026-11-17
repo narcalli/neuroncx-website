@@ -99,9 +99,16 @@ describe('the panel', () => {
     // Inactive panels sit top, left and right at their own height, so each can be measured where it is.
     // Each carries its opacity in the server HTML, so only the selected one shows before JavaScript runs.
     expect(html).toMatch(/id="ncx-agent-a1" class="stage" role="region" aria-label="Appointment assistance" aria-hidden="false" style="position:relative;pointer-events:auto;opacity:1;transform:none"/)
-    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
-    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
+    expect(html).toMatch(/id="ncx-agent-a2" class="stage" role="region" aria-label="Payment services" aria-hidden="true" inert="" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
+    expect(html).toMatch(/id="ncx-agent-a3" class="stage" role="region" aria-label="Prescription understanding" aria-hidden="true" inert="" style="position:absolute;top:0;left:0;right:0;pointer-events:none;opacity:0;transform:none"/)
     expect(html).not.toContain('Recover')
+  })
+
+  it('makes the hidden panels inert, so their links are out of the Tab order, and leaves the shown one alone', () => {
+    const tag = (id: string) => html.match(new RegExp(`<div id="ncx-agent-${id}"[^>]*>`))![0]
+    expect(tag('a1')).not.toContain('inert')
+    expect(tag('a2')).toContain('inert=""')
+    expect(tag('a3')).toContain('inert=""')
   })
 
   it('draws the three cards: what it does, features, saves to your systems (teal)', () => {
@@ -298,6 +305,8 @@ describe('Groups mode in the explorer', () => {
     )
     expect(panel(html, 'in')).toMatch(/<small class="you-set"><strong>Your team sets:<\/strong> The stages.<\/small><a class="ev-link" href="\/crm">See the CRM →<\/a>/)
     expect(panel(html, 'out')).toMatch(/<a class="ev-link" href="https:\/\/docs.example.com" target="_blank" rel="noopener noreferrer">Docs →<\/a>/)
+    // The second item's panel is hidden at first, so its link sits inside an inert panel.
+    expect(panel(html, 'out')).toMatch(/^id="ncx-agent-out"[^>]*aria-hidden="true" inert=""/)
   })
 
   it('falls back to "You set:" for a block saved before the label existed', () => {

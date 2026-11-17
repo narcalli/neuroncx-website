@@ -275,6 +275,8 @@ export const AgentFeatures: React.FC<{
                     role="region"
                     aria-label={a.name}
                     aria-hidden={!active}
+                    // Inert too: a hidden panel's links are out of the Tab order, not just hidden from screen readers.
+                    inert={!active}
                     // Inactive panels sit top, left and right, at their own height, so each can be measured
                     // where it is; the shown one fills the reserved height (not while measuring).
                     style={{
