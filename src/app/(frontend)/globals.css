@@ -46,8 +46,9 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
-  --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
+  /* Tailwind's defaults (and code, pre) use the site's own faces from layout.tsx. */
+  --font-mono: var(--font-label);
+  --font-sans: var(--font-body);
 }
 
 @layer utilities {

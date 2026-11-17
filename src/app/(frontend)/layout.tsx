@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
 import { IBM_Plex_Mono, Inter, Poppins } from 'next/font/google'
 import React from 'react'
 
@@ -20,7 +18,7 @@ import './globals.css'
 import { MotionProvider } from '@/motion/MotionProvider'
 import { LoopWatch } from '@/motion/LoopWatch'
 import { ReadingProgress } from '@/motion/ReadingProgress'
-import { getServerSideURL } from '@/utilities/getURL'
+import { getPayloadURL, getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 import { currentVersionTarget } from '@/utilities/versionCookie'
 
@@ -59,6 +57,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const appleTouchIcon = siteFileUrl(settings.appleTouchIcon)
   // Site Settings, Animations: on until set. In the server HTML, so CSS holds before any script runs.
   const animations = settings.animations || 'on'
+  // The logo and favicon load from the CMS address: open that connection early.
+  const cmsOrigin = getPayloadURL()
   // Who runs the site, for search engines (utilities/jsonLd.ts). Left out until the site's address is set.
   const identity = siteIdentity({
     siteUrl: getServerSideURL(),
@@ -72,8 +72,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       className={cn(
-        GeistSans.variable,
-        GeistMono.variable,
         displayFont.variable,
         bodyFont.variable,
         labelFont.variable,
@@ -83,6 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
     >
       <head>
+        {cmsOrigin ? <link rel="preconnect" href={cmsOrigin} /> : null}
         <link href={faviconIco} rel="icon" sizes="32x32" />
         <link href={faviconSvg} rel="icon" type="image/svg+xml" />
         {favicon32 ? <link href={favicon32} rel="icon" type="image/png" sizes="32x32" /> : null}
