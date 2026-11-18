@@ -55,6 +55,16 @@ describe('/integrations from the main Integrations master', () => {
     expect(html).toContain("Tell us what you&#x27;re running")
   })
 
+  it('keeps the bottom padding after a closing card, and drops it when an Expanding Card CTA ends the page', async () => {
+    expect(await toHtml(await IntegrationsPage())).toMatch(/^<article class="pb-24">/)
+    getMany.mockImplementation(async (collection: string) =>
+      collection === 'integrationsMaster'
+        ? [{ ...master, layout: [...master.layout.slice(0, 1), { blockType: 'expandingCardCta', heading: 'Talk to us' }, { blockType: 'content', hidden: true }] }]
+        : [],
+    )
+    expect(await toHtml(await IntegrationsPage())).toMatch(/^<article>/)
+  })
+
   it("takes the master's SEO title and description, with /integrations as canonical", async () => {
     const meta = await generateMetadata()
     expect(meta.title).toBe('Integrations: Telephony, Booking and Payments | NeuronCx')

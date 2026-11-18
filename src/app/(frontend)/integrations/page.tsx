@@ -20,8 +20,12 @@ const crumbs = <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Inte
 export default async function IntegrationsPage() {
   const m = await loadMaster()
   if (!m) notFound()
+  // As on a CMS page (PageView): a full-bleed navy Expanding Card CTA as the last row shown meets the
+  // navy footer with no page padding between them.
+  const shown = (m.layout || []).filter((b) => b && !('hidden' in b && b.hidden))
+  const endsFlush = shown.at(-1)?.blockType === 'expandingCardCta'
   return (
-    <article className="pb-24">
+    <article className={endsFlush ? undefined : 'pb-24'}>
       <IntegrationsLandingBlock record={m} leading={crumbs} />
     </article>
   )
