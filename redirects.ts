@@ -21,6 +21,13 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: true,
   }
 
+  // The CMS page /integration and the master's preview were replaced by /integrations, drawn from the
+  // main Integrations master (app/(frontend)/integrations/page.tsx).
+  const integrationsLanding = [
+    { source: '/integration', destination: '/integrations', permanent: true },
+    { source: '/integrations-preview', destination: '/integrations', permanent: true },
+  ]
+
   const blogRedirect = {
     source: '/blog',
     destination: '/posts',
@@ -77,6 +84,7 @@ export const redirects: NextConfig['redirects'] = async () => {
     internetExplorerRedirect,
     botSwarmPreview,
     blogRedirect,
+    ...integrationsLanding,
     ...oldSite.map(([source, destination]) => ({ source, destination, permanent: true })),
   ]
 }

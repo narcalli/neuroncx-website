@@ -70,7 +70,8 @@ export const queryPageByPath = cache(async (path: string): Promise<Page | null> 
  * (src/app/(frontend)): a page or pillar with one of these slugs is shadowed
  * there, so it is never listed in the sitemap.
  */
-const OWN_FIRST_LEVEL = ['posts', 'bot-swarm', 'integrations-preview']
+// integrations and integration: the CMS pages the Integrations master replaced (/integration redirects).
+const OWN_FIRST_LEVEL = ['posts', 'bot-swarm', 'integrations', 'integration']
 const OWN_SECOND_LEVEL = ['posts', 'bot-swarm', 'customers', 'integrations', 'next', 'api', 'dev']
 
 const shadowed = (path: string): boolean => {
