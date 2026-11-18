@@ -1,72 +1,35 @@
-import { siteUrlFor } from '@/utilities/siteDefaults'
-import type { Metadata } from 'next/types'
-
-import { CollectionArchive } from '@/components/CollectionArchive'
-import { PageRange } from '@/components/PageRange'
-import { Pagination } from '@/components/Pagination'
+import type { Metadata } from 'next'
+import { permanentRedirect } from 'next/navigation'
 import React from 'react'
-import { notFound } from 'next/navigation'
-import { getPaginated, CMS_TAG } from '@/utilities/cms'
 
+import { loadPostsPage, PostsIndex, postsMetadata } from '@/components/PostsIndex'
+import { notFoundUnlessCmsDown } from '@/utilities/cms'
+
+/**
+ * The blog index from page 2 on, with /posts's template, title rules and
+ * canonical (components/PostsIndex). Page 1 is /posts: redirects.ts sends
+ * /posts/page/1 there, and this route does too if it is ever reached.
+ */
 export const dynamic = 'force-dynamic'
 
-type Args = {
-  params: Promise<{
-    pageNumber: string
-  }>
+type Args = { params: Promise<{ pageNumber: string }> }
+
+/** A whole page number of 1 or more, or null. */
+const pageOf = async (params: Args['params']): Promise<number | null> => {
+  const { pageNumber } = await params
+  return /^[1-9]\d*$/.test(pageNumber) ? Number(pageNumber) : null
 }
 
-export default async function Page({ params: paramsPromise }: Args) {
-  const { pageNumber } = await paramsPromise
-
-  const sanitizedPageNumber = Number(pageNumber)
-
-  if (!Number.isInteger(sanitizedPageNumber)) notFound()
-
-  const posts = await getPaginated<any>(
-    'posts',
-    {
-      depth: 1,
-      limit: 12,
-      page: sanitizedPageNumber,
-      'where[_status][equals]': 'published',
-    },
-    { tags: [CMS_TAG, 'posts'] },
-  )
-
-  return (
-    <div className="pt-24 pb-24">
-      <div className="ncx-container mb-16">
-        <div className="prose max-w-none">
-          <h1>Posts</h1>
-        </div>
-      </div>
-
-      <div className="ncx-container mb-8">
-        <PageRange
-          collection="posts"
-          currentPage={posts.page}
-          limit={12}
-          totalDocs={posts.totalDocs}
-        />
-      </div>
-
-      <CollectionArchive posts={posts.docs} />
-
-      <div className="ncx-container">
-        {posts?.page && posts?.totalPages > 1 && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
-        )}
-      </div>
-    </div>
-  )
+export default async function PostsPage({ params }: Args) {
+  const page = await pageOf(params)
+  if (page === null) notFoundUnlessCmsDown()
+  if (page === 1) permanentRedirect('/posts')
+  const posts = await loadPostsPage(page)
+  // A page past the last has no posts: not found, unless the CMS did not answer.
+  if (!posts.docs.length || page > posts.totalPages) notFoundUnlessCmsDown()
+  return <PostsIndex page={page} posts={posts} />
 }
 
-export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { pageNumber } = await paramsPromise
-  const canonical = siteUrlFor(`/posts/page/${pageNumber}`)
-  return {
-    title: `Blog Posts Page ${pageNumber || ''}`,
-    ...(canonical ? { alternates: { canonical } } : {}),
-  }
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  return postsMetadata((await pageOf(params)) ?? 1)
 }

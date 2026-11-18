@@ -34,6 +34,13 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: true,
   }
 
+  // Page 1 of the blog index is /posts itself (components/PostsIndex).
+  const blogFirstPage = {
+    source: '/posts/page/1',
+    destination: '/posts',
+    permanent: true,
+  }
+
   // Old neuroncx.in addresses, each to its page on this site.
   const oldSite: [string, string][] = [
     ['/ai-assisted-chatbot-for-admissions-college-and-higher-education-institution/3', '/higher-education'],
@@ -84,6 +91,7 @@ export const redirects: NextConfig['redirects'] = async () => {
     internetExplorerRedirect,
     botSwarmPreview,
     blogRedirect,
+    blogFirstPage,
     ...integrationsLanding,
     ...oldSite.map(([source, destination]) => ({ source, destination, permanent: true })),
   ]
