@@ -18,6 +18,7 @@ import './globals.css'
 import { MotionProvider } from '@/motion/MotionProvider'
 import { LoopWatch } from '@/motion/LoopWatch'
 import { ReadingProgress } from '@/motion/ReadingProgress'
+import { CMS_TAG, getGlobal } from '@/utilities/cms'
 import { getPayloadURL, getServerSideURL } from '@/utilities/getURL'
 import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 import { currentVersionTarget } from '@/utilities/versionCookie'
@@ -49,6 +50,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
   const version = isEnabled ? await currentVersionTarget() : null
   const settings = await getSiteSettings()
+  // The Footer's contact address, for search engines; the same request as the Footer's, so it is read once.
+  const footer = await getGlobal<{ email?: string | null }>('footer', { depth: 2, tags: [CMS_TAG, 'footer'] })
 
   // Each icon falls back to the file shipped in public/ when the CMS field is empty.
   const faviconIco = siteFileUrl(settings.faviconIco) || '/favicon.ico'
@@ -67,6 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     description: settings.defaultDescription || DEFAULT_DESCRIPTION,
     logo: siteFileUrl(settings.organisation?.logo) || DEFAULT_LOGO_PATH,
     profiles: settings.organisation?.profiles?.map((p) => p.url),
+    email: footer?.email,
   })
 
   return (

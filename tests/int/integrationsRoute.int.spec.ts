@@ -41,7 +41,14 @@ describe('/integrations from the main Integrations master', () => {
   beforeEach(() => {
     getMany.mockReset()
     getMany.mockImplementation(async (collection: string, query: Record<string, unknown>) =>
-      collection === 'integrationsMaster' && query['where[isMain][equals]'] === true ? [master] : [],
+      collection === 'integrationsMaster' && query['where[isMain][equals]'] === true
+        ? [master]
+        : collection === 'integrations'
+          ? [
+              { id: 'i1', name: 'DocPulse', slug: 'docpulse', status: 'live', hasOwnPage: true },
+              { id: 'i2', name: 'Zenoti', slug: 'zenoti', status: 'live', hasOwnPage: true },
+            ]
+          : [],
     )
     vi.stubEnv('NEXT_PUBLIC_SERVER_URL', 'https://neuroncx.in')
   })
@@ -53,6 +60,21 @@ describe('/integrations from the main Integrations master', () => {
     expect(html).toContain('<h1>Plugged into the systems you already run</h1>')
     expect(html.indexOf('aria-label="Breadcrumb"')).toBeLessThan(html.indexOf('Plugged into the systems'))
     expect(html).toContain("Tell us what you&#x27;re running")
+  })
+
+  it('describes itself to search engines as a CollectionPage listing the integrations with their own pages', async () => {
+    const html = await toHtml(await IntegrationsPage())
+    const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]))
+    const page = ld.find((d) => d['@type'] === 'CollectionPage')
+    expect(page).toMatchObject({
+      url: 'https://neuroncx.in/integrations',
+      name: 'Integrations: Telephony, Booking and Payments | NeuronCx',
+      mainEntity: { '@type': 'ItemList', numberOfItems: 2 },
+    })
+    expect(page.mainEntity.itemListElement.map((i: { url: string }) => i.url)).toEqual([
+      'https://neuroncx.in/integrations/docpulse',
+      'https://neuroncx.in/integrations/zenoti',
+    ])
   })
 
   it('keeps the bottom padding after a closing card, and drops it when an Expanding Card CTA ends the page', async () => {

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { contentSecurityPolicy, securityHeaders } from '../../securityHeaders'
 import { clientIp, cmsEnquiryHeaders, turnstileOn, verifyTurnstile } from '@/utilities/enquiryGuard'
-import { siteIdentity } from '@/utilities/jsonLd'
+import { collectionPage, siteIdentity } from '@/utilities/jsonLd'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { shareCard, shareCardTitle, SHARE_CARD_TITLE_MAX } from '@/utilities/siteDefaults'
 
@@ -156,6 +156,46 @@ describe('Organization data', () => {
 
   it('is left out until the site address is set', () => {
     expect(siteIdentity({ ...base, siteUrl: '' })).toBeNull()
+  })
+
+  it("gives the company the site's contact address as a contact point, and only a real address", () => {
+    const [org] = siteIdentity({ ...base, email: ' team@neuroncx.in ' })!['@graph'] as any[]
+    expect(org.contactPoint).toEqual({ '@type': 'ContactPoint', contactType: 'customer service', email: 'team@neuroncx.in' })
+    const [none] = siteIdentity({ ...base, email: 'not an address' })!['@graph'] as any[]
+    expect(none).not.toHaveProperty('contactPoint')
+  })
+})
+
+describe('a listing page', () => {
+  it('is a CollectionPage whose main entity lists the pages it links, in order, leaving out unusable items', () => {
+    const page = collectionPage({
+      siteUrl: SITE,
+      path: '/integrations',
+      name: 'Integrations | NeuronCx',
+      description: 'What NeuronCx connects to.',
+      items: [
+        { name: 'DocPulse', href: '/integrations/docpulse' },
+        { name: '', href: '/integrations/nameless' },
+        { name: 'No page', href: null },
+        { name: 'Zenoti', href: '/integrations/zenoti' },
+      ],
+    })!
+    expect(page).toMatchObject({
+      '@type': 'CollectionPage',
+      url: `${SITE}/integrations`,
+      name: 'Integrations | NeuronCx',
+      isPartOf: { '@id': `${SITE}/#website` },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: 2,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'DocPulse', url: `${SITE}/integrations/docpulse` },
+          { '@type': 'ListItem', position: 2, name: 'Zenoti', url: `${SITE}/integrations/zenoti` },
+        ],
+      },
+    })
+    expect(collectionPage({ siteUrl: SITE, path: '/x', items: [] })).not.toHaveProperty('mainEntity')
+    expect(collectionPage({ siteUrl: '', path: '/x', items: [] })).toBeNull()
   })
 })
 

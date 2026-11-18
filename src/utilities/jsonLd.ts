@@ -90,6 +90,8 @@ export const siteIdentity = (args: {
   description?: string | null
   logo?: string | null
   profiles?: (string | null | undefined)[] | null
+  /** The site's contact address (the Footer's), as the organisation's contact point. */
+  email?: string | null
 }) => {
   let base: URL
   try {
@@ -104,6 +106,7 @@ export const siteIdentity = (args: {
       (args.profiles || []).filter((p): p is string => typeof p === 'string' && /^https:\/\/\S+$/.test(p.trim())),
     ),
   ].map((p) => p.trim())
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(args.email?.trim() || '') ? args.email!.trim() : null
 
   const organization = {
     '@type': 'Organization',
@@ -113,6 +116,7 @@ export const siteIdentity = (args: {
     ...(args.legalName?.trim() ? { legalName: args.legalName.trim() } : {}),
     ...(logo ? { logo } : {}),
     ...(sameAs.length ? { sameAs } : {}),
+    ...(email ? { contactPoint: { '@type': 'ContactPoint', contactType: 'customer service', email } } : {}),
   }
   const webSite = {
     '@type': 'WebSite',
@@ -134,6 +138,49 @@ const absoluteSite = (siteUrl: string): URL | null => {
 }
 
 const plain = (v?: string | null): string | undefined => (v?.trim() ? v.trim() : undefined)
+
+/**
+ * A page that lists other pages, such as /integrations, as a schema.org
+ * CollectionPage whose main entity is an ItemList of those pages, in order.
+ * No rich result in Google, but it tells search engines and AI tools what the
+ * page is and which pages it lists. Items without a name or an address are left
+ * out; with none left there is no list. Null when siteUrl is not absolute.
+ */
+export const collectionPage = (args: {
+  siteUrl: string
+  path: string
+  name?: string | null
+  description?: string | null
+  items: { name?: string | null; href?: string | null }[]
+}) => {
+  const base = absoluteSite(args.siteUrl)
+  if (!base) return null
+  const url = resolve(args.path, base)
+  const name = plain(args.name)
+  const description = plain(args.description)
+  const items = args.items.flatMap((it) => {
+    const itemName = plain(it.name)
+    const itemUrl = it.href ? resolve(it.href, base) : null
+    return itemName && itemUrl ? [{ name: itemName, url: itemUrl }] : []
+  })
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    url,
+    ...(name ? { name } : {}),
+    ...(description ? { description } : {}),
+    isPartOf: { '@id': `${base.toString()}#website` },
+    ...(items.length
+      ? {
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: items.length,
+            itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, url: it.url })),
+          },
+        }
+      : {}),
+  }
+}
 
 /**
  * An integration or agent page as software (schema.org SoftwareApplication),

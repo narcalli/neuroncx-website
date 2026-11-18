@@ -4,7 +4,12 @@ import React from 'react'
 
 import { IntegrationsLandingBlock, loadMaster } from '@/blocks/IntegrationsLanding/Component'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import type { Integration } from '@/payload-types'
+import { CMS_TAG, getMany } from '@/utilities/cms'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getServerSideURL } from '@/utilities/getURL'
+import { integrationHref } from '@/utilities/integrations'
+import { collectionPage, jsonLdHtml } from '@/utilities/jsonLd'
 
 /**
  * /integrations, from the main Integrations master record (Is main on): its
@@ -24,8 +29,30 @@ export default async function IntegrationsPage() {
   // navy footer with no page padding between them.
   const shown = (m.layout || []).filter((b) => b && !('hidden' in b && b.hidden))
   const endsFlush = shown.at(-1)?.blockType === 'expandingCardCta'
+  // For search engines: this page as a CollectionPage listing every integration with a page of its own
+  // (the integrations the content sitemap lists), each of which describes itself as software.
+  const integrations = await getMany<Integration>(
+    'integrations',
+    {
+      'where[status][equals]': 'live',
+      'where[_status][equals]': 'published',
+      'where[hasOwnPage][equals]': true,
+      sort: 'name',
+      limit: 1000,
+      depth: 0,
+    },
+    { tags: [CMS_TAG, 'integrations'] },
+  )
+  const listing = collectionPage({
+    siteUrl: getServerSideURL(),
+    path: '/integrations',
+    name: m.meta?.title || m.h1,
+    description: m.meta?.description,
+    items: integrations.map((d) => ({ name: d.name, href: integrationHref(d) })),
+  })
   return (
     <article className={endsFlush ? undefined : 'pb-24'}>
+      {listing ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(listing)} /> : null}
       <IntegrationsLandingBlock record={m} leading={crumbs} />
     </article>
   )
