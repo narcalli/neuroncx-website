@@ -189,6 +189,23 @@ export const getMany = async <T>(
 }
 
 /**
+ * Like getMany, but throws CmsUnavailableError when the CMS did not answer,
+ * instead of returning an empty list. For responses that must never be
+ * published empty because a request failed, such as the sitemaps: a route
+ * that throws keeps its last good copy in the cache, and a crawler treats the
+ * error as temporary, where an empty list would be cached and believed.
+ */
+export const getManyOrThrow = async <T>(
+  collection: string,
+  query: Query = {},
+  opts: FetchOptions = {},
+): Promise<T[]> => {
+  const data = await request<Paginated<T>>(`/api/${collection}`, query, opts)
+  if (!data) throw new CmsUnavailableError()
+  return data.docs || []
+}
+
+/**
  * Like getMany, but keeps the pagination envelope — needed wherever the page
  * renders page numbers or a total count.
  */

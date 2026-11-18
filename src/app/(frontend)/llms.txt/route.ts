@@ -1,6 +1,6 @@
 import { CONTENT_COLLECTIONS, type ContentCollectionSlug } from '@/content/registry'
 import type { Customer, Integration, Page, Post } from '@/payload-types'
-import { CMS_TAG, getMany } from '@/utilities/cms'
+import { CMS_TAG, getManyOrThrow } from '@/utilities/cms'
 import { getEntries, getHub, siteOrigin } from '@/utilities/content'
 import { publicCustomerQuery } from '@/utilities/customers'
 import { getIndustryPages } from '@/utilities/industries'
@@ -23,7 +23,8 @@ export async function GET(request: Request) {
   // The address each sitemap helper gives a single document, or nothing when it is left out.
   const urlOf = (entries: { loc: string }[]) => entries[0]?.loc
 
-  const pages = await getMany<Page>('pages', { limit: 1000, depth: 0, sort: 'slug' }, { tags: [CMS_TAG, 'pages-sitemap'] })
+  // These throw when the CMS does not answer (as the sitemaps), so a failed request is never cached as a shorter map.
+  const pages = await getManyOrThrow<Page>('pages', { limit: 1000, depth: 0, sort: 'slug' }, { tags: [CMS_TAG, 'pages-sitemap'] })
   // Home first, then the rest by slug.
   pages.sort((a, b) => Number(b.slug === 'home') - Number(a.slug === 'home'))
   const sections: LlmsSection[] = [
@@ -68,7 +69,7 @@ export async function GET(request: Request) {
   sections.push({ heading: 'Industries', links: industries })
 
   const [integrations, customers, posts] = await Promise.all([
-    getMany<Integration>(
+    getManyOrThrow<Integration>(
       'integrations',
       {
         'where[status][equals]': 'live',
@@ -79,12 +80,12 @@ export async function GET(request: Request) {
       },
       { tags: [CMS_TAG, 'integrations'] },
     ),
-    getMany<Customer>(
+    getManyOrThrow<Customer>(
       'customers',
       { ...publicCustomerQuery, 'where[hasOwnPage][equals]': true, limit: 1000, depth: 0 },
       { tags: [CMS_TAG, 'customers'] },
     ),
-    getMany<Post>('posts', { 'where[_status][equals]': 'published', limit: 1000, depth: 0 }, { tags: [CMS_TAG, 'posts'] }),
+    getManyOrThrow<Post>('posts', { 'where[_status][equals]': 'published', limit: 1000, depth: 0 }, { tags: [CMS_TAG, 'posts'] }),
   ])
   sections.push(
     {
