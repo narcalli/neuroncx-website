@@ -163,4 +163,65 @@ describe('structured data for each page type', () => {
     })
     expect(blogPosting({ siteUrl: SITE, path: '/posts/x', headline: '' })).toBeNull()
   })
+
+  it('names the company in full as publisher, and as author when the post names no person', () => {
+    const company = {
+      '@type': 'Organization',
+      '@id': `${SITE}/#organization`,
+      name: 'NeuronCx',
+      url: `${SITE}/`,
+      logo: `${SITE}/ncx-logo.png`,
+    }
+    const post = blogPosting({
+      siteUrl: SITE,
+      path: '/posts/x',
+      headline: 'X',
+      image: `${SITE}/og?title=X`,
+      organization: { name: 'NeuronCx', logo: '/ncx-logo.png' },
+    })!
+    expect(post.author).toEqual(company)
+    expect(post.publisher).toEqual(company)
+    expect(post.image).toBe(`${SITE}/og?title=X`)
+    const byPerson = blogPosting({ siteUrl: SITE, path: '/posts/x', headline: 'X', authors: ['Asha Rao'], organization: { name: 'NeuronCx' } })!
+    expect(byPerson.author).toEqual([{ '@type': 'Person', name: 'Asha Rao' }])
+    expect(byPerson.publisher).toMatchObject({ '@type': 'Organization', name: 'NeuronCx' })
+  })
+})
+
+describe('a post page', () => {
+  beforeEach(() => {
+    vi.stubEnv('NEXT_PUBLIC_SERVER_URL', SITE)
+    replies['/api/posts'] = {
+      docs: [
+        {
+          id: 'p1',
+          slug: 'four-flows',
+          title: 'Four WhatsApp flows | NeuronCX',
+          publishedAt: '2026-10-01T00:00:00.000Z',
+          updatedAt: '2026-10-05T00:00:00.000Z',
+          content: { root: { type: 'root', children: [] } },
+          meta: { description: 'Four flows for clinics.' },
+        },
+      ],
+    }
+  })
+
+  it('shows Home, Blog, post breadcrumbs, and describes the post with its share card as image and the company named', async () => {
+    const { default: PostPage } = await import('@/app/(frontend)/posts/[slug]/page')
+    const { renderToReadableStream } = await import('react-dom/server')
+    const React = (await import('react')).default
+    const stream = await renderToReadableStream(
+      React.createElement(React.Fragment, null, await PostPage({ params: Promise.resolve({ slug: 'four-flows' }) })),
+    )
+    await stream.allReady
+    const html = (await new Response(stream).text()).replace(/<!-- -->/g, '')
+    expect(html).toContain('aria-label="Breadcrumb"')
+    expect(html).toContain('href="/posts"')
+    const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]))
+    const posting = ld.find((d) => d['@type'] === 'BlogPosting')
+    expect(posting.image).toBe(`${SITE}/og?title=Four%20WhatsApp%20flows`)
+    expect(posting.author).toMatchObject({ '@type': 'Organization', name: 'NeuronCx' })
+    const trail = ld.find((d) => d['@type'] === 'BreadcrumbList')
+    expect(trail.itemListElement.map((i: { name: string }) => i.name)).toEqual(['Home', 'Blog', 'Four WhatsApp flows'])
+  })
 })

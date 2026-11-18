@@ -227,6 +227,11 @@ export const blogPosting = (args: {
   datePublished?: string | null
   dateModified?: string | null
   authors?: (string | null | undefined)[] | null
+  /**
+   * The company, named in full as the publisher, and as the author when the post names no person.
+   * Google reads a bare @id reference as an author with no name.
+   */
+  organization?: { name: string; logo?: string | null }
 }) => {
   const base = absoluteSite(args.siteUrl)
   const headline = plain(args.headline)
@@ -235,6 +240,16 @@ export const blogPosting = (args: {
   const image = args.image ? resolve(args.image, base) : null
   const description = plain(args.description)
   const authors = (args.authors || []).map((a) => plain(a)).filter((a): a is string => Boolean(a))
+  const logo = args.organization?.logo ? resolve(args.organization.logo, base) : null
+  const company = args.organization?.name
+    ? {
+        '@type': 'Organization',
+        '@id': organizationId(base),
+        name: args.organization.name,
+        url: base.toString(),
+        ...(logo ? { logo } : {}),
+      }
+    : { '@id': organizationId(base) }
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -245,9 +260,7 @@ export const blogPosting = (args: {
     ...(image ? { image } : {}),
     ...(args.datePublished ? { datePublished: args.datePublished } : {}),
     ...(args.dateModified ? { dateModified: args.dateModified } : {}),
-    author: authors.length
-      ? authors.map((name) => ({ '@type': 'Person', name }))
-      : { '@id': organizationId(base) },
-    publisher: { '@id': organizationId(base) },
+    author: authors.length ? authors.map((name) => ({ '@type': 'Person', name })) : company,
+    publisher: company,
   }
 }

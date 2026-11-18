@@ -8,7 +8,9 @@ import { formatAuthors } from '@/utilities/formatAuthors'
 
 export const PostHero: React.FC<{
   post: Post
-}> = ({ post }) => {
+  /** Shown 28px under the fixed header, at the container's edge, as on every page (the breadcrumbs). */
+  leading?: React.ReactNode
+}> = ({ post, leading }) => {
   const { categories, heroImage, populatedAuthors, publishedAt, title } = post
 
   const hasAuthors =
@@ -16,6 +18,12 @@ export const PostHero: React.FC<{
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end">
+      {/* The hero starts 10.4rem above the page's content, under the header: the trail sits 28px below the header. */}
+      {leading ? (
+        <div className="absolute inset-x-0 z-20" style={{ top: 'calc(10.4rem + 28px)' }}>
+          <div className="ncx-container">{leading}</div>
+        </div>
+      ) : null}
       <div className="ncx-container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
         <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
           <div className="uppercase text-sm mb-6">

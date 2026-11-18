@@ -6,12 +6,15 @@ import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
 
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getBySlug, CMS_TAG } from '@/utilities/cms'
 import { getServerSideURL } from '@/utilities/getURL'
 import { blogPosting, jsonLdHtml } from '@/utilities/jsonLd'
 import { pickMedia, type MediaValue } from '@/utilities/media'
+import { DEFAULT_LOGO_PATH, SITE_NAME, shareCard, shareCardTitle } from '@/utilities/siteDefaults'
+import { getSiteSettings, siteFileUrl } from '@/utilities/siteSettings'
 import { LivePreviewListener } from '@/components/lazyClient'
 
 export const dynamic = 'force-dynamic'
@@ -34,24 +37,37 @@ export default async function Post({ params: paramsPromise }: Args) {
   const related = Array.isArray(post.relatedPosts)
     ? post.relatedPosts.filter((p: any) => typeof p === 'object')
     : []
-  // The post for search engines (utilities/jsonLd.ts); left out until the site's address is set.
+  // The post for search engines (utilities/jsonLd.ts); left out until the site's address is set. Its image is
+  // the post's own, or else its share card (the one social previews show), so every post has one.
+  const settings = await getSiteSettings()
   const posting = blogPosting({
     siteUrl: getServerSideURL(),
     path: url,
     headline: post.title,
     description: post.meta?.description,
-    image: pickMedia((post.meta?.image || post.heroImage) as MediaValue)?.src,
+    image: pickMedia((post.meta?.image || post.heroImage) as MediaValue)?.src || shareCard(post.title)?.url,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     authors: (post.populatedAuthors || []).map((a: { name?: string | null }) => a?.name),
+    organization: {
+      name: settings.siteName || SITE_NAME,
+      logo: siteFileUrl(settings.organisation?.logo) || DEFAULT_LOGO_PATH,
+    },
   })
+  // Home, Blog, this post: visible under the header and as BreadcrumbList data. The title without a brand suffix.
+  const crumbs = (
+    <Breadcrumbs
+      items={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/posts' }, { label: shareCardTitle(post.title) }]}
+      onDark={Boolean(post.heroImage && typeof post.heroImage === 'object')}
+    />
+  )
 
   return (
     <article className="pt-16 pb-16">
       {posting ? <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(posting)} /> : null}
       <PayloadRedirects disableNotFound url={url} />
       {draft && <LivePreviewListener />}
-      <PostHero post={post} />
+      <PostHero post={post} leading={crumbs} />
       <div className="flex flex-col items-center gap-4 pt-8">
         {/* w-full: as a centred flex item the container would shrink to its
             text, and with paragraphs capped at 52ch that pulls the body off
