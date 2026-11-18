@@ -16,6 +16,7 @@ import type {
   IntegrationCategory,
   IntegrationsLandingBlock as IntegrationsLandingBlockProps,
   IntegrationsMaster,
+  Page,
 } from '@/payload-types'
 
 /**
@@ -23,6 +24,12 @@ import type {
  * master record (the chosen one, or the main one with Is main on), the
  * integration categories and the live integration items. Paints its own hero,
  * so the page using it sets its hero to None.
+ *
+ * With rows in the master's Page layout, the page is exactly those rows, in
+ * order: the master's parts (placement rows, drawn here) and any page block
+ * (drawn by RenderBlocks). With Hero design set to Hero block from the
+ * layout, the first row is the hero and the master's own hero is not drawn.
+ * An empty layout draws the standard page: the hero, then every part in order.
  */
 
 /** The chosen master record, or the main one when none is chosen. */
@@ -97,6 +104,22 @@ const sectionsOf = (m: IntegrationsMaster, categories: IntegrationCategory[]): S
   }))
 }
 
+/** The master's parts, as Page layout rows, in the order the standard page draws them. */
+const PART_ORDER = [
+  'integrationsLogoStripSection',
+  'integrationsCategoriesSection',
+  'integrationsFiveThingsSection',
+  'integrationsFeedsSection',
+  'integrationsApiCardSection',
+  'integrationsFaqSection',
+  'integrationsClosingSection',
+] as const
+
+type PartKey = (typeof PART_ORDER)[number]
+
+const isPart = (blockType: unknown): blockType is PartKey =>
+  (PART_ORDER as readonly unknown[]).includes(blockType)
+
 export const IntegrationsLandingBlock: React.FC<
   Pick<IntegrationsLandingBlockProps, 'master'> & {
     record?: IntegrationsMaster | null
@@ -126,9 +149,8 @@ export const IntegrationsLandingBlock: React.FC<
   const secondaryHref = hrefOf(m.hero?.secondaryCta?.link as LinkValue)
   const apiHref = hrefOf(m.apiCard?.link as LinkValue)
 
-  return (
-    <div className="ncx-ihub">
-      <style>{`
+  const styles = (
+    <style>{`
         .ncx-ihub{font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
 
         .ncx-ihub__hero{position:relative;overflow:hidden;isolation:isolate;background:var(--wash);padding:0 0 clamp(48px,6vw,72px)}
@@ -206,151 +228,204 @@ export const IntegrationsLandingBlock: React.FC<
           .ncx-ihub__api{padding:24px 22px}
         }
       `}</style>
+  )
 
-      <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`} data-loop>
-        <div
-          className="inner ncx-container"
-          style={leading ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties) : undefined}
-        >
-          {leading}
-          <div className={`ncx-ihub__grid${image ? '' : ' is-single'}`}>
-            <div>
-              {m.eyebrow ? (
-                <p className="pill">
-                  <span className="spark" aria-hidden="true" />
-                  {m.eyebrow}
-                </p>
-              ) : null}
-              <Heading>{m.h1}</Heading>
-              {m.subheading ? <p className="sub">{m.subheading}</p> : null}
-              {(primaryHref && m.cta?.label) || (secondaryHref && m.hero?.secondaryCta?.label) ? (
-                <div className="cta">
-                  {primaryHref && m.cta?.label ? (
-                    <Link className="btn primary" href={primaryHref}>
-                      {m.cta.label}
-                    </Link>
-                  ) : null}
-                  {secondaryHref && m.hero?.secondaryCta?.label ? (
-                    <Link className="btn ghost" href={secondaryHref}>
-                      {m.hero.secondaryCta.label}
-                    </Link>
-                  ) : null}
-                </div>
-              ) : null}
-              {systems.length ? (
-                <ul className="systems" aria-label="Systems NeuronCx connects to">
-                  {systems.map((s) => (
-                    <li key={s.id}>{s.name}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-            {image ? (
-              <div className="ncx-ihub__visual">
-                <Image
-                  src={image.src}
-                  alt={image.alt || ''}
-                  width={image.width || 1600}
-                  height={image.height || 1200}
-                  sizes="(max-width: 960px) 100vw, 560px"
-                  unoptimized={image.unoptimized}
-                  priority
-                />
+  const heroNode = (
+    <header className={`ncx-ihub__hero${centred ? ' is-centred' : ''}`} data-loop>
+      <div
+        className="inner ncx-container"
+        style={
+          leading
+            ? ({ '--crumb-top': 'calc(28px - clamp(44px,6vw,76px))' } as React.CSSProperties)
+            : undefined
+        }
+      >
+        {leading}
+        <div className={`ncx-ihub__grid${image ? '' : ' is-single'}`}>
+          <div>
+            {m.eyebrow ? (
+              <p className="pill">
+                <span className="spark" aria-hidden="true" />
+                {m.eyebrow}
+              </p>
+            ) : null}
+            <Heading>{m.h1}</Heading>
+            {m.subheading ? <p className="sub">{m.subheading}</p> : null}
+            {(primaryHref && m.cta?.label) || (secondaryHref && m.hero?.secondaryCta?.label) ? (
+              <div className="cta">
+                {primaryHref && m.cta?.label ? (
+                  <Link className="btn primary" href={primaryHref}>
+                    {m.cta.label}
+                  </Link>
+                ) : null}
+                {secondaryHref && m.hero?.secondaryCta?.label ? (
+                  <Link className="btn ghost" href={secondaryHref}>
+                    {m.hero.secondaryCta.label}
+                  </Link>
+                ) : null}
               </div>
+            ) : null}
+            {systems.length ? (
+              <ul className="systems" aria-label="Systems NeuronCx connects to">
+                {systems.map((s) => (
+                  <li key={s.id}>{s.name}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          {image ? (
+            <div className="ncx-ihub__visual">
+              <Image
+                src={image.src}
+                alt={image.alt || ''}
+                width={image.width || 1600}
+                height={image.height || 1200}
+                sizes="(max-width: 960px) 100vw, 560px"
+                unoptimized={image.unoptimized}
+                priority
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </header>
+  )
+
+  // Each part as it draws, in the standard page or as a Page layout row.
+  const parts: Record<PartKey, React.ReactNode> = {
+    integrationsLogoStripSection: m.logoStripOn ? (
+      <IntegrationsMarqueeBlock blockType="integrationsMarquee" {...(m.logoStrip || {})} />
+    ) : null,
+
+    integrationsCategoriesSection: sections.map((s) => (
+      <IntegrationsBlock
+        key={s.key}
+        blockType="integrations"
+        populateBy="filter"
+        categories={[s.category.id]}
+        products={products}
+        label={s.label}
+        heading={s.heading}
+        intro={s.intro}
+        cardDesign={s.cardDesign}
+        limit={24}
+      />
+    )),
+
+    integrationsFiveThingsSection: m.fiveThings?.length ? (
+      <section className="ncx-ihub__section">
+        <div className="ncx-container">
+          <SplitHeading as="h2">
+            {m.fiveThingsHeading || 'What connecting your systems gives you'}
+          </SplitHeading>
+          <ol className="ncx-ihub__five">
+            {m.fiveThings.map((t, i) => (
+              <li key={t.id || i}>
+                <p className="n">{String(i + 1).padStart(2, '0')}</p>
+                <h3>{t.title}</h3>
+                <p>{t.line}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    ) : null,
+
+    integrationsFeedsSection: m.whenFeedsGoWrong?.length ? (
+      <section className="ncx-ihub__section ncx-ihub__wrong">
+        <div className="ncx-container">
+          <SplitHeading as="h2">{m.whenFeedsGoWrongHeading || 'When feeds go wrong'}</SplitHeading>
+          <dl className="ncx-ihub__rows">
+            {m.whenFeedsGoWrong.map((r, i) => (
+              <div className="ncx-ihub__row" key={r.id || i}>
+                <dt>{r.problem}</dt>
+                <dd>{r.whatHappens}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    ) : null,
+
+    integrationsApiCardSection: m.apiCard?.heading ? (
+      <section className="ncx-ihub__section">
+        <div className="ncx-container">
+          <div className="ncx-ihub__api">
+            <div>
+              <SplitHeading as="h2">{m.apiCard.heading}</SplitHeading>
+              {m.apiCard.line ? <Reveal as="p">{m.apiCard.line}</Reveal> : null}
+            </div>
+            {apiHref ? (
+              <Link className="btn ghost" href={apiHref}>
+                {m.apiCard.buttonLabel || 'Get in touch'}
+              </Link>
             ) : null}
           </div>
         </div>
-      </header>
+      </section>
+    ) : null,
 
-      {m.logoStripOn ? (
-        <IntegrationsMarqueeBlock blockType="integrationsMarquee" {...(m.logoStrip || {})} />
-      ) : null}
+    integrationsFaqSection: m.faqs?.length ? (
+      <FAQBlock
+        blockType="faq"
+        heading={m.faqHeading || 'Questions about integrations'}
+        items={m.faqs.map((f, i) => ({
+          id: f.id || String(i),
+          question: f.question,
+          answer: paragraph(f.answer),
+        }))}
+        emitSchema
+      />
+    ) : null,
 
-      {sections.map((s) => (
-        <IntegrationsBlock
-          key={s.key}
-          blockType="integrations"
-          populateBy="filter"
-          categories={[s.category.id]}
-          products={products}
-          label={s.label}
-          heading={s.heading}
-          intro={s.intro}
-          cardDesign={s.cardDesign}
-          limit={24}
-        />
-      ))}
-
-      {m.fiveThings?.length ? (
-        <section className="ncx-ihub__section">
-          <div className="ncx-container">
-            <SplitHeading as="h2">{m.fiveThingsHeading || 'What connecting your systems gives you'}</SplitHeading>
-            <ol className="ncx-ihub__five">
-              {m.fiveThings.map((t, i) => (
-                <li key={t.id || i}>
-                  <p className="n">{String(i + 1).padStart(2, '0')}</p>
-                  <h3>{t.title}</h3>
-                  <p>{t.line}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      ) : null}
-
-      {m.whenFeedsGoWrong?.length ? (
-        <section className="ncx-ihub__section ncx-ihub__wrong">
-          <div className="ncx-container">
-            <SplitHeading as="h2">{m.whenFeedsGoWrongHeading || 'When feeds go wrong'}</SplitHeading>
-            <dl className="ncx-ihub__rows">
-              {m.whenFeedsGoWrong.map((r, i) => (
-                <div className="ncx-ihub__row" key={r.id || i}>
-                  <dt>{r.problem}</dt>
-                  <dd>{r.whatHappens}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-      ) : null}
-
-      {m.apiCard?.heading ? (
-        <section className="ncx-ihub__section">
-          <div className="ncx-container">
-            <div className="ncx-ihub__api">
-              <div>
-                <SplitHeading as="h2">{m.apiCard.heading}</SplitHeading>
-                {m.apiCard.line ? <Reveal as="p">{m.apiCard.line}</Reveal> : null}
-              </div>
-              {apiHref ? (
-                <Link className="btn ghost" href={apiHref}>
-                  {m.apiCard.buttonLabel || 'Get in touch'}
-                </Link>
-              ) : null}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {m.faqs?.length ? (
-        <FAQBlock
-          blockType="faq"
-          heading={m.faqHeading || 'Questions about integrations'}
-          items={m.faqs.map((f, i) => ({
-            id: f.id || String(i),
-            question: f.question,
-            answer: paragraph(f.answer),
-          }))}
-          emitSchema
-        />
-      ) : null}
-
+    integrationsClosingSection: (
       <ClosingCtaBlock
         heading={m.closing?.heading || null}
         subhead={m.closing?.subheading || null}
         primaryLabel={m.cta?.label || null}
         primaryLink={primaryHref || '/contact'}
       />
-    </div>
+    ),
+  }
+
+  // The standard page.
+  // Placement rows have no Hidden switch; page blocks do.
+  const rows = (m.layout || []).filter((b) => b && !('hidden' in b && b.hidden))
+  if (!rows.length) {
+    return (
+      <div className="ncx-ihub">
+        {styles}
+        {heroNode}
+        {PART_ORDER.map((key) => (
+          <React.Fragment key={key}>{parts[key]}</React.Fragment>
+        ))}
+      </div>
+    )
+  }
+
+  // The master's Page layout. Each part keeps its own wrapper, so the landing's styles never reach a page block.
+  // RenderBlocks lists this block among the page blocks, so it is loaded here, not imported at the top: a
+  // static import would make each module read the other before it is ready.
+  const { RenderBlocks } = await import('@/blocks/RenderBlocks')
+  const blockHero = m.heroDesign === 'blockHero'
+  return (
+    <>
+      {styles}
+      {blockHero ? null : <div className="ncx-ihub">{heroNode}</div>}
+      {rows.map((block, i) => {
+        const key = block.id || `${block.blockType}-${i}`
+        if (isPart(block.blockType)) {
+          return (
+            <div className="ncx-ihub" key={key}>
+              {parts[block.blockType]}
+            </div>
+          )
+        }
+        // The first row, with Hero block from the layout, is the page's hero: it takes the breadcrumbs and the H1.
+        const isHero = blockHero && i === 0
+        const row = (isHero ? { ...block, headingLevel } : block) as unknown as Page['layout'][0]
+        return <RenderBlocks key={key} blocks={[row]} leading={isHero ? leading : undefined} />
+      })}
+    </>
   )
 }
