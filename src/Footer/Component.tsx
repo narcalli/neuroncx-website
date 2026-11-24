@@ -45,6 +45,11 @@ export async function Footer() {
         .ncx-footer a{display:block;color:#fff;text-decoration:none;font-size:16px;
           margin-bottom:9px;opacity:.85}
         .ncx-footer a:hover{opacity:1}
+        /* A heading that links keeps the heading's own size and colour, and says so on hover. */
+        .ncx-footer .ncx-footer__h .ncx-footer__hlink{display:inline;color:inherit;font-size:inherit;
+          margin:0;opacity:1}
+        .ncx-footer .ncx-footer__h .ncx-footer__hlink:hover,
+        .ncx-footer .ncx-footer__h .ncx-footer__hlink:focus-visible{color:#fff;text-decoration:underline}
         .ncx-footer .note{margin-top:48px;padding-top:22px;border-top:1px solid rgba(255,255,255,.14);
           font-family:var(--font-display),Arial,sans-serif;font-size:14px;color:#9AA5BF;
           display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -78,7 +83,20 @@ export async function Footer() {
 
           {footerData?.email || footerData?.phone ? (
             <div>
-              <h2 className="ncx-footer__h">Contact</h2>
+              {/* The heading links where the CMS points it, else it stays plain text. */}
+              <h2 className="ncx-footer__h">
+                {footerData?.linkContactHeading ? (
+                  <Link
+                    className="ncx-footer__hlink"
+                    href={hrefFor(footerData.contactLink)}
+                    {...(footerData.contactLink?.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {footerData?.contactHeading || 'Contact'}
+                  </Link>
+                ) : (
+                  footerData?.contactHeading || 'Contact'
+                )}
+              </h2>
               {footerData?.email ? (
                 <a href={`mailto:${footerData.email}`}>{footerData.email}</a>
               ) : null}
