@@ -3,16 +3,7 @@ import React from 'react'
 import { BlockIcon } from '@/components/BlockIcon'
 import { Animator } from '../HeroFullBackground/Animator'
 
-type LinkGroup = {
-  type?: 'reference' | 'custom' | null
-  reference?: {
-    relationTo?: 'pages' | 'posts'
-    value?: { slug?: string | null } | string | number | null
-  } | null
-  url?: string | null
-  label: string
-  newTab?: boolean | null
-}
+import { ctaHref as resolveHref, type CtaGroup as LinkGroup } from '@/utilities/ctaHref'
 
 type Card = {
   icon?: string | null
@@ -33,18 +24,6 @@ type Props = {
   leading?: React.ReactNode
   crumbs?: React.ReactNode
   headingLevel?: 'h1' | 'h2'
-}
-
-/** Resolves a CTA group into a real address, or null when there is nothing to link to. */
-const resolveHref = (cta: LinkGroup | null | undefined): string | null => {
-  if (!cta) return null
-  if (cta.type === 'custom') return cta.url || null
-  if (cta.type === 'reference' && cta.reference && typeof cta.reference.value === 'object') {
-    const slug = cta.reference.value?.slug
-    if (!slug) return null
-    return cta.reference.relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
-  }
-  return null
 }
 
 // One base duration per possible column, deliberately uneven so parallel
