@@ -16,9 +16,12 @@ type Props = GeneratedProps & { rowHeading?: string | null }
 /**
  * Comparison table: NeuronCx beside other types of system. A real table for
  * screen readers (a caption from the heading, column and row headers). One
- * column can be highlighted: a navy header over pale cells. Below 720px the
- * table scrolls sideways inside a labelled, focusable region, with the row
- * labels pinned on the left.
+ * column can be highlighted: a navy header over pale cells.
+ *
+ * Up to 24 rows, so the header row stays sticky while the page scrolls past
+ * it, above 720px. Below 720px the table scrolls sideways instead, inside a
+ * labelled, focusable region, with the row label column pinned on the left;
+ * a row label can wrap onto a second line there, same as at full width.
  *
  * The top-left corner is empty unless rowHeading is set, in which case it
  * becomes a proper column header (e.g. "Capability") instead of a blank cell.
@@ -99,8 +102,16 @@ const css = `
   .ncx-cmp td{font-size:15px;line-height:1.55;color:var(--ncx-body);background:var(--ncx-white)}
   .ncx-cmp td.is-lit{background:var(--ncx-paper)}
   .ncx-cmp .cmp-note{margin:14px 0 0;font-size:14px;line-height:1.55;color:var(--ncx-muted);max-width:80ch}
+  /* At 720px and up: the header row stays in view while the page scrolls
+     past a table that can now run to 24 rows. 104px clears the site's own
+     sticky header, same offset as the legal document's sticky contents. */
+  @media (min-width:720px){
+    .ncx-cmp thead th,.ncx-cmp .cmp-corner{position:sticky;top:104px;z-index:2}
+  }
   /* Below 720px: the table keeps readable columns and scrolls sideways; the
-     row labels stay pinned on the left, with a hairline to show the edge. */
+     row labels stay pinned on the left, with a hairline to show the edge.
+     A row label wraps rather than truncates, so a longer one runs to a
+     second line instead of being cut off. */
   @media (max-width:719.98px){
     .ncx-cmp table{table-layout:auto;min-width:calc(150px + var(--cmp-cols) * 190px)}
     .ncx-cmp .cmp-corner,.ncx-cmp th[scope="row"]{position:sticky;left:0;z-index:1;width:150px;min-width:150px;
