@@ -49,8 +49,21 @@ describe('the table', () => {
   })
 
   describe('the button under the intro', () => {
-    const withCta = (cta: unknown) =>
-      renderToStaticMarkup(React.createElement(ComparisonTableBlock, { ...block, cta } as Props & { cta: unknown }))
+    type TestCta = {
+      type?: 'reference' | 'custom'
+      reference?: { relationTo?: 'pages' | 'posts'; value?: { slug?: string } | string }
+      url?: string
+      label?: string
+      newTab?: boolean
+      appearance?: 'outline' | 'solid'
+    }
+    const withCta = (cta: TestCta) =>
+      renderToStaticMarkup(
+        React.createElement(ComparisonTableBlock, {
+          ...block,
+          cta,
+        } as React.ComponentProps<typeof ComparisonTableBlock>),
+      )
 
     it('links an internal reference by its slug, and sits above the table', () => {
       const html2 = withCta({
