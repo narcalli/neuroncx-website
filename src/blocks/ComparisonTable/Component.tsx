@@ -11,7 +11,14 @@ import { Reveal } from '@/motion/Reveal'
  * it here rather than hand-edit that generated file; drop this once the
  * types are regenerated from the CMS and copied over.
  */
-type Props = GeneratedProps & { rowHeading?: string | null }
+type Props = GeneratedProps & {
+  rowHeading?: string | null
+  /**
+   * h1 when this block opens a page that has no hero, so the page still has
+   * its one main heading. Set by PageView, not by the editor.
+   */
+  headingLevel?: 'h1' | 'h2'
+}
 
 /**
  * Comparison table: NeuronCx beside other types of system. A real table for
@@ -28,8 +35,22 @@ type Props = GeneratedProps & { rowHeading?: string | null }
  *
  * The top-left corner is empty unless rowHeading is set, in which case it
  * becomes a proper column header (e.g. "Capability") instead of a blank cell.
+ *
+ * Opening a page with no hero, the heading is the page's h1 and is written
+ * plainly rather than through SplitHeading, which holds a heading at opacity
+ * 0 until it is scrolled to: right for a section heading, wrong for the one
+ * heading the page is about. Same split as ContactForm.
  */
-export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro, columns, rows, footnote, rowHeading }) => {
+export const ComparisonTableBlock: React.FC<Props> = ({
+  eyebrow,
+  heading,
+  intro,
+  columns,
+  rows,
+  footnote,
+  rowHeading,
+  headingLevel = 'h2',
+}) => {
   const cols = (columns || []).filter((c) => c && c.label)
   const body = (rows || []).filter((r) => r && r.label)
   if (!cols.length || !body.length) return null
@@ -41,7 +62,7 @@ export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro,
       <style>{css}</style>
       <div className="ncx-container">
         {eyebrow ? <Reveal as="p" from="left" className="cmp-eyebrow">{eyebrow}</Reveal> : null}
-        <SplitHeading as="h2">{heading}</SplitHeading>
+        {headingLevel === 'h1' ? <h1>{heading}</h1> : <SplitHeading as="h2">{heading}</SplitHeading>}
         {intro ? <Reveal as="p" className="cmp-intro">{intro}</Reveal> : null}
 
         <div className="cmp-scroll" role="region" aria-label={`${heading}: comparison table`} tabIndex={0}>
@@ -85,7 +106,9 @@ export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro,
 const css = `
   .ncx-cmp{padding:clamp(56px,7vw,88px) 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
   .ncx-cmp .cmp-eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;color:var(--ncx-crimson-ink);margin:0 0 12px}
-  .ncx-cmp h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(28px,3.4vw,38px);
+  /* h1 as well as h2: opening a page with no hero, this heading is the
+     page's h1 and has to look exactly the same (see headingLevel above). */
+  .ncx-cmp h2,.ncx-cmp h1{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(28px,3.4vw,38px);
     letter-spacing:-.03em;line-height:1.15;margin:0;max-width:var(--ncx-heading-max);color:var(--ncx-ink)}
   .ncx-cmp .cmp-intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
   /* overflow-x here also makes overflow-y compute to auto, which turns this

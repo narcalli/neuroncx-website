@@ -80,9 +80,9 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
   const lastBlock = Array.isArray(layout) ? [...layout].reverse().find((b) => b && !b.hidden) : undefined
   const endsFlush = String(lastBlock?.blockType ?? '') === 'expandingCardCta'
 
-  // With no hero, a hero block or contact form that opens the page carries
-  // its one H1, and so does a legal document, as the page title. Any other
-  // hero block renders an H2.
+  // With no hero, a hero block, a contact form or a comparison table that
+  // opens the page carries its one H1, and so does a legal document, as the
+  // page title. Any other hero block renders an H2.
   const headedLayout: Page['layout'] = Array.isArray(layout)
     ? layout.map((b): LayoutBlock => {
         if (!b) return b
@@ -91,7 +91,7 @@ export const PageView = async ({ page, url, draft }: { page: Page; url: string; 
           return { ...b, headingLevel: heroDisabled && b === firstBlock ? 'h1' : 'h2' }
         }
         if (!heroDisabled || b !== firstBlock) return b
-        if (type === 'contactForm') return { ...b, headingLevel: 'h1' }
+        if (type === 'contactForm' || type === 'comparisonTable') return { ...b, headingLevel: 'h1' }
         if (type === 'content' && b.documentStyle === 'legal') return { ...b, pageTitle: page.title }
         return b
       })

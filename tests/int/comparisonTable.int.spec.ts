@@ -31,6 +31,23 @@ describe('the table', () => {
     expect(html).toMatch(/\.cmp-caption\{position:absolute;width:1px;height:1px;[^}]*clip:rect\(0 0 0 0\)/)
   })
 
+  it('carries the page h1 when it opens a page with no hero, and an h2 otherwise', () => {
+    // h2 by default, through SplitHeading like any other section heading.
+    expect(html).toContain('<h2')
+    expect(html).not.toContain('<h1')
+
+    const asH1 = renderToStaticMarkup(
+      React.createElement(ComparisonTableBlock, { ...block, headingLevel: 'h1' } as Props & { headingLevel: 'h1' }),
+    )
+    expect(asH1).toContain('<h1>NeuronCx and the systems you might use instead</h1>')
+    expect(asH1).not.toContain('<h2')
+  })
+
+  it('styles the h1 exactly like the h2, so the page heading does not render bare', () => {
+    // The stylesheet used to name h2 alone; an h1 then came out unstyled.
+    expect(html).toMatch(/\.ncx-cmp h2,\.ncx-cmp h1\{font-family:var\(--font-display\)/)
+  })
+
   it('has column headers and row headers', () => {
     expect(html).toContain('<thead><tr><td class="cmp-corner"></td><th scope="col" class="is-lit">NeuronCx</th><th scope="col">A classic CRM</th><th scope="col">A chatbot tool</th></tr></thead>')
     expect(html).toContain('<tr><th scope="row">Customer record</th><td class="is-lit">One record per person</td><td>Contacts and deals</td><td>Chat history only</td></tr>')
