@@ -63,6 +63,7 @@ import { ContextEngineBlock } from '@/blocks/ContextEngine/Component'
 import { SolutionGridBlock } from '@/blocks/SolutionGrid/Component'
 import { TrustPanelBlock } from '@/blocks/TrustPanel/Component'
 import { StatBandBlock } from '@/blocks/StatBand/Component'
+import { StackComparisonBlock } from '@/blocks/StackComparison/Component'
 import { BlockWrapper } from '@/blocks/BlockWrapper'
 
 const blockComponents = {
@@ -124,6 +125,7 @@ const blockComponents = {
   solutionGrid: SolutionGridBlock,
   trustPanel: TrustPanelBlock,
   statBand: StatBandBlock,
+  stackComparison: StackComparisonBlock,
 }
 
 // Blocks that manage their own vertical spacing and should sit flush.

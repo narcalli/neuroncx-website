@@ -218,6 +218,20 @@
      highlight. Flat --ncx-teal measures 1.9:1 on navy. */
   --ncx-teal-ink: #136b74;
 
+  /* Rating scale (Stack Comparison). Three traffic-light stops plus a
+     neutral, each with its own pale tint for a coloured cell background;
+     the ink stop is always the text/icon colour, the tint the fill.
+     Measured on white and on their own tint: good 5.28:1 / 4.67:1, warn
+     5.93:1 / 5.37:1, none 5.78:1 / 5.16:1 — all pass 4.5:1. Roadmap reuses
+     --ncx-teal / --ncx-teal-tint (6.21:1 / 5.37:1) rather than adding a
+     fourth hue. */
+  --ncx-good: #1e7b45;
+  --ncx-good-tint: #e7f4ec;
+  --ncx-warn: #8a5a00;
+  --ncx-warn-tint: #fdf3dc;
+  --ncx-none: #5f6672;
+  --ncx-none-tint: #f1f2f4;
+
   /* Flipping pair: both are declared light here and remapped inside a
      highlight, so a block states its intent once and works in either state. */
   --ncx-focus: var(--ncx-teal);
