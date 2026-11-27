@@ -43,6 +43,16 @@ describe('the table', () => {
     expect(asH1).not.toContain('<h2')
   })
 
+  it('drops its top padding only when it opens the page', () => {
+    // Mid page it keeps the padding that holds it off the section above.
+    expect(html).toContain('class="ncx-cmp"')
+    const opening = renderToStaticMarkup(
+      React.createElement(ComparisonTableBlock, { ...block, headingLevel: 'h1' } as Props & { headingLevel: 'h1' }),
+    )
+    expect(opening).toContain('class="ncx-cmp opens-page"')
+    expect(opening).toMatch(/\.ncx-cmp\.opens-page\{padding-top:clamp\(16px,2vw,24px\)\}/)
+  })
+
   it('styles the h1 exactly like the h2, so the page heading does not render bare', () => {
     // The stylesheet used to name h2 alone; an h1 then came out unstyled.
     expect(html).toMatch(/\.ncx-cmp h2,\.ncx-cmp h1\{font-family:var\(--font-display\)/)

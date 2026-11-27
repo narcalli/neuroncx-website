@@ -67,7 +67,10 @@ export const ComparisonTableBlock: React.FC<Props> = ({
   const ctaSolid = cta?.appearance === 'solid'
 
   return (
-    <section className="ncx-cmp" style={{ '--cmp-cols': cols.length } as React.CSSProperties}>
+    <section
+      className={headingLevel === 'h1' ? 'ncx-cmp opens-page' : 'ncx-cmp'}
+      style={{ '--cmp-cols': cols.length } as React.CSSProperties}
+    >
       <style>{css}</style>
       <div className="ncx-container">
         {eyebrow ? <Reveal as="p" from="left" className="cmp-eyebrow">{eyebrow}</Reveal> : null}
@@ -126,6 +129,11 @@ export const ComparisonTableBlock: React.FC<Props> = ({
 
 const css = `
   .ncx-cmp{padding:clamp(56px,7vw,88px) 0;font-family:var(--font-body),Arial,sans-serif;color:var(--ncx-body)}
+  /* Opening the page, there is nothing above to be separated from: the
+     breadcrumbs already leave 44px under themselves, and the padding meant
+     to hold this section off the one before it stacks on top of that as
+     dead space. Trimmed to sit where a hero block would. */
+  .ncx-cmp.opens-page{padding-top:clamp(16px,2vw,24px)}
   .ncx-cmp .cmp-eyebrow{font-family:var(--font-display),Arial,sans-serif;font-size:14px;color:var(--ncx-crimson-ink);margin:0 0 12px}
   /* h1 as well as h2: opening a page with no hero, this heading is the
      page's h1 and has to look exactly the same (see headingLevel above). */
