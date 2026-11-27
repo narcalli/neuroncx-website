@@ -18,10 +18,13 @@ type Props = GeneratedProps & { rowHeading?: string | null }
  * screen readers (a caption from the heading, column and row headers). One
  * column can be highlighted: a navy header over pale cells.
  *
- * Up to 24 rows, so the header row stays sticky while the page scrolls past
- * it, above 720px. Below 720px the table scrolls sideways instead, inside a
- * labelled, focusable region, with the row label column pinned on the left;
- * a row label can wrap onto a second line there, same as at full width.
+ * Up to 24 rows, so above 720px the header row sticks under the site header
+ * while the page scrolls past it. Below 720px the table scrolls sideways
+ * instead, inside a labelled, focusable region, with the row label column
+ * pinned on the left; a row label can wrap onto a second line there, same
+ * as at full width. The two cannot both be on: the sideways scroll makes
+ * the box a scroll container, and a sticky header inside a box that never
+ * scrolls does not follow the page. See the stylesheet below.
  *
  * The top-left corner is empty unless rowHeading is set, in which case it
  * becomes a proper column header (e.g. "Capability") instead of a blank cell.
@@ -85,6 +88,10 @@ const css = `
   .ncx-cmp h2{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:clamp(28px,3.4vw,38px);
     letter-spacing:-.03em;line-height:1.15;margin:0;max-width:var(--ncx-heading-max);color:var(--ncx-ink)}
   .ncx-cmp .cmp-intro{color:var(--ncx-muted);margin:14px 0 0;max-width:64ch;font-size:18px;line-height:1.6}
+  /* overflow-x here also makes overflow-y compute to auto, which turns this
+     box into a scroll container. That is what the sideways scroll below
+     720px needs, but it also becomes the scrollport the sticky header
+     resolves against, so the header is switched off it at wider widths. */
   .ncx-cmp .cmp-scroll{margin-top:40px;border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);
     background:var(--ncx-white);overflow-x:auto}
   .ncx-cmp .cmp-scroll:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
@@ -103,10 +110,25 @@ const css = `
   .ncx-cmp td.is-lit{background:var(--ncx-paper)}
   .ncx-cmp .cmp-note{margin:14px 0 0;font-size:14px;line-height:1.55;color:var(--ncx-muted);max-width:80ch}
   /* At 720px and up: the header row stays in view while the page scrolls
-     past a table that can now run to 24 rows. 104px clears the site's own
-     sticky header, same offset as the legal document's sticky contents. */
+     past a table that can run to 24 rows.
+
+     The scroll box gives up being a scroll container at this width, which
+     it only needs below 720px. While it is one, it is also the scrollport
+     the header sticks to, and because its height always equals its content
+     it never scrolls: the header would just sit a fixed distance down the
+     table, on top of the first rows, instead of following the page.
+
+     top is 64px, the height of the site's own sticky header, so the row
+     docks directly under it with no strip of table showing between them.
+     The corner cells round themselves because the box no longer clips
+     them to its own rounded edge. */
   @media (min-width:720px){
-    .ncx-cmp thead th,.ncx-cmp .cmp-corner{position:sticky;top:104px;z-index:2}
+    .ncx-cmp .cmp-scroll{overflow-x:visible}
+    .ncx-cmp thead th,.ncx-cmp .cmp-corner{position:sticky;top:64px;z-index:2}
+    .ncx-cmp thead tr:first-child > :first-child{border-top-left-radius:var(--ncx-r-panel)}
+    .ncx-cmp thead tr:first-child > :last-child{border-top-right-radius:var(--ncx-r-panel)}
+    .ncx-cmp tbody tr:last-child > :first-child{border-bottom-left-radius:var(--ncx-r-panel)}
+    .ncx-cmp tbody tr:last-child > :last-child{border-bottom-right-radius:var(--ncx-r-panel)}
   }
   /* Below 720px: the table keeps readable columns and scrolls sideways; the
      row labels stay pinned on the left, with a hairline to show the edge.

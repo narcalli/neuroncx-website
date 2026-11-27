@@ -46,6 +46,14 @@ describe('the table', () => {
     expect(html).toMatch(/thead th,\.ncx-cmp th\.cmp-corner\{[^}]*color:var\(--ncx-ink\);background:var\(--ncx-white\)\}/)
   })
 
+  it('sticks the header under the site header above 720px, and drops the scroll container so it can', () => {
+    // The box must stop being a scroll container at this width: while it is
+    // one it is the scrollport the header sticks to, and it never scrolls,
+    // so the header would sit partway down the table over the first rows.
+    expect(html).toMatch(/@media \(min-width:720px\)\{[^@]*\.cmp-scroll\{overflow-x:visible\}/)
+    expect(html).toMatch(/@media \(min-width:720px\)\{[^@]*thead th,[^{]*\.cmp-corner\{position:sticky;top:64px;z-index:2\}/)
+  })
+
   it('scrolls sideways below 720px in a labelled, focusable region, with row labels pinned', () => {
     expect(html).toContain('<div class="cmp-scroll" role="region" aria-label="NeuronCx and the systems you might use instead: comparison table" tabindex="0">')
     expect(html).toMatch(/@media \(max-width:719\.98px\)\{[^@]*th\[scope="row"\]\{position:sticky;left:0;/)
