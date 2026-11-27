@@ -1,8 +1,17 @@
 import React from 'react'
 
-import type { ComparisonTableBlock as Props } from '@/payload-types'
+import type { ComparisonTableBlock as GeneratedProps } from '@/payload-types'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
+
+/**
+ * payload-types.ts does not yet carry the rowHeading field (it is a
+ * hand-copied snapshot with no payload.config.ts in this repo to regenerate
+ * it from — see StackComparison/Component.tsx for the same situation). Add
+ * it here rather than hand-edit that generated file; drop this once the
+ * types are regenerated from the CMS and copied over.
+ */
+type Props = GeneratedProps & { rowHeading?: string | null }
 
 /**
  * Comparison table: NeuronCx beside other types of system. A real table for
@@ -10,8 +19,11 @@ import { Reveal } from '@/motion/Reveal'
  * column can be highlighted: a navy header over pale cells. Below 720px the
  * table scrolls sideways inside a labelled, focusable region, with the row
  * labels pinned on the left.
+ *
+ * The top-left corner is empty unless rowHeading is set, in which case it
+ * becomes a proper column header (e.g. "Capability") instead of a blank cell.
  */
-export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro, columns, rows, footnote }) => {
+export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro, columns, rows, footnote, rowHeading }) => {
   const cols = (columns || []).filter((c) => c && c.label)
   const body = (rows || []).filter((r) => r && r.label)
   if (!cols.length || !body.length) return null
@@ -31,7 +43,11 @@ export const ComparisonTableBlock: React.FC<Props> = ({ eyebrow, heading, intro,
             <caption className="cmp-caption">{heading}</caption>
             <thead>
               <tr>
-                <td className="cmp-corner" />
+                {rowHeading ? (
+                  <th scope="col" className="cmp-corner">{rowHeading}</th>
+                ) : (
+                  <td className="cmp-corner" />
+                )}
                 {cols.map((c, i) => (
                   <th key={c.id || i} scope="col" className={i === lit ? 'is-lit' : undefined}>
                     {c.label}
@@ -76,7 +92,7 @@ const css = `
   /* The row label column: a quarter of the table, a little more with two columns. */
   .ncx-cmp .cmp-corner,.ncx-cmp th[scope="row"]{width:24%;background:var(--ncx-white)}
   .ncx-cmp thead th,.ncx-cmp .cmp-corner{border-bottom:1px solid var(--ncx-rule)}
-  .ncx-cmp thead th{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;line-height:1.35;
+  .ncx-cmp thead th,.ncx-cmp th.cmp-corner{font-family:var(--font-display),Arial,sans-serif;font-weight:600;font-size:15px;line-height:1.35;
     color:var(--ncx-ink);background:var(--ncx-white)}
   .ncx-cmp thead th.is-lit{background:var(--ncx-navy);color:var(--ncx-on-navy);border-bottom-color:var(--ncx-navy)}
   .ncx-cmp th[scope="row"]{font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:15px;line-height:1.4;color:var(--ncx-ink)}

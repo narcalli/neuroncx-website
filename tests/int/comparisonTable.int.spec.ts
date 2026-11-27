@@ -43,7 +43,7 @@ describe('the table', () => {
   it('colours the highlighted column: navy header with light text, paper cells; other headers ink on white', () => {
     expect(html).toContain('thead th.is-lit{background:var(--ncx-navy);color:var(--ncx-on-navy)')
     expect(html).toContain('td.is-lit{background:var(--ncx-paper)}')
-    expect(html).toMatch(/thead th\{[^}]*color:var\(--ncx-ink\);background:var\(--ncx-white\)\}/)
+    expect(html).toMatch(/thead th,\.ncx-cmp th\.cmp-corner\{[^}]*color:var\(--ncx-ink\);background:var\(--ncx-white\)\}/)
   })
 
   it('scrolls sideways below 720px in a labelled, focusable region, with row labels pinned', () => {
@@ -54,6 +54,14 @@ describe('the table', () => {
   it('puts the footnote under the table in the muted colour', () => {
     expect(html).toMatch(/<\/table><\/div><p class="cmp-note">Typical setups, not named products\.<\/p>/)
     expect(html).toMatch(/\.cmp-note\{[^}]*color:var\(--ncx-muted\)/)
+  })
+
+  it('leaves the top-left corner empty with no rowHeading, and makes it a real column header once one is set', () => {
+    expect(html).toContain('<thead><tr><td class="cmp-corner"></td>')
+    const labelled = renderToStaticMarkup(
+      React.createElement(ComparisonTableBlock, { ...block, rowHeading: 'Capability' } as Props & { rowHeading: string }),
+    )
+    expect(labelled).toContain('<thead><tr><th scope="col" class="cmp-corner">Capability</th>')
   })
 
   it('highlights nothing when no column is highlighted, and draws nothing without columns or rows', () => {
