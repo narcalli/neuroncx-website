@@ -6,6 +6,16 @@ vi.mock('@/components/PayloadRedirects', () => ({ PayloadRedirects: () => null }
 vi.mock('@/components/LivePreviewListener', () => ({ LivePreviewListener: () => null }))
 vi.mock('@/utilities/clusters', () => ({ loadClusterPages: async () => [] }))
 
+// The integrations landing block draws the integrations block, which reads
+// draftMode() to decide whether to ask the CMS for drafts. That is only
+// readable inside a request, and these render components directly, so the
+// one call that needs a request is stubbed and the rest of the module,
+// usesCollection and integrationHref, is left as it is.
+vi.mock('@/utilities/integrations', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/utilities/integrations')>()),
+  loadIntegrations: async () => [],
+}))
+
 import { PageView } from '@/components/PageView'
 import { AgenticHeroBlock } from '@/blocks/AgenticHero/Component'
 import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
