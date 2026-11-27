@@ -16,6 +16,15 @@ vi.mock('@/utilities/integrations', async (importOriginal) => ({
   loadIntegrations: async () => [],
 }))
 
+// The same block then asks the CMS for its categories through getMany. With
+// nothing stubbing it that is a real request to CMS_URL from a unit test:
+// slow when the CMS is up, a logged failure when it is not, and either way
+// an answer this test does not need, since it only reads heading levels.
+vi.mock('@/utilities/cms', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/utilities/cms')>()),
+  getMany: async () => [],
+}))
+
 import { PageView } from '@/components/PageView'
 import { AgenticHeroBlock } from '@/blocks/AgenticHero/Component'
 import { ConversationHeroBlock } from '@/blocks/ConversationHero/Component'
