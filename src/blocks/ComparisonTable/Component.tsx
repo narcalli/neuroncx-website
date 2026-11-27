@@ -118,13 +118,16 @@ const css = `
      it never scrolls: the header would just sit a fixed distance down the
      table, on top of the first rows, instead of following the page.
 
-     top is 64px, the height of the site's own sticky header, so the row
-     docks directly under it with no strip of table showing between them.
+     top follows --ncx-nav-offset, which is how far down the window the site
+     bar reaches at that moment (globals.css, Header/Component.client.tsx).
+     The bar hides on the way down the page, so a fixed 64px would leave the
+     row floating with a strip of table scrolling past above it; tracking the
+     bar keeps the row against the top of the content either way.
      The corner cells round themselves because the box no longer clips
      them to its own rounded edge. */
   @media (min-width:720px){
     .ncx-cmp .cmp-scroll{overflow-x:visible}
-    .ncx-cmp thead th,.ncx-cmp .cmp-corner{position:sticky;top:64px;z-index:2}
+    .ncx-cmp thead th,.ncx-cmp .cmp-corner{position:sticky;top:var(--ncx-nav-offset,64px);z-index:2}
     .ncx-cmp thead tr:first-child > :first-child{border-top-left-radius:var(--ncx-r-panel)}
     .ncx-cmp thead tr:first-child > :last-child{border-top-right-radius:var(--ncx-r-panel)}
     .ncx-cmp tbody tr:last-child > :first-child{border-bottom-left-radius:var(--ncx-r-panel)}

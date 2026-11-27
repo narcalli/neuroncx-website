@@ -51,7 +51,11 @@ describe('the table', () => {
     // one it is the scrollport the header sticks to, and it never scrolls,
     // so the header would sit partway down the table over the first rows.
     expect(html).toMatch(/@media \(min-width:720px\)\{[^@]*\.cmp-scroll\{overflow-x:visible\}/)
-    expect(html).toMatch(/@media \(min-width:720px\)\{[^@]*thead th,[^{]*\.cmp-corner\{position:sticky;top:64px;z-index:2\}/)
+    // top tracks the site bar rather than assuming it is always there: it
+    // hides on the way down the page (Header/Component.client.tsx).
+    expect(html).toMatch(
+      /@media \(min-width:720px\)\{[^@]*thead th,[^{]*\.cmp-corner\{position:sticky;top:var\(--ncx-nav-offset,64px\);z-index:2\}/,
+    )
   })
 
   it('scrolls sideways below 720px in a labelled, focusable region, with row labels pinned', () => {

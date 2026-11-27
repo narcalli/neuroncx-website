@@ -250,6 +250,15 @@
   --ncx-crimson-wash-on-navy: rgba(198, 40, 40, 0.22);
   --ncx-teal-wash-on-navy: rgba(79, 178, 187, 0.18);
 
+  /* How far down the viewport the sticky header bar currently reaches, for
+     anything that has to dock under it. The bar hides itself on the way down
+     the page and comes back on the way up, so this is rewritten as it moves
+     (Header/Component.client.tsx) rather than being a fixed number: a sticky
+     thing reading it sits tight under the bar while the bar is there, and
+     moves up to the top of the window once it has gone. 64px, the bar's own
+     height, is the right answer before any scrolling has happened. */
+  --ncx-nav-offset: 64px;
+
   /* Depth and shape */
   --ncx-shadow: 0 1px 2px rgba(20, 26, 45, 0.05), 0 8px 24px -12px rgba(20, 26, 45, 0.14);
   --ncx-lift: 0 2px 4px rgba(20, 26, 45, 0.06), 0 16px 38px -16px rgba(20, 26, 45, 0.34);

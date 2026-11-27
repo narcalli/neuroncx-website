@@ -206,6 +206,23 @@ export const HeaderClient: React.FC<{
       darkZones = Array.from(document.querySelectorAll('[data-nav="dark"]'))
     }
 
+    // How much of the viewport the bar is covering right now, published as
+    // --ncx-nav-offset for anything that sticks below it (the comparison
+    // table's header row is the first). The bar hides with a transform, so
+    // its own bottom edge is the honest answer: 64 while it is shown, 0 once
+    // it has slid away, and the steps between during the slide, which keeps
+    // whatever is docked under it moving with it rather than jumping. It
+    // also covers the announcement bar above it and the safe-area inset
+    // without either having to be known here. Written only when the rounded
+    // value changes, since this runs on every scroll frame.
+    let lastOffset = -1
+    const publishOffset = (r: DOMRect) => {
+      const offset = Math.max(0, Math.round(r.bottom))
+      if (offset === lastOffset) return
+      lastOffset = offset
+      document.documentElement.style.setProperty('--ncx-nav-offset', `${offset}px`)
+    }
+
     const paint = () => {
       ticking = false
       const scrollY = window.scrollY
@@ -215,6 +232,7 @@ export const HeaderClient: React.FC<{
       nav.classList.toggle('is-stuck', stuck)
       nav.classList.toggle('is-hidden', hidden)
       const r = nav.getBoundingClientRect()
+      publishOffset(r)
       const probe = r.top + r.height / 2
 
       const tagged = darkZones.some((zone) => {
@@ -265,6 +283,15 @@ export const HeaderClient: React.FC<{
     const onFocusIn = () => {
       hasFocus.current = true
       nav.classList.remove('is-hidden')
+      // The bar just came back without the page moving, so nothing would
+      // otherwise repaint and --ncx-nav-offset would still read 0.
+      onScroll()
+    }
+
+    // The slide takes 300ms. A scroll that stops partway through would leave
+    // the offset at whatever it reached, so settle it on the final position.
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.target === nav && e.propertyName === 'transform') publishOffset(nav.getBoundingClientRect())
     }
     const onFocusOut = (e: FocusEvent) => {
       hasFocus.current = Boolean(e.relatedTarget) && nav.contains(e.relatedTarget as Node)
@@ -276,11 +303,14 @@ export const HeaderClient: React.FC<{
     window.addEventListener('resize', onResize, { passive: true })
     nav.addEventListener('focusin', onFocusIn)
     nav.addEventListener('focusout', onFocusOut)
+    nav.addEventListener('transitionend', onTransitionEnd)
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
       nav.removeEventListener('focusin', onFocusIn)
       nav.removeEventListener('focusout', onFocusOut)
+      nav.removeEventListener('transitionend', onTransitionEnd)
+      document.documentElement.style.removeProperty('--ncx-nav-offset')
     }
     // Re-reads the dark sections after a client-side navigation.
   }, [pathname])
