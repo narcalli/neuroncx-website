@@ -3,12 +3,13 @@ import React from 'react'
 import type { ComparisonTableBlock as GeneratedProps } from '@/payload-types'
 import { SplitHeading } from '@/motion/SplitHeading'
 import { Reveal } from '@/motion/Reveal'
+import { ctaHref, type CtaGroup } from '@/utilities/ctaHref'
 
 /**
- * payload-types.ts does not yet carry the rowHeading field (it is a
+ * payload-types.ts does not yet carry the rowHeading or cta fields (it is a
  * hand-copied snapshot with no payload.config.ts in this repo to regenerate
  * it from — see StackComparison/Component.tsx for the same situation). Add
- * it here rather than hand-edit that generated file; drop this once the
+ * them here rather than hand-edit that generated file; drop this once the
  * types are regenerated from the CMS and copied over.
  */
 type Props = GeneratedProps & {
@@ -18,6 +19,8 @@ type Props = GeneratedProps & {
    * its one main heading. Set by PageView, not by the editor.
    */
   headingLevel?: 'h1' | 'h2'
+  /** The button under the intro, usually out to a sister comparison. */
+  cta?: (CtaGroup & { appearance?: 'outline' | 'solid' | null }) | null
 }
 
 /**
@@ -50,12 +53,18 @@ export const ComparisonTableBlock: React.FC<Props> = ({
   footnote,
   rowHeading,
   headingLevel = 'h2',
+  cta,
 }) => {
   const cols = (columns || []).filter((c) => c && c.label)
   const body = (rows || []).filter((r) => r && r.label)
   if (!cols.length || !body.length) return null
   // One highlighted column at most (the CMS refuses more); the first wins.
   const lit = cols.findIndex((c) => c.highlight)
+  // Both halves or nothing: a label with no target, or a target the query
+  // did not populate, is a button that goes nowhere.
+  const ctaTo = ctaHref(cta)
+  const ctaLabel = cta?.label?.trim()
+  const ctaSolid = cta?.appearance === 'solid'
 
   return (
     <section className="ncx-cmp" style={{ '--cmp-cols': cols.length } as React.CSSProperties}>
@@ -64,6 +73,18 @@ export const ComparisonTableBlock: React.FC<Props> = ({
         {eyebrow ? <Reveal as="p" from="left" className="cmp-eyebrow">{eyebrow}</Reveal> : null}
         {headingLevel === 'h1' ? <h1>{heading}</h1> : <SplitHeading as="h2">{heading}</SplitHeading>}
         {intro ? <Reveal as="p" className="cmp-intro">{intro}</Reveal> : null}
+
+        {ctaTo && ctaLabel ? (
+          <Reveal as="p" className="cmp-cta-row">
+            <a
+              className={ctaSolid ? 'cmp-cta is-solid' : 'cmp-cta'}
+              href={ctaTo}
+              {...(cta?.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              {ctaLabel}
+            </a>
+          </Reveal>
+        ) : null}
 
         <div className="cmp-scroll" role="region" aria-label={`${heading}: comparison table`} tabIndex={0}>
           <table>
@@ -115,6 +136,21 @@ const css = `
      box into a scroll container. That is what the sideways scroll below
      720px needs, but it also becomes the scrollport the sticky header
      resolves against, so the header is switched off it at wider widths. */
+  /* The button under the intro, in either of the two looks the editor can
+     pick. Outline is the quieter one, so it does not compete with the
+     page's own call to action; solid is the same crimson as that one.
+     44px tall either way, the size a finger can hit. */
+  .ncx-cmp .cmp-cta-row{margin:24px 0 0}
+  .ncx-cmp .cmp-cta{display:inline-flex;align-items:center;min-height:44px;padding:0 22px;border-radius:999px;
+    font-family:var(--font-display),Arial,sans-serif;font-weight:500;font-size:15px;text-decoration:none;
+    background:var(--ncx-white);color:var(--ncx-ink);border:1px solid var(--ncx-rule);
+    transition:border-color .15s ease,background .15s ease}
+  .ncx-cmp .cmp-cta:hover{border-color:var(--ncx-rule-strong);background:var(--ncx-paper)}
+  .ncx-cmp .cmp-cta.is-solid{background:var(--ncx-crimson);color:var(--ncx-on-navy);border-color:var(--ncx-crimson)}
+  .ncx-cmp .cmp-cta.is-solid:hover{background:var(--ncx-crimson-hover);border-color:var(--ncx-crimson-hover)}
+  .ncx-cmp .cmp-cta:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}
+  @media(prefers-reduced-motion:reduce){ .ncx-cmp .cmp-cta{transition:none} }
+
   .ncx-cmp .cmp-scroll{margin-top:40px;border:1px solid var(--ncx-rule);border-radius:var(--ncx-r-panel);
     background:var(--ncx-white);overflow-x:auto}
   .ncx-cmp .cmp-scroll:focus-visible{outline:2px solid var(--ncx-focus);outline-offset:3px}

@@ -48,6 +48,56 @@ describe('the table', () => {
     expect(html).toMatch(/\.ncx-cmp h2,\.ncx-cmp h1\{font-family:var\(--font-display\)/)
   })
 
+  describe('the button under the intro', () => {
+    const withCta = (cta: unknown) =>
+      renderToStaticMarkup(React.createElement(ComparisonTableBlock, { ...block, cta } as Props & { cta: unknown }))
+
+    it('links an internal reference by its slug, and sits above the table', () => {
+      const html2 = withCta({
+        type: 'reference',
+        reference: { relationTo: 'pages', value: { slug: 'healthcare-comparison' } },
+        label: 'See the healthcare comparison',
+      })
+      expect(html2).toContain('href="/healthcare-comparison"')
+      expect(html2).toContain('See the healthcare comparison')
+      // Under the intro and above the table. Compare the markup, not the
+      // stylesheet, which names every class before any of them is used.
+      const intro = html2.indexOf('class="cmp-intro"')
+      const button = html2.indexOf('<a class="cmp-cta')
+      const table = html2.indexOf('class="cmp-scroll"')
+      expect(intro).toBeGreaterThan(-1)
+      expect(button).toBeGreaterThan(intro)
+      expect(button).toBeLessThan(table)
+    })
+
+    it('links a custom address, and opens a new tab only when asked', () => {
+      expect(withCta({ type: 'custom', url: '/pricing', label: 'Pricing' })).toContain('href="/pricing"')
+      expect(withCta({ type: 'custom', url: '/pricing', label: 'Pricing' })).not.toContain('target="_blank"')
+      const tab = withCta({ type: 'custom', url: 'https://example.com', label: 'Out', newTab: true })
+      expect(tab).toContain('target="_blank"')
+      expect(tab).toContain('rel="noopener noreferrer"')
+    })
+
+    it('takes either look, outline by default', () => {
+      const outline = withCta({ type: 'custom', url: '/a', label: 'Go' })
+      expect(outline).toContain('class="cmp-cta"')
+      const solid = withCta({ type: 'custom', url: '/a', label: 'Go', appearance: 'solid' })
+      expect(solid).toContain('class="cmp-cta is-solid"')
+      expect(solid).toMatch(/\.cmp-cta\.is-solid\{background:var\(--ncx-crimson\)/)
+    })
+
+    it('draws nothing when half filled, or when a reference did not resolve', () => {
+      // The stylesheet always names the class, so look for the element.
+      const drawn = (h: string) => h.includes('class="cmp-cta')
+      expect(drawn(html)).toBe(false) // no cta at all
+      expect(drawn(withCta({ type: 'custom', url: '/a' }))).toBe(false) // no label
+      expect(drawn(withCta({ type: 'custom', label: 'Go' }))).toBe(false) // no target
+      expect(drawn(withCta({ type: 'custom', url: '/a', label: '   ' }))).toBe(false) // blank label
+      // Below depth 2 a reference comes back as an id, not an object.
+      expect(drawn(withCta({ type: 'reference', reference: { relationTo: 'pages', value: 'abc123' }, label: 'Go' }))).toBe(false)
+    })
+  })
+
   it('has column headers and row headers', () => {
     expect(html).toContain('<thead><tr><td class="cmp-corner"></td><th scope="col" class="is-lit">NeuronCx</th><th scope="col">A classic CRM</th><th scope="col">A chatbot tool</th></tr></thead>')
     expect(html).toContain('<tr><th scope="row">Customer record</th><td class="is-lit">One record per person</td><td>Contacts and deals</td><td>Chat history only</td></tr>')
